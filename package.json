@@ -12,5 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "koa": "^2.14.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.9",
+    "@babel/node": "^7.22.6",
+    "@babel/preset-env": "^7.22.9"
   }
 }
