@@ -1,4 +1,5 @@
 import Koa from 'koa'
+import env from '@/config/config.dev'
 
 const app = new Koa()
 
@@ -6,6 +7,6 @@ app.use((ctx, next) => {
   ctx.body = 'KUN IS CUTEST!'
 })
 
-app.listen(3000, () => {
-  console.log('server is running on http://localhost:3000')
+app.listen(env.APP_PORT, () => {
+  console.log(`server is running on http://localhost:${env.APP_PORT}`)
 })
