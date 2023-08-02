@@ -5,7 +5,6 @@ class UpdateLogController {
     try {
       const { body } = ctx.request
       const newUpdateLog = new updateLog(body)
-      console.log(newUpdateLog)
       const savedUpdateLog = await newUpdateLog.save()
       ctx.status = 201
       ctx.body = savedUpdateLog

@@ -3,12 +3,14 @@ import UpdateLogController from '@/controller/updateLogController'
 
 const router = new Router()
 
-router.post('/updateLogs', UpdateLogController.createUpdateLog)
+router.prefix('/update')
 
-router.get('/updateLogs', UpdateLogController.getUpdateLogs)
+router.post('/logs', UpdateLogController.createUpdateLog)
 
-router.put('/updateLogs/:id', UpdateLogController.updateUpdateLog)
+router.get('/logs', UpdateLogController.getUpdateLogs)
 
-router.delete('/updateLogs/:id', UpdateLogController.deleteUpdateLog)
+router.put('/logs/:id', UpdateLogController.updateUpdateLog)
+
+router.delete('/logs/:id', UpdateLogController.deleteUpdateLog)
 
 export default router
