@@ -6,11 +6,15 @@ import env from '@/config/config.dev'
 import router from '@/routes/routes'
 // 解析请求体
 import koaBody from 'koa-body'
+// 允许跨域请求
+import cors from '@koa/cors'
 
 // 初始化 koa-app
 const app = new Koa()
 
-// 使用 koa-router
+// 使用 koa 跨域请求中间件
+app.use(cors())
+// 使用 koa-body
 app.use(
   koaBody({
     multipart: true,
@@ -23,6 +27,7 @@ app.use(
     },
   })
 )
+// 使用 koa-router
 app.use(router())
 
 app.listen(env.APP_PORT, () => {
