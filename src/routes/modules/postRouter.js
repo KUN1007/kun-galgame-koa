@@ -1,10 +1,11 @@
-const Router = require('koa-router')
-const Post = require('../models/post')
+import Router from 'koa-router'
+import Post from '@/models/postModel'
 
 const router = new Router()
 
+router.prefix('/post')
 // Create a new post
-router.post('/posts', async (ctx) => {
+/* router.post('/posts', async (ctx) => {
   const postData = ctx.request.body
   try {
     const post = new Post(postData)
@@ -14,20 +15,21 @@ router.post('/posts', async (ctx) => {
     ctx.status = 400
     ctx.body = { error: err.message }
   }
-})
+}) */
 
 // Get all posts
 router.get('/posts', async (ctx) => {
-  try {
-    const posts = await Post.find()
-    ctx.body = posts
-  } catch (err) {
-    ctx.status = 500
-    ctx.body = { error: 'Internal Server Error' }
-  }
+  console.log(ctx)
+  // try {
+  //   const posts = await Post.find()
+  //   ctx.body = posts
+  // } catch (err) {
+  //   ctx.status = 500
+  //   ctx.body = { error: 'Internal Server Error' }
+  // }
 })
 
-// Get a specific post by ID
+/* // Get a specific post by ID
 router.get('/posts/:id', async (ctx) => {
   try {
     const post = await Post.findById(ctx.params.id)
@@ -75,6 +77,6 @@ router.delete('/posts/:id', async (ctx) => {
     ctx.status = 500
     ctx.body = { error: 'Internal Server Error' }
   }
-})
+}) */
 
-module.exports = router
+export default router

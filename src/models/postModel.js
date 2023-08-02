@@ -1,5 +1,6 @@
 import mongoose from '@/db/connection'
 
+// 帖子 schema 结构
 const postSchema = new mongoose.Schema(
   {
     pid: { type: mongoose.Schema.Types.ObjectId, required: true },
