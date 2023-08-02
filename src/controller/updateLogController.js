@@ -3,9 +3,9 @@ import updateLog from '@/models/updateLogModel'
 class UpdateLogController {
   async createUpdateLog(ctx) {
     try {
-      console.log(ctx.request.body)
-      const { upid, description, time, version } = ctx.request.body
-      const newUpdateLog = new updateLog({ upid, description, time, version })
+      const { body } = ctx.request
+      const newUpdateLog = new updateLog(body)
+      console.log(newUpdateLog)
       const savedUpdateLog = await newUpdateLog.save()
       ctx.status = 201
       ctx.body = savedUpdateLog
