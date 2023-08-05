@@ -2,7 +2,7 @@ import mongoose from '@/db/connection'
 import increasingSequence from '@/utils/increasingSequence'
 
 // 更新日志 schema 结构
-const updateLogSchema = new mongoose.Schema(
+const UpdateLogSchema = new mongoose.Schema(
   {
     // 单个更新日志的 id，唯一，从 1 递增
     upid: { type: Number, unique: true },
@@ -14,8 +14,8 @@ const updateLogSchema = new mongoose.Schema(
 )
 
 // pre-save 钩子，在保存文档之前自动递增 upid 字段
-updateLogSchema.pre('save', increasingSequence('upid'))
+UpdateLogSchema.pre('save', increasingSequence('upid'))
 
-const updateLog = mongoose.model('updateLog', updateLogSchema)
+const UpdateLogModel = mongoose.model('updateLog', UpdateLogSchema)
 
-export default updateLog
+export default UpdateLogModel

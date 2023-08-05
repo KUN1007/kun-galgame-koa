@@ -1,10 +1,12 @@
-import updateLog from '@/models/updateLogModel'
+// 导入更新数据的 schema
+import UpdateLogModel from '@/models/updateLogModel'
 
 class UpdateLogController {
+  // 创建单条更新数据
   async createUpdateLog(ctx) {
     try {
       const { body } = ctx.request
-      const newUpdateLog = new updateLog(body)
+      const newUpdateLog = new UpdateLogModel(body)
       const savedUpdateLog = await newUpdateLog.save()
       ctx.status = 201
       ctx.body = savedUpdateLog
@@ -23,8 +25,7 @@ class UpdateLogController {
       const skip = (parseInt(page) - 1) * limit
 
       // 根据时间排列好五条数据
-      const updateLogs = await updateLog
-        .find()
+      const updateLogs = await UpdateLogModel.find()
         .sort({ upid: -1 })
         .skip(skip)
         .limit(limit)
@@ -52,11 +53,12 @@ class UpdateLogController {
     }
   }
 
+  // 更新单条更新数据
   async updateUpdateLog(ctx) {
     try {
-      const { id } = ctx.params // Assuming the updateLog id is passed as a route parameter
+      const { id } = ctx.params // Assuming the UpdateLogModel id is passed as a route parameter
       const { description, version } = ctx.request.body
-      const updatedUpdateLog = await updateLog.findByIdAndUpdate(
+      const updatedUpdateLog = await UpdateLogModel.findByIdAndUpdate(
         id,
         { description, version },
         { new: true }
@@ -68,10 +70,11 @@ class UpdateLogController {
     }
   }
 
+  // 删除单条更新数据
   async deleteUpdateLog(ctx) {
     try {
       const { id } = ctx.params // Assuming the updateLog id is passed as a route parameter
-      const deletedUpdateLog = await updateLog.findByIdAndDelete(id)
+      const deletedUpdateLog = await UpdateLogModel.findByIdAndDelete(id)
       ctx.body = deletedUpdateLog
     } catch (error) {
       ctx.status = 500

@@ -19,6 +19,7 @@
     "@koa/cors": "^4.0.0",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.1",
     "koa": "^2.14.2",
     "koa-body": "^6.0.1",
     "koa-combine-routers": "^4.0.2",
