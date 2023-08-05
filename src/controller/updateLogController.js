@@ -14,15 +14,44 @@ class UpdateLogController {
     }
   }
 
+  // 每次返回 5 条历史更新记录，按照时间排序
   async getUpdateLogs(ctx) {
     try {
-      const updateLogs = await updateLog.find().sort({ time: -1 })
-      ctx.body = updateLogs
+      const { page, limit } = ctx.query
+
+      // 根据请求参数计算跳过的步幅
+      const skip = (parseInt(page) - 1) * limit
+
+      // 根据时间排列好五条数据
+      const updateLogs = await updateLog
+        .find()
+        .sort({ upid: -1 })
+        .skip(skip)
+        .limit(limit)
+
+      // 将数据结构适配为接口定义好的数据结构
+      const data = updateLogs.map((log) => ({
+        upid: log.upid,
+        description: log.description,
+        time: log.time,
+        version: log.version,
+      }))
+
+      // Calculate the total number of pages
+      // const totalLogs = await updateLog.countDocuments()
+      // const totalPages = Math.ceil(totalLogs / limit)
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: data,
+      }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to fetch update logs' }
     }
   }
+
   async updateUpdateLog(ctx) {
     try {
       const { id } = ctx.params // Assuming the updateLog id is passed as a route parameter
