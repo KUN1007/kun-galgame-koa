@@ -25,7 +25,7 @@ const UserSchema = new Schema(
     upvotes_topic: { type: Number, default: 0 },
     reply_topic: { type: Number, default: 0 },
   },
-  { timestamps: { created_at: 'created', updated_at: 'updated' } }
+  { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 )
 
 // pre-save 钩子，在保存文档之前自动递增 upid 字段

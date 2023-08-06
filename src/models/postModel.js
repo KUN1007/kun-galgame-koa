@@ -23,7 +23,7 @@ const postSchema = new mongoose.Schema(
     category: { type: String, required: true },
     update: { type: Date, default: Date.now },
   },
-  { timestamps: { created_at: 'created', updated_at: 'updated' } }
+  { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 )
 
 const posts = mongoose.model('posts', postSchema)

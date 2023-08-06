@@ -3,41 +3,38 @@ import generateToken from '@/utils/jsonWebToken'
 import UserModel from '@/models/UserModel'
 
 class LoginController {
-  // 用户登录
-  async login(ctx) {
-    // 接收用户的数据
-    // 返回token
-    const { body } = ctx.request
-    // 验证用户账号密码是否正确
-    let checkUserPasswd = false
-    const user = await UserModel.findOne({ username: body.username })
+  /*
+   * 接受用户传过来的数据并返回 token
+   */
 
-    if (user === null) {
+  async login(ctx) {
+    const { name, password } = ctx.request.body
+
+    // 通过 mongodb 的 $or 运算符检查用户名或邮箱
+    const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
+
+    // 用户不存在
+    if (!user) {
       ctx.body = {
         code: 404,
-        msg: '用户名或者密码错误',
+        message: '用户不存在',
       }
       return
     }
 
-    if (await bcrypt.compare(body.password, user.password)) {
-      checkUserPasswd = true
-    }
+    const isPasswordValid = await bcrypt.compare(password, user.password)
 
-    // mongoDB查库
-    if (checkUserPasswd) {
+    if (isPasswordValid) {
       // 验证通过，返回Token数据
-      const userObj = user.toJSON()
-      const arr = ['password', 'username']
-      arr.map((item) => {
-        return delete userObj[item]
-      })
+      const { password, username, ...userObj } = user.toJSON()
+      const token = generateToken({ _id: user._id }, '60m')
+      const refreshToken = generateToken({ _id: user._id }, '7d')
 
       ctx.body = {
         code: 200,
         data: userObj,
-        token: generateToken({ _id: user._id }, '60m'),
-        refreshToken: generateToken({ _id: user._id }, '7d'),
+        token,
+        refreshToken,
       }
     } else {
       // 用户名 密码验证失败，返回提示

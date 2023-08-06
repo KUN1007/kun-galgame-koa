@@ -5,15 +5,13 @@ class RegisterController {
   // 注册接口
   async register(ctx) {
     // 接收客户端的数据
-    const { body } = ctx.request
+    const { name, email, password, ip } = ctx.request.body
     let msg = {}
-
-    console.log(ctx.request.body.email)
-
     let check = true
-    // 邮箱已被注册
-    const email = await UserModel.findOne({ email: body.email })
-    if (email !== null) {
+
+    // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
+    const emailCount = await UserModel.countDocuments({ email })
+    if (emailCount > 0) {
       msg.email = '该邮箱已被注册，请修改'
       check = false
     }
@@ -27,46 +25,49 @@ class RegisterController {
      * 但是如果注册时注册为 `KUN` 则数据库中也保存的是 `KUN` 而不是 `kun`
      */
 
-    const username = await UserModel.findOne({
-      name: { $regex: new RegExp('^' + body.name + '$', 'i') },
-    })
-
     // 用户名已被注册
-    if (username !== null) {
+    const usernameCount = await UserModel.countDocuments({
+      name: { $regex: new RegExp('^' + name + '$', 'i') },
+    })
+    if (usernameCount > 0) {
       msg.name = '用户名已经存在，请修改'
       check = false
     }
 
     // 写入数据到数据库
     if (check) {
-      // bcrypt.hash 的第二个参数为哈希函数，越复杂加密效果越好
-      body.password = await bcrypt.hash(body.password, 7)
+      try {
+        // bcrypt.hash 的第二个参数为哈希函数的迭代次数，越大加密效果越好但运算越慢
+        const hashedPassword = await bcrypt.hash(password, 7)
 
-      // 新建一个 User 数据
-      const user = new UserModel({
-        // 写入数据库时名字区分大小写
-        name: body.name,
-        email: body.email,
-        password: body.password,
-        ip: body.ip,
-      })
+        // 新建一个 User 数据
+        const user = new UserModel({
+          // 写入数据库时名字区分大小写
+          name,
+          email,
+          password,
+          ip,
+        })
 
-      const result = await user.save()
+        const result = await user.save()
 
-      console.log(result)
-
-      ctx.body = {
-        code: 200,
-        message: 'OK',
-        data: result,
+        ctx.body = {
+          code: 200,
+          message: 'OK',
+          data: result,
+        }
+      } catch (error) {
+        ctx.body = {
+          code: 500,
+          message: '写入数据库出错',
+        }
       }
-      return
-    }
-
-    // 上面执行出错
-    ctx.body = {
-      code: 500,
-      message: msg,
+    } else {
+      // 上面执行出错
+      ctx.body = {
+        code: 500,
+        message: msg,
+      }
     }
   }
 }
