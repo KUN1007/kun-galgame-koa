@@ -12,7 +12,7 @@ const generateToken = (payload, expire = '7h') => {
       { expiresIn: expire }
     )
   } else {
-    throw new Error('生成token失败！')
+    throw new Error('生成token错误')
   }
 }
 

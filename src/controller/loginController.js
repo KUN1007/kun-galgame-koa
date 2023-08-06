@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import generateToken from '@/utils/jsonWebToken'
-import UserModel from '@/models/UserModel'
+import UserModel from '@/models/userModel'
 
 class LoginController {
   /*
@@ -25,14 +25,16 @@ class LoginController {
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if (isPasswordValid) {
-      // 验证通过，返回Token数据
-      const { password, username, ...userObj } = user.toJSON()
+      // 验证通过，返回Token数据，这里剩余参数写法可以避免暴露不必要的 user 数据
+      // const { password, username, ...userObj } = user.toJSON()
+      const { password, username, ..._ } = user.toJSON()
       const token = generateToken({ _id: user._id }, '60m')
       const refreshToken = generateToken({ _id: user._id }, '7d')
 
       ctx.body = {
         code: 200,
-        data: userObj,
+        message: 'OK',
+        // data: userObj,
         token,
         refreshToken,
       }
