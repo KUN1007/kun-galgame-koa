@@ -16,6 +16,6 @@ const UpdateLogSchema = new mongoose.Schema(
 // pre-save 钩子，在保存文档之前自动递增 upid 字段
 UpdateLogSchema.pre('save', increasingSequence('upid'))
 
-const UpdateLogModel = mongoose.model('updateLog', UpdateLogSchema)
+const UpdateLogModel = mongoose.model('update_log', UpdateLogSchema)
 
 export default UpdateLogModel

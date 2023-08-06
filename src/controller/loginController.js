@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
-import { generateToken } from '@/common/Utils'
-import User from '@/model/User'
+import generateToken from '@/utils/jsonWebToken'
+import UserModel from '@/models/UserModel'
 
 class LoginController {
   // 用户登录
@@ -10,7 +10,7 @@ class LoginController {
     const { body } = ctx.request
     // 验证用户账号密码是否正确
     let checkUserPasswd = false
-    const user = await User.findOne({ username: body.username })
+    const user = await UserModel.findOne({ username: body.username })
 
     if (user === null) {
       ctx.body = {
