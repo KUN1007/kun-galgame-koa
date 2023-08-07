@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken'
 import env from '@/config/config.dev'
 
+const getJWTPayload = (token) => {
+  return jwt.verify(token.split(' ')[1], config.JWT_SECRET)
+}
+
 // 生成 token 返回给客户端
 const generateToken = (payload, expire = '7h') => {
   if (payload) {
@@ -16,4 +20,4 @@ const generateToken = (payload, expire = '7h') => {
   }
 }
 
-export default generateToken
+export { getJWTPayload, generateToken }

@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import UpdateLogController from '@/controller/updateLogController'
+import UpdateLogController from '@/controller/update-log/updateLogController'
 
 const router = new Router()
 

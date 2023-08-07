@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import generateToken from '@/utils/jsonWebToken'
+import { generateToken } from '@/utils/jsonWebToken'
 import UserModel from '@/models/userModel'
 
 class LoginController {
