@@ -1,12 +1,47 @@
 import bcrypt from 'bcrypt'
+import { generateToken } from '@/utils/jsonWebToken'
 import UserModel from '@/models/userModel'
 
-class RegisterController {
-  // 注册接口
-  async register(ctx) {
-    // 接收客户端的数据
-    const { name, email, password, ip } = ctx.request.body
-    let msg = {}
+class UserService {
+  /*
+   * 接受用户传过来的数据并返回 token
+   */
+
+  async loginUser(name, password) {
+    // 通过 mongodb 的 $or 运算符检查用户名或邮箱
+    const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
+
+    // 用户不存在
+    if (!user) {
+      return { code: 404, message: '用户不存在' }
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (isPasswordValid) {
+      // 验证通过，返回Token数据，这里剩余参数写法可以避免暴露不必要的 user 数据
+      // const { password, username, ...userObj } = user.toJSON()
+      const { password, username, ..._ } = user.toJSON()
+      const token = generateToken({ _id: user._id }, '60m')
+      const refreshToken = generateToken({ _id: user._id }, '7d')
+
+      // 规范化成接口定义的数据结构
+      return {
+        code: 200,
+        message: 'OK',
+        data: {
+          token,
+          refreshToken,
+        },
+      }
+    } else {
+      return { code: 404, message: '用户名或者密码错误' }
+    }
+  }
+
+  // 注册逻辑
+  async registerUser(name, email, password, ip) {
+    const msg = {}
     let check = true
 
     // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
@@ -25,7 +60,6 @@ class RegisterController {
      * 但是如果注册时注册为 `KUN` 则数据库中也保存的是 `KUN` 而不是 `kun`
      */
 
-    // 用户名已被注册
     const usernameCount = await UserModel.countDocuments({
       name: { $regex: new RegExp('^' + name + '$', 'i') },
     })
@@ -42,34 +76,22 @@ class RegisterController {
 
         // 新建一个 User 数据
         const user = new UserModel({
-          // 写入数据库时名字区分大小写
           name,
           email,
-          password,
+          password: hashedPassword,
           ip,
         })
 
         const result = await user.save()
 
-        ctx.body = {
-          code: 200,
-          message: 'OK',
-          data: result,
-        }
+        return { code: 200, message: 'OK', data: result }
       } catch (error) {
-        ctx.body = {
-          code: 500,
-          message: '写入数据库出错',
-        }
+        return { code: 500, message: '写入数据库出错' }
       }
     } else {
-      // 上面执行出错
-      ctx.body = {
-        code: 500,
-        message: msg,
-      }
+      return { code: 500, message: msg }
     }
   }
 }
 
-export default new RegisterController()
+export default new UserService()
