@@ -31,5 +31,5 @@ app.use(
 app.use(router())
 
 app.listen(env.APP_PORT, () => {
-  console.log(`server is running on http://localhost:${env.APP_PORT}`)
+  console.log(`server is running on http://${env.APP_HOST}:${env.APP_PORT}`)
 })

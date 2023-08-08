@@ -4,35 +4,23 @@
  * 这样无需进行回调函数的处理，仅需 async / await 即可
  */
 
-import redis from 'redis'
-import { promisifyAll } from 'bluebird'
+import Redis from 'ioredis'
 import env from '@/config/config.dev'
 
-const options = {
+// 创建单个 redis 客户端实例并 promisify
+const redisClient = new Redis({
   host: env.REDIS_HOST,
   port: env.REDIS_PORT,
-  password: env.REDIS_PASSWORD,
-  no_ready_check: true,
-  detect_buffers: true,
-  retry_strategy: function (options) {
-    if (options.error && options.error.code === 'ECONNREFUSED') {
-      return new Error('The server refused the connection')
-    }
-    if (options.total_retry_time > 1000 * 60 * 60) {
-      return new Error('Retry time exhausted')
-    }
-    if (options.attempt > 7) {
-      console.log('already tried 7 times!')
-      return undefined
-    }
-    return Math.min(options.attempt * 100, 3000)
-  },
-}
+})
 
-// 创建单个 redis 客户端实例并 promisify
-const client = promisifyAll(redis.createClient(options))
+// 监听 'ready' 事件
+redisClient.on('connect', () => {
+  console.log(
+    `redis: ${env.REDIS_HOST}:${env.REDIS_PORT} connection successful! `
+  )
+})
 
-client.on('error', (err) => {
+redisClient.on('error', (err) => {
   console.error('Redis Client Error:', err)
 })
 
@@ -42,46 +30,38 @@ const setValue = async (key, value, time) => {
     return
   }
 
-  if (typeof value === 'string') {
-    try {
-      if (typeof time !== 'undefined') {
-        await client.setAsync(key, value, 'EX', time)
-      } else {
-        await client.setAsync(key, value)
-      }
-    } catch (err) {
-      console.error('client.set -> err', err)
+  try {
+    if (time) {
+      await redisClient.setex(key, time, value)
+    } else {
+      await redisClient.set(key, value)
     }
-  } else if (typeof value === 'object') {
-    // Handle object values if needed
+    console.log('Value set in Redis:', key, value)
+  } catch (error) {
+    console.error('Error setting value in Redis:', error)
   }
 }
 
 // 获取值
 const getValue = async (key) => {
   try {
-    return await client.getAsync(key)
-  } catch (err) {
-    console.error('client.getAsync -> err', err)
+    const value = await redisClient.get(key)
+    console.log('Value retrieved from Redis:', key, value)
+    return value
+  } catch (error) {
+    console.error('Error getting value from Redis:', error)
     return null
   }
 }
 
-// 获取全部值
-const getHValue = (key) => {
-  // 这里由于将之前的 client promisify 了，所以不能使用 hgetall
-  return client.hgetallAsync(key)
+// 示例：从 Redis 删除值
+const delValue = async (key) => {
+  try {
+    await redisClient.del(key)
+    console.log('Value deleted from Redis:', key)
+  } catch (error) {
+    console.error('Error deleting value from Redis:', error)
+  }
 }
 
-// 删除值
-const delValue = (key) => {
-  client.del(key, (err, res) => {
-    if (res === 1) {
-      console.log('delete successfully')
-    } else {
-      console.log('delete redis key error:' + err)
-    }
-  })
-}
-
-export { client, setValue, getValue, getHValue, delValue }
+export { redisClient, setValue, getValue, delValue }

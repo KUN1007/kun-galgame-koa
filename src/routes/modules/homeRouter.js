@@ -3,12 +3,9 @@ import PostController from '@/controller/postController'
 
 const router = new Router()
 
-router.prefix('/edit')
+router.prefix('/home')
 
-// 发布帖子
-router.post('/', PostController.createPost)
-
-// 更新帖子
-router.put('/', PostController.updatePost)
+// 获取帖子
+router.post('/topic', PostController.getPosts)
 
 export default router

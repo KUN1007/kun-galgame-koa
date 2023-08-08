@@ -5,6 +5,7 @@
     "hgetall",
     "kungalgame",
     "moemoepoint",
+    "setex",
     "upid",
     "upvotes"
   ]
