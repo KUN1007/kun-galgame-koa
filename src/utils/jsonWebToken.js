@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import env from '@/config/config.dev'
 
 const getJWTPayload = (token) => {
-  return jwt.verify(token.split(' ')[1], config.JWT_SECRET)
+  return jwt.verify(token.split(' ')[1], env.JWT_SECRET)
 }
 
 // 生成 token 返回给客户端

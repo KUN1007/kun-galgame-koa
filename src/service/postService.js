@@ -31,7 +31,7 @@ class PostService {
         .sort(sortOptions)
         .skip(skip)
         .limit(limit)
-        .populate('uid', 'avatar name')
+        .populate('user', 'uid avatar name')
         .lean()
 
       const data = posts.map((post) => ({
@@ -44,7 +44,14 @@ class PostService {
         time: post.time,
         content: post.content,
         upvotes: post.upvotes,
-        uid: post.uid,
+        // 这里 populate 后的结果是一个数组，取第一个用户数据
+        uid: post.user[0] // 检查是否有用户信息填充
+          ? {
+              uid: post.user[0].uid,
+              avatar: post.user[0].avatar,
+              name: post.user[0].name,
+            }
+          : null,
       }))
 
       return data

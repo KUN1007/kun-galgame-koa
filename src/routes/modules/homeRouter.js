@@ -6,6 +6,6 @@ const router = new Router()
 router.prefix('/home')
 
 // 获取帖子
-router.post('/topic', PostController.getPosts)
+router.get('/topic', PostController.getPosts)
 
 export default router

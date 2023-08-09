@@ -1,11 +1,13 @@
 import PostService from '@/service//postService'
+import { getJWTPayload } from '@/utils/jsonWebToken'
 
 class PostController {
   // 创建帖子
   async createPost(ctx) {
     try {
-      const { title, content, time, tags, category } = ctx.request.body
-      const uid = ctx.state.user.uid // Assuming user information is stored in the ctx.state.user
+      const { title, content, time, tags, category, uid } = ctx.request.body
+      // console.log(ctx.header)
+      // const result = await getJWTPayload(ctx.header.authorization)
 
       const savedPost = await PostService.createPost(
         title,
