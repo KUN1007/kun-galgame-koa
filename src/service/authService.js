@@ -1,4 +1,4 @@
-import { generateToken } from '@/utils/jsonWebToken'
+import { generateToken } from '@/middleware/jwtMiddleware'
 import { setValue } from '@/utils/redis'
 
 class AuthService {
@@ -11,7 +11,7 @@ class AuthService {
 
     return { token, refreshToken }
   }
-  
+
   // ... 其他方法 ...
 }
 

@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt from '@/middleware/jwtMiddleware'
 import env from '@/config/config.dev'
 
 const getJWTPayload = (token) => {

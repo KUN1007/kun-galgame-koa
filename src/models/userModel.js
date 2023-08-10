@@ -1,5 +1,5 @@
 import mongoose from '@/db/connection'
-import increasingSequence from '@/utils/increasingSequence'
+import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
 const Schema = mongoose.Schema
 

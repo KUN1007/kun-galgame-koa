@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { generateToken } from '@/utils/jsonWebToken'
+import { generateToken } from '@/middleware/jwtMiddleware'
 import UserModel from '@/models/userModel'
 import { setValue } from '@/config/redisConfig' // 导入存储到 Redis 的函数
 

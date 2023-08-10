@@ -1,5 +1,5 @@
 import mongoose from '@/db/connection'
-import increasingSequence from '@/utils/increasingSequence'
+import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
 // 更新日志 schema 结构
 const UpdateLogSchema = new mongoose.Schema(

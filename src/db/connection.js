@@ -12,9 +12,7 @@ mongoose.connect(DB_URL, {
 
 // 连接成功
 mongoose.connection.on('connected', () => {
-  console.log(
-    `MongoDB: ${env.MONGO_DB}, DB_HOST: ${env.MONGO_HOST} connection successful! `
-  )
+  console.log(`MongoDB: ${DB_URL} connection successful! `)
 })
 
 // 连接错误

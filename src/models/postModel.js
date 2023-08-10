@@ -1,5 +1,5 @@
 import mongoose from '@/db/connection'
-import increasingSequence from '@/utils/increasingSequence'
+import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
 // 帖子 schema 结构
 const PostSchema = new mongoose.Schema(

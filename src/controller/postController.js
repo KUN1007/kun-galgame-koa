@@ -1,25 +1,14 @@
-import PostService from '@/service//postService'
-import { getJWTPayload } from '@/utils/jsonWebToken'
+import PostService from '@/service/postService'
 
 class PostController {
   // 创建帖子
   async createPost(ctx) {
     try {
       const { title, content, time, tags, category, uid } = ctx.request.body
-      // console.log(ctx.header)
-      // const result = await getJWTPayload(ctx.header.authorization)
 
-      const savedPost = await PostService.createPost(
-        title,
-        content,
-        time,
-        tags,
-        category,
-        uid
-      )
+      await PostService.createPost(title, content, time, tags, category, uid)
 
-      ctx.status = 201
-      ctx.body = savedPost
+      ctx.body = { code: 200, message: 'OK' }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to create post' }
@@ -66,6 +55,44 @@ class PostController {
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to delete post' }
+    }
+  }
+
+  // 首页左边获取热度最高的 10 条帖子数据
+  async getNavTopPosts(ctx) {
+    try {
+      const limit = 10 // 设置返回的帖子数量
+      const data = await PostService.getNavTopPosts(limit)
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: data,
+      }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = {
+        code: 500,
+        message: 'Internal Server Error',
+      }
+    }
+  }
+
+  // 按关键词搜索帖子
+  async searchPosts(ctx) {
+    try {
+      const { keywords, page, limit, sortBy, sortOrder } = ctx.query
+      const data = await PostService.searchPosts(
+        keywords,
+        page,
+        limit,
+        sortBy,
+        sortOrder
+      )
+      ctx.body = { code: 200, message: 'OK', data }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = { error: 'Failed to fetch search results' }
     }
   }
 }

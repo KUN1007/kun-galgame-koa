@@ -85,6 +85,66 @@ class PostService {
       throw new Error('Failed to delete post')
     }
   }
+
+  // 首页左边获取热度最高的 10 条帖子数据
+  async getNavTopPosts(limit) {
+    try {
+      const posts = await PostModel.find({}, 'pid title popularity')
+        .sort({ popularity: -1 })
+        .limit(limit)
+        .lean()
+
+      const data = posts.map((post) => ({
+        pid: post.pid,
+        title: post.title,
+        popularity: post.popularity,
+      }))
+
+      return data
+    } catch (error) {
+      throw new Error('Failed to fetch top posts')
+    }
+  }
+
+  // 检索帖子
+  async searchPosts(keywords, page, limit, sortBy, sortOrder) {
+    const skip = (parseInt(page) - 1) * parseInt(limit)
+
+    // 将传过来的搜索内容按照空格分开搜索
+    const keywordsArray = keywords
+      .split(' ')
+      .filter((keyword) => keyword.trim() !== '')
+
+    // 构建 OR 条件来检索多个字段
+    // 使用 $in 条件将每个关键词分别应用于不同的字段进行匹配
+    const searchQuery = {
+      $or: [
+        { title: { $in: keywordsArray, $options: 'i' } },
+        { category: { $in: keywordsArray, $options: 'i' } },
+        { tags: { $in: keywordsArray, $options: 'i' } },
+        { content: { $in: keywordsArray, $options: 'i' } },
+      ],
+    }
+
+    // const totalResults = await PostModel.countDocuments(searchQuery)
+    let sortOptions = {}
+    if (sortBy) {
+      sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1
+    }
+
+    const posts = await PostModel.find(searchQuery)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean()
+
+    return {
+      // totalResults,
+      // currentPage: parseInt(page),
+      // totalPages: Math.ceil(totalResults / parseInt(limit)),
+      posts,
+    }
+  }
 }
 
 export default new PostService()
