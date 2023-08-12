@@ -78,6 +78,26 @@ class PostController {
     }
   }
 
+  // 首页左边获取最新发布的 10 条帖子数据
+  async getNavNewPosts(ctx) {
+    try {
+      const limit = 10 // 设置返回的帖子数量
+      const data = await PostService.getNavNewPosts(limit)
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: data,
+      }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = {
+        code: 500,
+        message: 'Internal Server Error',
+      }
+    }
+  }
+
   // 按关键词搜索帖子
   async searchPosts(ctx) {
     try {

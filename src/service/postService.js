@@ -106,6 +106,26 @@ class PostService {
     }
   }
 
+  // 首页左边获取最新发布的 10 条帖子数据
+  async getNavNewPosts(limit) {
+    try {
+      const posts = await PostModel.find({}, 'pid title time')
+        .sort({ time: -1 })
+        .limit(limit)
+        .lean()
+
+      const data = posts.map((post) => ({
+        pid: post.pid,
+        title: post.title,
+        time: post.time,
+      }))
+
+      return data
+    } catch (error) {
+      throw new Error('Failed to fetch top posts')
+    }
+  }
+
   // 检索帖子
   async searchPosts(keywords, page, limit, sortBy, sortOrder) {
     const skip = (parseInt(page) - 1) * parseInt(limit)
