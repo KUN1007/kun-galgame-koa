@@ -10,6 +10,7 @@ const PostSchema = new mongoose.Schema(
     uid: { type: Number, required: true, ref: 'users' },
     tags: { type: [String], required: true },
     category: { type: [String], required: true },
+    rid: { type: [Number], default: [] },
     time: { type: String, default: '' },
     popularity: { type: Number, default: 0 },
     upvotes: { type: Number, default: 0 },
