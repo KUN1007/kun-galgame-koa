@@ -139,10 +139,10 @@ class PostService {
     // 使用 $in 条件将每个关键词分别应用于不同的字段进行匹配
     const searchQuery = {
       $or: [
-        { title: { $in: keywordsArray, $options: 'i' } },
-        { category: { $in: keywordsArray, $options: 'i' } },
-        { tags: { $in: keywordsArray, $options: 'i' } },
-        { content: { $in: keywordsArray, $options: 'i' } },
+        { title: { $regex: keywordsArray.join('|'), $options: 'i' } },
+        { category: { $regex: keywordsArray.join('|'), $options: 'i' } },
+        { tags: { $in: keywordsArray } },
+        { content: { $regex: keywordsArray.join('|'), $options: 'i' } },
       ],
     }
 
