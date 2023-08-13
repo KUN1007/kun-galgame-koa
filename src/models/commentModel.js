@@ -4,12 +4,12 @@ import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 // 帖子 schema 结构
 const CommentSchema = new mongoose.Schema(
   {
-    cid: { type: Number, default: 0 },
-    rid: { type: Number, default: 0 },
-    pid: { type: Number, default: 0 },
-    c_uid: { type: Number, default: 0 },
-    to_uid: { type: Number, default: 0 },
-    content: { type: String, default: 0 },
+    cid: { type: Number, unique: true },
+    rid: { type: Number, required: true },
+    pid: { type: Number, required: true },
+    c_uid: { type: Number, required: true },
+    to_uid: { type: Number, required: true },
+    content: { type: String, default: '' },
     likes: { type: Number, default: 0 },
     dislikes: { type: Number, default: 0 },
   },
