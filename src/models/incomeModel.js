@@ -1,20 +1,25 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-// 支出 schema 结构
-const ExpenditureSchema = new mongoose.Schema(
+// 收入 schema 结构
+const IncomeSchema = new mongoose.Schema(
   {
-    eid: { type: Number, unique: true },
+    // 单条收入的 id，从 1 开始且唯一，在收入创建时自动加一
+    iid: { type: Number, unique: true },
+    // 收入发生的原因
     reason: { type: String, default: '' },
+    // 收入发生的时间
     time: { type: String, default: Date.now },
+    // 收入发生的金额
     amount: { type: Number, default: 0 },
   },
+  // 收入的时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 )
 
-// pre-save 钩子，在保存文档之前自动递增 eid 字段
-ExpenditureSchema.pre('save', increasingSequence('eid'))
+// pre-save 钩子，在保存文档之前自动递增 iid 字段
+IncomeSchema.pre('save', increasingSequence('iid'))
 
-const ExpenditureModel = mongoose.model('expenditure', ExpenditureSchema)
+const IncomeModel = mongoose.model('income', IncomeSchema)
 
-export default ExpenditureModel
+export default IncomeModel
