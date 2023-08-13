@@ -29,6 +29,29 @@ class PostController {
     }
   }
 
+  // 根据关键词获取单条帖子数据
+  async getPostByPid(ctx) {
+    try {
+      const pid = parseInt(ctx.params.pid)
+      const post = await PostService.getPostByPid(pid)
+
+      if (!post) {
+        ctx.status = 404
+        ctx.body = { error: 'Post not found' }
+        return
+      }
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: post,
+      }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = { error: 'Failed to fetch post' }
+    }
+  }
+
   // 更新帖子（标题和内容）
   async updatePost(ctx) {
     try {

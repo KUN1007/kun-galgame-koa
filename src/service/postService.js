@@ -1,7 +1,7 @@
 import PostModel from '@/models/postModel'
 
 class PostService {
-  // 创建帖子
+  // 创建帖子，用于编辑界面
   async createPost(title, content, time, tags, category, uid) {
     try {
       const newPost = new PostModel({
@@ -21,7 +21,7 @@ class PostService {
     }
   }
 
-  // 按照关键词获取帖子
+  // 按照关键词获取帖子，用于主页帖子列表
   async getPosts(sortField, sortOrder, page, limit) {
     try {
       const skip = (parseInt(page) - 1) * limit
@@ -57,6 +57,15 @@ class PostService {
       return data
     } catch (error) {
       throw new Error('Failed to fetch posts')
+    }
+  }
+
+  async getPostByPid(pid) {
+    try {
+      const post = await PostModel.findOne({ pid }).lean()
+      return post
+    } catch (error) {
+      throw new Error('Failed to fetch post')
     }
   }
 
@@ -126,7 +135,7 @@ class PostService {
     }
   }
 
-  // 检索帖子
+  // 检索帖子，用于搜索框
   async searchPosts(keywords, page, limit, sortBy, sortOrder) {
     const skip = (parseInt(page) - 1) * parseInt(limit)
 
