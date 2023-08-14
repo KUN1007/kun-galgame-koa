@@ -16,6 +16,8 @@ const ReplySchema = new mongoose.Schema(
     floor: { type: Number, default: 0 },
     // 回复的 tag，可选，字符串数组
     tags: { type: [String], default: [] },
+    // 回帖发布的时间
+    time: { type: String, default: Date.now },
     // 回复被再次编辑的时间
     edited: { type: String, default: '' },
     // 回帖的内容

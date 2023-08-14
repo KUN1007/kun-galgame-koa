@@ -75,13 +75,20 @@ class ReplyController {
       const pid = parseInt(ctx.params.pid)
       const page = parseInt(ctx.query.page) || 1
       const limit = parseInt(ctx.query.limit) || 10
+      const { sortField, sortOrder } = ctx.query
 
-      const responseData = await ReplyService.getReplies(pid, page, limit)
+      const data = await ReplyService.getReplies(
+        pid,
+        page,
+        limit,
+        sortField,
+        sortOrder
+      )
 
       ctx.body = {
         code: 200,
         message: 'OK',
-        data: responseData,
+        data,
       }
     } catch (error) {
       ctx.status = 500

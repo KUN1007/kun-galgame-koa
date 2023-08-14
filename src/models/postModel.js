@@ -19,7 +19,7 @@ const PostSchema = new mongoose.Schema(
     // 帖子下方回复的 ID，标识了这个帖子底下有多少回复
     rid: { type: [Number], default: [] },
     // 帖子发布的时间
-    time: { type: String, default: '' },
+    time: { type: String, default: Date.now },
     // 帖子的热度，有专门的热度计算公式
     popularity: { type: Number, default: 0 },
     // 帖子的被推数量
