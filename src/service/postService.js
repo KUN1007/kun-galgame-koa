@@ -23,10 +23,10 @@ class PostService {
     const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
 
     const posts = await PostModel.find()
-      .populate({ path: 'uid', select: '_id name' })
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
+      .populate('user', 'uid avatar name')
       .lean()
 
     const data = posts.map((post) => ({
@@ -40,7 +40,12 @@ class PostService {
       content: post.content,
       upvotes: post.upvotes,
       // 这里 populate 后的结果是一个数组，取第一个用户数据
-      uid: post.uid,
+      uid: {
+        // 这里去掉了 _id
+        uid: post.user[0].uid,
+        avatar: post.user[0].avatar,
+        name: post.user[0].name,
+      },
     }))
 
     return data
