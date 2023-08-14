@@ -3,136 +3,102 @@ import PostModel from '@/models/postModel'
 class PostService {
   // 创建帖子，用于编辑界面
   async createPost(title, content, time, tags, category, uid) {
-    try {
-      const newPost = new PostModel({
-        title,
-        content,
-        time,
-        tags,
-        category,
-        uid,
-      })
+    const newPost = new PostModel({
+      title,
+      content,
+      time,
+      tags,
+      category,
+      uid,
+    })
 
-      const savedPost = await newPost.save()
+    const savedPost = await newPost.save()
 
-      return savedPost
-    } catch (error) {
-      throw new Error('Failed to create post')
-    }
+    return savedPost
   }
 
   // 按照关键词获取帖子，用于主页帖子列表
   async getPosts(sortField, sortOrder, page, limit) {
-    try {
-      const skip = (parseInt(page) - 1) * limit
-      const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
+    const skip = (parseInt(page) - 1) * limit
+    const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
 
-      const posts = await PostModel.find()
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(limit)
-        .populate('user', 'uid avatar name')
-        .lean()
+    const posts = await PostModel.find()
+      .populate({ path: 'uid', select: '_id name' })
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean()
 
-      const data = posts.map((post) => ({
-        tid: post.pid,
-        title: post.title,
-        views: post.views,
-        likes: post.likes,
-        replies: post.replies,
-        comments: post.comments,
-        time: post.time,
-        content: post.content,
-        upvotes: post.upvotes,
-        // 这里 populate 后的结果是一个数组，取第一个用户数据
-        uid: post.user[0] // 检查是否有用户信息填充
-          ? {
-              uid: post.user[0].uid,
-              avatar: post.user[0].avatar,
-              name: post.user[0].name,
-            }
-          : null,
-      }))
+    const data = posts.map((post) => ({
+      tid: post.pid,
+      title: post.title,
+      views: post.views,
+      likes: post.likes,
+      replies: post.replies,
+      comments: post.comments,
+      time: post.time,
+      content: post.content,
+      upvotes: post.upvotes,
+      // 这里 populate 后的结果是一个数组，取第一个用户数据
+      uid: post.uid,
+    }))
 
-      return data
-    } catch (error) {
-      throw new Error('Failed to fetch posts')
-    }
+    return data
   }
 
   async getPostByPid(pid) {
-    try {
-      const post = await PostModel.findOne({ pid }).lean()
-      return post
-    } catch (error) {
-      throw new Error('Failed to fetch post')
-    }
+    const post = await PostModel.findOne({ pid }).lean()
+    return post
   }
 
   // 更新帖子（标题和内容）
   async updatePost(pid, title, content) {
-    try {
-      const updatedPost = await PostModel.findOneAndUpdate(
-        { pid },
-        { title, content },
-        { new: true }
-      )
+    const updatedPost = await PostModel.findOneAndUpdate(
+      { pid },
+      { title, content },
+      { new: true }
+    )
 
-      return updatedPost
-    } catch (error) {
-      throw new Error('Failed to update post')
-    }
+    return updatedPost
   }
 
   // 删除帖子，根据 pid
   async deletePost(pid) {
-    try {
-      const deletedPost = await PostModel.findOneAndDelete({ pid })
+    const deletedPost = await PostModel.findOneAndDelete({ pid })
 
-      return deletedPost
-    } catch (error) {
-      throw new Error('Failed to delete post')
-    }
+    return deletedPost
   }
 
   // 首页左边获取热度最高的 10 条帖子数据
   async getNavTopPosts(limit) {
-    try {
-      const posts = await PostModel.find({}, 'pid title popularity')
-        .sort({ popularity: -1 })
-        .limit(limit)
-        .lean()
+    const posts = await PostModel.find({}, 'pid title popularity')
+      .sort({ popularity: -1 })
+      .limit(limit)
+      .lean()
 
-      const data = posts.map((post) => ({
-        pid: post.pid,
-        title: post.title,
-        popularity: post.popularity,
-      }))
+    const data = posts.map((post) => ({
+      pid: post.pid,
+      title: post.title,
+      popularity: post.popularity,
+    }))
 
-      return data
-    } catch (error) {
-      throw new Error('Failed to fetch top posts')
-    }
+    return data
   }
 
   // 首页左边获取最新发布的 10 条帖子数据
   async getNavNewPosts(limit) {
-    try {
-      const posts = await PostModel.find({}, 'pid title time')
-        .sort({ time: -1 })
-        .limit(limit)
-        .lean()
+    const posts = await PostModel.find({}, 'pid title time')
+      .sort({ time: -1 })
+      .limit(limit)
+      .lean()
 
-      const data = posts.map((post) => ({
-        pid: post.pid,
-        title: post.title,
-        time: post.time,
-      }))
+    const data = posts.map((post) => ({
+      pid: post.pid,
+      title: post.title,
+      time: post.time,
+    }))
 
-      return data
-    } catch (error) {
-      throw new Error('Failed to fetch top posts')
-    }
+    return data
   }
 
   // 检索帖子，用于搜索框

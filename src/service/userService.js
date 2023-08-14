@@ -9,43 +9,36 @@ class UserService {
    */
 
   async loginUser(name, password) {
-    try {
-      // 通过 mongodb 的 $or 运算符检查用户名或邮箱
-      const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
+    // 通过 mongodb 的 $or 运算符检查用户名或邮箱
+    const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
 
-      // 用户不存在
-      if (!user) {
-        return { code: 404, message: '用户不存在' }
-      }
+    // 用户不存在
+    if (!user) {
+      return { code: 404, message: '用户不存在' }
+    }
 
-      const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isPasswordValid = await bcrypt.compare(password, user.password)
 
-      if (isPasswordValid) {
-        // 验证通过，返回Token数据，这里剩余参数写法可以避免暴露不必要的 user 数据
-        // const { password, username, ...userObj } = user.toJSON()
-        const token = generateToken({ _id: user._id }, '60m')
-        const refreshToken = generateToken({ _id: user._id }, '7d')
+    if (isPasswordValid) {
+      // 验证通过，返回Token数据，这里剩余参数写法可以避免暴露不必要的 user 数据
+      // const { password, username, ...userObj } = user.toJSON()
+      const token = generateToken({ _id: user._id }, '60m')
+      const refreshToken = generateToken({ _id: user._id }, '7d')
 
-        // 存储 token 到 Redis，key 为用户的 uid
-        await setValue(`user:${user._id}`, token, 60 * 60) // 存储 60 分钟
+      // 存储 token 到 Redis，key 为用户的 uid
+      await setValue(`user:${user._id}`, token, 60 * 60) // 存储 60 分钟
 
-        // 规范化成接口定义的数据结构
-        return {
-          code: 200,
-          message: 'OK',
-          data: {
-            token,
-            refreshToken,
-          },
-        }
-      } else {
-        return { code: 404, message: '用户名或者密码错误' }
-      }
-    } catch (error) {
+      // 规范化成接口定义的数据结构
       return {
-        code: 500,
-        message: 'An error occurred while processing the login request',
+        code: 200,
+        message: 'OK',
+        data: {
+          token,
+          refreshToken,
+        },
       }
+    } else {
+      return { code: 404, message: '用户名或者密码错误' }
     }
   }
 
