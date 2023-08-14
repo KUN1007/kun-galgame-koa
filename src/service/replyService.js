@@ -1,4 +1,5 @@
 import ReplyModel from '@/models/replyModel'
+import TagService from './tagService'
 
 class ReplyService {
   // 创建回帖
@@ -8,7 +9,12 @@ class ReplyService {
       const baseFloor = await ReplyModel.countDocuments({ pid, floor: 1 })
       const floor = baseFloor + 1
 
-      console.log('@@@@@@@@@@@@' + pid, r_uid, to_uid, floor, tags, content)
+      // 统计标签出现次数
+      const tagCounts = {}
+      for (const tag of tags) {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1
+      }
+
       const newReply = new ReplyModel({
         pid,
         r_uid,
@@ -16,9 +22,20 @@ class ReplyService {
         floor,
         tags,
         content,
+        // 手动指定虚拟字段的值
+        user: r_uid,
+        post: pid,
       })
 
+      console.log(newReply)
+
       const savedReply = await newReply.save()
+
+      // 更新标签的出现次数
+      for (const tag in tagCounts) {
+        await TagService.updateTagCount(tag, tagCounts[tag])
+      }
+
       return savedReply
     } catch (error) {
       throw new Error('Failed to create reply')

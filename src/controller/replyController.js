@@ -6,14 +6,13 @@ class ReplyController {
     try {
       // 请求的是 /topic/detail/{pid}/reply，pid 会通过 params 拿到
       const pid = parseInt(ctx.params.pid)
-      const { r_uid, to_uid, floor, tags, content } = ctx.request.body
+      const { r_uid, to_uid, tags, content } = ctx.request.body
 
       const savedReply = await ReplyService.createReply(
         pid,
         r_uid,
         to_uid,
-        floor,
-        tags,
+        JSON.parse(tags),
         content
       )
       ctx.status = 201
