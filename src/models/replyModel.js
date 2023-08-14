@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-// 帖子 schema 结构
+// 回帖 schema 结构
 const ReplySchema = new mongoose.Schema(
   {
     // 回复的 ID，从 1 开始且唯一，自动生成
@@ -11,7 +11,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复人的 uid，标识了这个回帖是谁发的
     r_uid: { type: Number, required: true, ref: 'users' },
     // 被回复人的 uid，标志了这个回帖是回给谁的
-    to_tid: { type: Number, required: true },
+    to_uid: { type: Number, required: true },
     // 回复的楼层数，标志了这个回复属于该帖子的几楼
     floor: { type: Number, default: 0 },
     // 回复的 tag，可选，字符串数组
