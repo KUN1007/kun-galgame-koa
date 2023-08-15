@@ -50,6 +50,6 @@ const UserSchema = new Schema(
 // pre-save 钩子，在保存文档之前自动递增 upid 字段
 UserSchema.pre('save', increasingSequence('uid'))
 
-const UserModel = mongoose.model('users', UserSchema)
+const UserModel = mongoose.model('user', UserSchema)
 
 export default UserModel

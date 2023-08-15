@@ -7,7 +7,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复的 ID，从 1 开始且唯一，自动生成
     rid: { type: Number, unique: true },
     // 回复所属帖子的 ID，标志了该条回复是属于哪个帖子的
-    pid: { type: Number, required: true, ref: 'post' },
+    pid: { type: Number, required: true },
     // 回复人的 uid，标识了这个回帖是谁发的
     r_uid: { type: Number, required: true, ref: 'users' },
     // 被回复人的 uid，标志了这个回帖是回给谁的
@@ -44,13 +44,6 @@ ReplySchema.virtual('user', {
   ref: 'users', // 关联的模型名称
   localField: 'uid', // 当前模型中用于关联的字段
   foreignField: 'uid', // 关联模型中用于关联的字段
-})
-
-// 创建虚拟字段 'post'，用于和帖子关联
-ReplySchema.virtual('post', {
-  ref: 'posts', // 关联的模型名称
-  localField: 'pid', // 当前模型中用于关联的字段
-  foreignField: 'pid', // 关联模型中用于关联的字段
 })
 
 // pre-save 钩子，在保存文档之前自动递增 upid 字段

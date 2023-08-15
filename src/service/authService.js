@@ -1,3 +1,7 @@
+/*
+ * 鉴权服务，用户 jwt 路由接口鉴权
+ */
+
 import { generateToken } from '@/middleware/jwtMiddleware'
 import { setValue } from '@/utils/redis'
 

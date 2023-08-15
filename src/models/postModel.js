@@ -11,7 +11,7 @@ const PostSchema = new mongoose.Schema(
     // 帖子的内容，富文本
     content: { type: String, required: true },
     // 发帖人的 uid
-    uid: { type: Number, required: true, ref: 'users' },
+    uid: { type: Number, required: true, ref: 'user' },
     // 帖子的 tag，为一个字符串数组
     tags: { type: [String], required: true },
     // 帖子的分类，暂时有一个或两个
@@ -47,7 +47,7 @@ const PostSchema = new mongoose.Schema(
 
 // 创建虚拟字段 'users'
 PostSchema.virtual('user', {
-  ref: 'users', // 关联的模型名称
+  ref: 'user', // 关联的模型名称
   localField: 'uid', // 当前模型中用于关联的字段
   foreignField: 'uid', // 关联模型中用于关联的字段
 })

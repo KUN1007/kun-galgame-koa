@@ -1,3 +1,7 @@
+/*
+ * 帖子的 CRUD，定义了一些对帖子数据的数据库交互操作
+ */
+
 import PostModel from '@/models/postModel'
 
 class PostService {

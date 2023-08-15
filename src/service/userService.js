@@ -1,3 +1,7 @@
+/*
+ * 用户的 CRUD，定义了一些对用户数据的数据库交互操作
+ */
+
 import bcrypt from 'bcrypt'
 import { generateToken } from '@/middleware/jwtMiddleware'
 import UserModel from '@/models/userModel'

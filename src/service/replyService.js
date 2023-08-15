@@ -1,3 +1,6 @@
+/*
+ * 回帖的 CRUD，定义了一些对回帖数据的数据库交互操作
+ */
 import ReplyModel from '@/models/replyModel'
 import TagService from './tagService'
 import PostModel from '@/models/postModel'

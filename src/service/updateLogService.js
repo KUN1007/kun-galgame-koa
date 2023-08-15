@@ -1,3 +1,7 @@
+/*
+ * 更新日志的 CRUD，定义了一些对更新日志数据的数据库交互操作
+ */
+
 import UpdateLogModel from '@/models/updateLogModel'
 
 class UpdateLogService {
