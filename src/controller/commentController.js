@@ -1,27 +1,64 @@
-// commentController.js
-import CommentService from '@/path/to/commentService';
+import CommentService from '@/service/commentService'
 
 class CommentController {
-  static async getCommentsByReplyIds(ctx) {
+  // 发布单条评论
+  async createComment(ctx) {
     try {
-      const replyIds = ctx.request.body.replyIds; // 获取需要加载评论的回帖的 ID 数组
-      const page = parseInt(ctx.query.page) || 1;
-      const limit = parseInt(ctx.query.limit) || 5; // 每页加载的评论数量
+      const pid = ctx.params.pid
+      const { c_uid, rid, to_uid, content } = ctx.request.body
 
-      const comments = await CommentService.getCommentsByReplyIds(replyIds, page, limit);
+      const newComment = await CommentService.createComment(
+        rid,
+        pid,
+        c_uid,
+        to_uid,
+        content
+      )
 
+      ctx.body = {
+        code: 200,
+        message: 'Comment created successfully',
+        data: newComment,
+      }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = { error: 'Failed to create comment' }
+    }
+  }
+
+  // 删除单条评论
+  async deleteComment(ctx) {
+    try {
+      const cid = parseInt(ctx.params.cid)
+
+      const deletedComment = await CommentService.deleteComment(cid)
+
+      ctx.body = {
+        code: 200,
+        message: 'Comment deleted successfully',
+        data: deletedComment,
+      }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = { error: 'Failed to delete comment' }
+    }
+  }
+
+  // 根据回帖的 rid 获取回帖的所有评论
+  async getCommentsByReplyRid(ctx) {
+    try {
+      const rid = ctx.query.rid
+      const comments = await CommentService.getCommentsByReplyRid(rid)
       ctx.body = {
         code: 200,
         message: 'OK',
         data: comments,
-      };
+      }
     } catch (error) {
-      ctx.status = 500;
-      ctx.body = { error: 'Failed to fetch comments' };
+      ctx.status = 500
+      ctx.body = { error: 'Failed to fetch comments' }
     }
   }
-
-  // 其他评论控制逻辑...
 }
 
-export default CommentController;
+export default new CommentController()

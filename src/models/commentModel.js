@@ -25,10 +25,17 @@ const CommentSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 )
 
-// 创建虚拟字段 'users'
-CommentSchema.virtual('user', {
-  ref: 'users', // 关联的模型名称
-  localField: 'uid', // 当前模型中用于关联的字段
+// 创建虚拟字段 'c_uid'
+CommentSchema.virtual('cuid', {
+  ref: 'user', // 关联的模型名称
+  localField: 'c_uid', // 当前模型中用于关联的字段
+  foreignField: 'uid', // 关联模型中用于关联的字段
+})
+
+// 创建虚拟字段 'touid'
+CommentSchema.virtual('touid', {
+  ref: 'user', // 关联的模型名称
+  localField: 'to_uid', // 当前模型中用于关联的字段
   foreignField: 'uid', // 关联模型中用于关联的字段
 })
 
