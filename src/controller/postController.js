@@ -6,9 +6,16 @@ class PostController {
     try {
       const { title, content, time, tags, category, uid } = ctx.request.body
 
-      await PostService.createPost(title, content, time, tags, category, uid)
+      const postData = await PostService.createPost(
+        title,
+        content,
+        time,
+        tags,
+        category,
+        uid
+      )
 
-      ctx.body = { code: 200, message: 'OK' }
+      ctx.body = { code: 200, message: 'OK', data: postData }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to create post' }
@@ -55,12 +62,22 @@ class PostController {
   // 更新帖子（标题和内容）
   async updatePost(ctx) {
     try {
-      const pid = ctx.params.pid // Assuming the pid is passed as a route parameter
-      const { title, content } = ctx.request.body
+      const pid = ctx.params.pid
+      const { title, content, tags, category } = ctx.request.body
 
-      const updatedPost = await PostService.updatePost(pid, title, content)
+      const updatedPost = await PostService.updatePost(
+        pid,
+        title,
+        content,
+        tags,
+        category
+      )
 
-      ctx.body = updatedPost
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: updatedPost,
+      }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to update post' }
@@ -70,7 +87,7 @@ class PostController {
   // 删除帖子
   async deletePost(ctx) {
     try {
-      const pid = ctx.params.pid // Assuming the pid is passed as a route parameter
+      const pid = ctx.params.pid
 
       const deletedPost = await PostService.deletePost(pid)
 

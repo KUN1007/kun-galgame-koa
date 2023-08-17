@@ -12,7 +12,7 @@ class ReplyController {
         pid,
         r_uid,
         to_uid,
-        JSON.parse(tags),
+        tags,
         content
       )
       ctx.status = 201

@@ -3,6 +3,7 @@
  */
 
 import PostModel from '@/models/postModel'
+import TagService from './tagService'
 
 class PostService {
   // 创建帖子，用于编辑界面
@@ -16,7 +17,11 @@ class PostService {
       uid,
     })
 
+    // 保存帖子
     const savedPost = await newPost.save()
+
+    // 保存帖子 tag
+    await TagService.createTagsByPidAndRid(savedPost.pid, 0, tags)
 
     return savedPost
   }
@@ -61,14 +66,21 @@ class PostService {
   }
 
   // 更新帖子（标题和内容）
-  async updatePost(pid, title, content) {
-    const updatedPost = await PostModel.findOneAndUpdate(
-      { pid },
-      { title, content },
-      { new: true }
-    )
+  async updatePost(pid, title, content, tags, category) {
+    try {
+      const updatedPost = await PostModel.findOneAndUpdate(
+        { pid },
+        { title, content, tags, category },
+        { new: true }
+      )
 
-    return updatedPost
+      // 使用 TagService 更新标签的使用次数
+      await TagService.updateTagsByPidAndRid(pid, 0, tags)
+
+      return updatedPost
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   // 删除帖子，根据 pid

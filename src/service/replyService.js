@@ -2,8 +2,8 @@
  * 回帖的 CRUD，定义了一些对回帖数据的数据库交互操作
  */
 import ReplyModel from '@/models/replyModel'
-import TagService from './tagService'
 import PostModel from '@/models/postModel'
+import TagService from './tagService'
 
 class ReplyService {
   // 创建回帖
@@ -14,12 +14,6 @@ class ReplyService {
       .lean()
     const baseFloor = maxFloorReply ? maxFloorReply.floor : 0
     const floor = baseFloor + 1
-
-    // 统计标签出现次数
-    const tagCounts = {}
-    for (const tag of tags) {
-      tagCounts[tag] = (tagCounts[tag] || 0) + 1
-    }
 
     const newReply = new ReplyModel({
       pid,
@@ -32,13 +26,11 @@ class ReplyService {
 
     const savedReply = await newReply.save()
 
-    // 更新标签的出现次数
-    for (const tag in tagCounts) {
-      await TagService.updateTagCount(tag, tagCounts[tag])
-    }
-
     // 更新帖子的 rid 数组
     await PostModel.updateOne({ pid }, { $push: { rid: savedReply.rid } })
+
+    // 保存 tags
+    await TagService.createTagsByPidAndRid(pid, savedReply.rid, tags)
 
     return savedReply
   }

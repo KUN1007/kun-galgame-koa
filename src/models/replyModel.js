@@ -15,7 +15,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复的楼层数，标志了这个回复属于该帖子的几楼
     floor: { type: Number, default: 0 },
     // 回复的 tag，可选，字符串数组
-    tags: { type: [String], default: [] },
+    tags: { type: String, default: '' },
     // 回帖发布的时间
     time: { type: String, default: Date.now },
     // 回复被再次编辑的时间
@@ -33,7 +33,7 @@ const ReplySchema = new mongoose.Schema(
     // 回帖的评论数
     comment: { type: Number, default: 0 },
     // 回帖的评论 id
-    cid: { type: [Number], default: [] },
+    cid: { type: Array, default: [] },
   },
   // 时间戳，自动创建
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

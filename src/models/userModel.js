@@ -15,8 +15,9 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     // 用户的注册 ip，可选
     ip: { type: String, default: '' },
-    avatar: { type: String, default: '' },
     // 用户头像的图片地址
+    avatar: { type: String, default: '' },
+    // 用户的角色，普通用户，管理员，超级管理员
     roles: { type: Number, default: 1 },
     // 用户的状态
     status: { type: Number, default: 0 },
@@ -31,17 +32,17 @@ const UserSchema = new Schema(
     // 用户的被赞数
     like: { type: Number, default: 0 },
     // 用户的发帖 ID
-    topic: { type: [Number], default: [] },
+    topic: { type: Array, default: [] },
     // 用户的评论 ID
-    comment: { type: [Number], default: [] },
+    comment: { type: Array, default: [] },
     // 用户的回帖 ID
-    reply: { type: [Number], default: [] },
+    reply: { type: Array, default: [] },
     // 用户点赞的帖子 ID
-    like_topic: { type: [Number], default: [] },
+    like_topic: { type: Array, default: [] },
     // 用户推的帖子 ID
-    upvote_topic: { type: [Number], default: [] },
+    upvote_topic: { type: Array, default: [] },
     // 用户回复的帖子 ID
-    reply_topic: { type: [Number], default: [] },
+    reply_topic: { type: Array, default: [] },
   },
   // 时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

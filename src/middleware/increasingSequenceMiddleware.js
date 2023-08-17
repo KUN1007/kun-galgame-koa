@@ -7,6 +7,7 @@
 const increasingSequence = (fieldName, startSeq = 1) =>
   async function (next) {
     const doc = this
+
     if (!doc.isNew) {
       return next()
     }
@@ -29,3 +30,50 @@ const increasingSequence = (fieldName, startSeq = 1) =>
   }
 
 export default increasingSequence
+
+/* 
+const increasingSequence = (fieldName, startSeq = 1) =>
+  async function (next) {
+    const doc = this;
+
+    // 如果文档已经存在，直接执行下一步操作
+    if (!doc.isNew) {
+      return next();
+    }
+
+    // 获取当前文档的构造函数，用于查找上一个文档
+    const Model = doc.constructor;
+
+    try {
+      // 使用一个事务来保证操作的原子性
+      const session = await Model.startSession();
+      session.startTransaction();
+
+      // 查找上一个文档，并将查询锁定以避免并发问题
+      const lastDoc = await Model.findOne({}, { [fieldName]: 1 })
+        .sort({ [fieldName]: -1 })
+        .session(session)
+        .setOptions({ skipLocked: true });
+
+      if (lastDoc) {
+        // 递增字段值
+        doc[fieldName] = lastDoc[fieldName] + 1;
+      } else {
+        doc[fieldName] = startSeq;
+      }
+
+      // 保存当前文档，并提交事务
+      await doc.save({ session });
+      await session.commitTransaction();
+      session.endSession();
+
+      next();
+    } catch (error) {
+      // 如果出现错误，回滚事务并传递错误
+      return next(error);
+    }
+  };
+
+export default increasingSequence;
+
+*/

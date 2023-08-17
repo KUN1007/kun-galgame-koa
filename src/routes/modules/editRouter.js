@@ -6,9 +6,9 @@ const router = new Router()
 router.prefix('/edit')
 
 // 发布帖子
-router.post('/', PostController.createPost)
+router.post('/topic', PostController.createPost)
 
 // 更新帖子
-router.put('/', PostController.updatePost)
+router.put('/topic/:pid', PostController.updatePost)
 
 export default router
