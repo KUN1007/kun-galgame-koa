@@ -4,6 +4,7 @@
 import ReplyModel from '@/models/replyModel'
 import PostModel from '@/models/postModel'
 import TagService from './tagService'
+import UserService from './userService'
 
 class ReplyService {
   // 创建回帖
@@ -26,6 +27,9 @@ class ReplyService {
 
     const savedReply = await newReply.save()
 
+    // 在用户的回帖数组里保存回帖
+    await UserService.updateUserArray(r_uid, 'reply', savedReply.rid)
+
     // 更新帖子的 rid 数组
     await PostModel.updateOne({ pid }, { $push: { rid: savedReply.rid } })
 
@@ -36,10 +40,10 @@ class ReplyService {
   }
 
   // 获取单个回帖详情，暂时用不到
-  async getReplyByRid(rid) {
-    const reply = await ReplyModel.findOne({ rid }).lean()
-    return reply
-  }
+  // async getReplyByRid(rid) {
+  //   const reply = await ReplyModel.findOne({ rid }).lean()
+  //   return reply
+  // }
 
   // 更新回帖
   async updateReply(pid, rid, content, tags) {
@@ -52,6 +56,16 @@ class ReplyService {
     // 保存 tags
     await TagService.updateTagsByPidAndRid(pid, rid, tags, '')
     return updatedReply
+  }
+
+  // 向回复 model 中的评论数组增添一条评论
+  async addCommentToReply(rid, cid) {
+    await ReplyModel.updateOne({ rid }, { $addToSet: { cid } })
+  }
+
+  // 从回复 model 中的评论数组移除一条评论
+  async removeCommentFromReply(rid, cid) {
+    await ReplyModel.updateOne({ rid }, { $pull: { cid } })
   }
 
   // 删除回帖
@@ -71,7 +85,7 @@ class ReplyService {
     return deletedReply
   }
 
-  // 获取回帖的接口
+  // 获取某个话题下回复的接口，分页获取，懒加载，每次 5 条
   async getReplies(pid, page, limit, sortField, sortOrder) {
     const post = await PostModel.findOne({ pid }).lean()
     const totalReplies = post.rid.length

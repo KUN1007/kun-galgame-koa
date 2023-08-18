@@ -1,5 +1,10 @@
+/*
+ * 评论的 CRUD，定义了一些对评论数据的数据库交互操作
+ */
+
 import CommentModel from '@/models/commentModel'
-import ReplyModel from '@/models/replyModel'
+import ReplyService from './replyService'
+import UserService from './userService'
 
 class CommentService {
   // 创建一条评论
@@ -14,18 +19,21 @@ class CommentService {
 
     const savedComment = await newComment.save()
 
+    // 在用户的回帖数组里保存回帖
+    await UserService.updateUserArray(c_uid, 'comment', savedComment.cid)
+
     // 更新回帖的评论数组
-    await ReplyModel.updateOne({ rid }, { $push: { cid: savedComment.cid } })
+    await ReplyService.addCommentToReply(rid, savedComment.cid)
 
     return savedComment
   }
 
   // 删除一条评论
-  async deleteComment(cid, rid) {
+  async deleteComment(rid, cid) {
     const deletedComment = await CommentModel.findOneAndDelete({ cid }).lean()
 
     // 更新回帖的评论数组
-    await ReplyModel.updateOne({ rid }, { $pull: { cid } })
+    await ReplyService.removeCommentFromReply(rid, cid)
 
     return deletedComment
   }

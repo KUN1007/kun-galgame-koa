@@ -35,10 +35,10 @@ const UserSchema = new Schema(
     dislike: { type: Number, default: 0 },
     // 用户的发帖 ID
     topic: { type: Array, default: [] },
-    // 用户的评论 ID
-    comment: { type: Array, default: [] },
     // 用户的回帖 ID
     reply: { type: Array, default: [] },
+    // 用户的评论 ID
+    comment: { type: Array, default: [] },
     // 用户点赞的帖子 ID
     like_topic: { type: Array, default: [] },
     // 用户推的帖子 ID

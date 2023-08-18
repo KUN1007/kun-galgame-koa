@@ -29,9 +29,10 @@ class CommentController {
   // 删除单条评论
   async deleteComment(ctx) {
     try {
+      const rid = parseInt(ctx.params.rid)
       const cid = parseInt(ctx.params.cid)
 
-      const deletedComment = await CommentService.deleteComment(cid)
+      const deletedComment = await CommentService.deleteComment(rid, cid)
 
       ctx.body = {
         code: 200,
@@ -44,6 +45,7 @@ class CommentController {
     }
   }
 
+  // 更新一条评论
   async updateComment(ctx) {
     try {
       const cid = parseInt(ctx.params.cid)
@@ -59,7 +61,7 @@ class CommentController {
     }
   }
 
-  // 根据回帖的 rid 获取回帖的所有评论
+  // 根据回复的 rid 获取回复下面的所有评论
   async getCommentsByReplyRid(ctx) {
     try {
       const rid = ctx.query.rid
