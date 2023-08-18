@@ -99,6 +99,14 @@ class UserService {
       return { code: 500, message: msg }
     }
   }
+
+  // 更新用户的发帖，回帖，评论，点赞，不喜欢，推
+  async updateUserArray(uid, updateField, itemId) {
+    await UserModel.updateOne(
+      { uid: uid },
+      { $addToSet: { [updateField]: itemId } }
+    )
+  }
 }
 
 export default new UserService()

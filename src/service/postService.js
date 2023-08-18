@@ -4,6 +4,7 @@
 
 import PostModel from '@/models/postModel'
 import TagService from './tagService'
+import UserService from './userService'
 
 class PostService {
   // 创建帖子，用于编辑界面
@@ -19,6 +20,9 @@ class PostService {
 
     // 保存帖子
     const savedPost = await newPost.save()
+
+    // 在用户的发帖数组里保存帖子
+    await UserService.updateUserArray(uid, 'topic', savedPost.pid)
 
     // 保存帖子 tag
     await TagService.createTagsByPidAndRid(savedPost.pid, 0, tags, category)

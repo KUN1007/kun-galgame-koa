@@ -31,6 +31,8 @@ const UserSchema = new Schema(
     upvote: { type: Number, default: 0 },
     // 用户的被赞数
     like: { type: Number, default: 0 },
+    // 用户的点踩数
+    dislike: { type: Number, default: 0 },
     // 用户的发帖 ID
     topic: { type: Array, default: [] },
     // 用户的评论 ID
