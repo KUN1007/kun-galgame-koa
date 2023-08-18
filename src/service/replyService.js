@@ -35,19 +35,22 @@ class ReplyService {
     return savedReply
   }
 
-  // 获取单个回帖详情
+  // 获取单个回帖详情，暂时用不到
   async getReplyByRid(rid) {
     const reply = await ReplyModel.findOne({ rid }).lean()
     return reply
   }
 
   // 更新回帖
-  async updateReply(rid, content) {
+  async updateReply(pid, rid, content, tags) {
     const updatedReply = await ReplyModel.findOneAndUpdate(
       { rid },
-      { $set: { content, edited: new Date().toISOString() } },
+      { $set: { content, edited: new Date().toISOString(), tags } },
       { new: true }
     ).lean()
+
+    // 保存 tags
+    await TagService.updateTagsByPidAndRid(pid, rid, tags, '')
     return updatedReply
   }
 

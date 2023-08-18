@@ -15,7 +15,7 @@ const PostSchema = new mongoose.Schema(
     // 帖子的 tag，为一个字符串数组
     tags: { type: String, required: true },
     // 帖子的分类，暂时有一个或两个
-    category: { type: Array, required: true },
+    category: { type: String, required: true },
     // 帖子下方回复的 ID，标识了这个帖子底下有多少回复
     rid: { type: Array, default: [] },
     // 帖子发布的时间

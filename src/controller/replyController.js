@@ -48,9 +48,19 @@ class ReplyController {
   async updateReply(ctx) {
     try {
       const rid = parseInt(ctx.params.rid)
-      const { content } = ctx.request.body
-      const updatedReply = await ReplyService.updateReply(rid, content)
-      ctx.body = updatedReply
+      const pid = parseInt(ctx.params.pid)
+      const { content, tags } = ctx.request.body
+      const updatedReply = await ReplyService.updateReply(
+        pid,
+        rid,
+        content,
+        tags
+      )
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: updatedReply,
+      }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to update reply' }
@@ -74,7 +84,7 @@ class ReplyController {
     try {
       const pid = parseInt(ctx.params.pid)
       const page = parseInt(ctx.query.page) || 1
-      const limit = parseInt(ctx.query.limit) || 10
+      const limit = parseInt(ctx.query.limit) || 5
       const { sortField, sortOrder } = ctx.query
 
       const data = await ReplyService.getReplies(
