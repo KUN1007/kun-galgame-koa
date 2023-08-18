@@ -12,6 +12,8 @@ const TagSchema = new mongoose.Schema(
     rid: { type: Number, default: 0 },
     // tag 的名字
     name: { type: String, require: true },
+    // tag 所属帖子的分类
+    category: { type: String, default: '' },
   },
   // 时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

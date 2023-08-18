@@ -30,7 +30,7 @@ class ReplyService {
     await PostModel.updateOne({ pid }, { $push: { rid: savedReply.rid } })
 
     // 保存 tags
-    await TagService.createTagsByPidAndRid(pid, savedReply.rid, tags)
+    await TagService.createTagsByPidAndRid(pid, savedReply.rid, tags, '')
 
     return savedReply
   }

@@ -21,7 +21,7 @@ class PostService {
     const savedPost = await newPost.save()
 
     // 保存帖子 tag
-    await TagService.createTagsByPidAndRid(savedPost.pid, 0, tags)
+    await TagService.createTagsByPidAndRid(savedPost.pid, 0, tags, category)
 
     return savedPost
   }
@@ -75,7 +75,7 @@ class PostService {
       )
 
       // 使用 TagService 更新标签的使用次数
-      await TagService.updateTagsByPidAndRid(pid, 0, tags)
+      await TagService.updateTagsByPidAndRid(pid, 0, tags, category)
 
       return updatedPost
     } catch (error) {
