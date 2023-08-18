@@ -30,6 +30,21 @@ class CommentService {
     return deletedComment
   }
 
+  async updateComment(cid, content) {
+    try {
+      const updatedComment = await CommentModel.findOneAndUpdate(
+        { cid },
+        { $set: { content, edited: new Date().toISOString() } },
+        { new: true }
+      ).lean()
+
+      return updatedComment
+    } catch (error) {
+      console.error('Failed to update comment:', error)
+      throw new Error('Failed to update comment')
+    }
+  }
+
   // 根据回帖的 rid 获取回帖的所有评论
   async getCommentsByReplyRid(rid) {
     const comment = await CommentModel.find({ rid })

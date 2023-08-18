@@ -44,6 +44,21 @@ class CommentController {
     }
   }
 
+  async updateComment(ctx) {
+    try {
+      const cid = parseInt(ctx.params.cid)
+      const { content } = ctx.request.body
+
+      const updatedComment = await CommentService.updateComment(cid, content)
+
+      ctx.body = updatedComment
+    } catch (error) {
+      console.error('Failed to update comment:', error)
+      ctx.status = 500
+      ctx.body = { error: 'Failed to update comment' }
+    }
+  }
+
   // 根据回帖的 rid 获取回帖的所有评论
   async getCommentsByReplyRid(ctx) {
     try {
