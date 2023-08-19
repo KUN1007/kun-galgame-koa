@@ -6,13 +6,13 @@ const TagSchema = new mongoose.Schema(
   {
     // 单个 tag 的 ID，从 1 开始自动递增且唯一
     tag_id: { type: Number, unique: true },
-    // tag 所在的帖子或者回帖的 id
+    // tag 所在的话题或者回帖的 id
     pid: { type: Number, require: true },
-    // tag 所在的回帖 id，为 0 的就是楼主帖子的 tag
+    // tag 所在的回帖 id，为 0 的就是楼主话题的 tag
     rid: { type: Number, default: 0 },
     // tag 的名字
     name: { type: String, require: true },
-    // tag 所属帖子的分类
+    // tag 所属话题的分类
     category: { type: String, default: '' },
   },
   // 时间戳，自动生成

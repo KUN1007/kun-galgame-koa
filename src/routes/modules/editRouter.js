@@ -5,10 +5,10 @@ const router = new Router()
 
 router.prefix('/edit')
 
-// 发布帖子
+// 发布话题
 router.post('/topic', PostController.createPost)
 
-// 更新帖子
+// 更新话题
 router.put('/topic/:pid', PostController.updatePost)
 
 export default router

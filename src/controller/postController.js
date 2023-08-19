@@ -2,10 +2,10 @@ import PostService from '@/service/postService'
 
 class PostController {
   /*
-   * 帖子页面
+   * 话题页面
    */
 
-  // 根据帖子 id 获取单条帖子数据
+  // 根据话题 id 获取单条话题数据
   async getPostByPid(ctx) {
     try {
       const pid = parseInt(ctx.params.pid)
@@ -28,7 +28,7 @@ class PostController {
     }
   }
 
-  // 楼主的其它帖子，按热度
+  // 楼主的其它话题，按热度
   async getPopularPostsByUserUid(ctx) {
     try {
       const { uid, pid } = ctx.query
@@ -46,10 +46,10 @@ class PostController {
     }
   }
 
-  // 相同标签下的其它帖子，按热度
+  // 相同标签下的其它话题，按热度
   async getRelatedPostsByTags(ctx) {
     try {
-      // 传 pid 的目的是过滤掉当前帖子
+      // 传 pid 的目的是过滤掉当前话题
       const { tags, pid } = ctx.query
       const relatedPosts = await PostService.getRelatedPostsByTags(tags, pid)
 
@@ -69,7 +69,7 @@ class PostController {
    * 编辑界面
    */
 
-  // 创建帖子
+  // 创建话题
   async createPost(ctx) {
     try {
       const { title, content, time, tags, category, uid } = ctx.request.body
@@ -90,7 +90,7 @@ class PostController {
     }
   }
 
-  // 更新帖子（标题，内容，标签，分类）
+  // 更新话题（标题，内容，标签，分类）
   async updatePost(ctx) {
     try {
       const pid = ctx.params.pid
@@ -119,7 +119,7 @@ class PostController {
    * 主页
    */
 
-  // 获取帖子分页数据，排序
+  // 获取话题分页数据，排序
   async getPosts(ctx) {
     try {
       const { sortField, sortOrder, page, limit } = ctx.query
@@ -133,10 +133,10 @@ class PostController {
     }
   }
 
-  // 首页左边获取热度最高的 10 条帖子数据
+  // 首页左边获取热度最高的 10 条话题数据
   async getNavTopPosts(ctx) {
     try {
-      const limit = 10 // 设置返回的帖子数量
+      const limit = 10 // 设置返回的话题数量
       const data = await PostService.getNavTopPosts(limit)
 
       ctx.body = {
@@ -153,10 +153,10 @@ class PostController {
     }
   }
 
-  // 首页左边获取最新发布的 10 条帖子数据
+  // 首页左边获取最新发布的 10 条话题数据
   async getNavNewPosts(ctx) {
     try {
-      const limit = 10 // 设置返回的帖子数量
+      const limit = 10 // 设置返回的话题数量
       const data = await PostService.getNavNewPosts(limit)
 
       ctx.body = {
@@ -173,7 +173,7 @@ class PostController {
     }
   }
 
-  // 按关键词搜索帖子
+  // 按关键词搜索话题
   async searchPosts(ctx) {
     try {
       const { keywords, page, limit, sortBy, sortOrder } = ctx.query
@@ -195,7 +195,7 @@ class PostController {
    * 后台管理系统，待定
    */
 
-  // 删除帖子
+  // 删除话题
   async deletePost(ctx) {
     try {
       const pid = ctx.params.pid

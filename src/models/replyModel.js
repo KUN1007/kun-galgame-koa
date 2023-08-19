@@ -6,13 +6,13 @@ const ReplySchema = new mongoose.Schema(
   {
     // 回复的 ID，从 1 开始且唯一，自动生成
     rid: { type: Number, unique: true },
-    // 回复所属帖子的 ID，标志了该条回复是属于哪个帖子的
+    // 回复所属话题的 ID，标志了该条回复是属于哪个话题的
     pid: { type: Number, required: true },
     // 回复人的 uid，标识了这个回帖是谁发的
     r_uid: { type: Number, required: true, ref: 'users' },
     // 被回复人的 uid，标志了这个回帖是回给谁的
     to_uid: { type: Number, required: true },
-    // 回复的楼层数，标志了这个回复属于该帖子的几楼
+    // 回复的楼层数，标志了这个回复属于该话题的几楼
     floor: { type: Number, default: 0 },
     // 回复的 tag，可选，字符串数组
     tags: { type: String, default: '' },

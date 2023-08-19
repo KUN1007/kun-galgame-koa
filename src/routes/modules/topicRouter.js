@@ -8,16 +8,16 @@ const router = new Router()
 router.prefix('/topic')
 
 /*
- * 帖子相关
+ * 话题相关
  */
 
-// 获取单个帖子
+// 获取单个话题
 router.get('/detail/:pid', PostController.getPostByPid)
 
-// 左侧相同标签下的其它帖子
+// 左侧相同标签下的其它话题
 router.get('/nav/same', PostController.getRelatedPostsByTags)
 
-// 楼主的其它帖子
+// 楼主的其它话题
 router.get('/nav/master', PostController.getPopularPostsByUserUid)
 
 /*
@@ -27,7 +27,7 @@ router.get('/nav/master', PostController.getPopularPostsByUserUid)
 // 发布单个回帖
 router.post('/detail/:pid/reply', ReplyController.createReply)
 
-// 根据帖子 id 获取帖子回帖
+// 根据话题 id 获取话题回帖
 router.get('/detail/:pid/reply', ReplyController.getReplies)
 
 // 更新单个回帖

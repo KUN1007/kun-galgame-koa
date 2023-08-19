@@ -1,5 +1,5 @@
 /*
- * 帖子的 CRUD，定义了一些对帖子数据的数据库交互操作
+ * 话题的 CRUD，定义了一些对话题数据的数据库交互操作
  */
 
 import PostModel from '@/models/postModel'
@@ -8,19 +8,19 @@ import UserService from './userService'
 
 class PostService {
   /*
-   * 帖子页面
+   * 话题页面
    */
 
-  // 根据 pid 获取单个帖子信息
+  // 根据 pid 获取单个话题信息
   async getPostByPid(pid) {
     const post = await PostModel.findOne({ pid }).lean()
     return post
   }
 
-  // 楼主的其它帖子，按热度
+  // 楼主的其它话题，按热度
   async getPopularPostsByUserUid(uid, currentPid) {
     const user = await UserService.getUserByUid(uid)
-    // 返回 5 条数据，不包括当前帖子
+    // 返回 5 条数据，不包括当前话题
     const popularPIDs = user.topic
       .filter((pid) => pid !== currentPid)
       .slice(0, 5)
@@ -38,13 +38,13 @@ class PostService {
     return post
   }
 
-  // 相同标签下的其它帖子，按热度
+  // 相同标签下的其它话题，按热度
   async getRelatedPostsByTags(tags, pidToExclude) {
     // 将传过来的字符串转为数组
     const tagsArray = JSON.parse(tags)
     const relatedPosts = await PostModel.find({
       tags: { $in: tagsArray },
-      // 返回相同标签的帖子中排除当前帖子
+      // 返回相同标签的话题中排除当前话题
       pid: { $ne: pidToExclude },
     })
       .sort({ popularity: -1 })
@@ -64,30 +64,30 @@ class PostService {
    * 编辑页面
    */
 
-  // 创建帖子，用于编辑界面
+  // 创建话题，用于编辑界面
   async createPost(title, content, time, tags, category, uid) {
     const newPost = new PostModel({
       title,
       content,
       time,
       tags: JSON.parse(tags),
-      category,
+      category: JSON.parse(category),
       uid,
     })
 
-    // 保存帖子
+    // 保存话题
     const savedPost = await newPost.save()
 
-    // 在用户的发帖数组里保存帖子
+    // 在用户的发帖数组里保存话题
     await UserService.updateUserArray(uid, 'topic', savedPost.pid)
 
-    // 保存帖子 tag
+    // 保存话题 tag
     await TagService.createTagsByPidAndRid(savedPost.pid, 0, tags, category)
 
     return savedPost
   }
 
-  // 更新帖子（标题，内容，标签，分类）
+  // 更新话题（标题，内容，标签，分类）
   async updatePost(pid, title, content, tags, category) {
     try {
       const updatedPost = await PostModel.findOneAndUpdate(
@@ -109,7 +109,7 @@ class PostService {
    * 主页
    */
 
-  // 按照关键词获取帖子，用于主页帖子列表
+  // 按照关键词获取话题，用于主页话题列表
   async getPosts(sortField, sortOrder, page, limit) {
     const skip = (parseInt(page) - 1) * limit
     const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
@@ -143,7 +143,7 @@ class PostService {
     return data
   }
 
-  // 首页左边获取热度最高的 10 条帖子数据
+  // 首页左边获取热度最高的 10 条话题数据
   async getNavTopPosts(limit) {
     const posts = await PostModel.find({}, 'pid title popularity')
       .sort({ popularity: -1 })
@@ -159,7 +159,7 @@ class PostService {
     return data
   }
 
-  // 首页左边获取最新发布的 10 条帖子数据
+  // 首页左边获取最新发布的 10 条话题数据
   async getNavNewPosts(limit) {
     const posts = await PostModel.find({}, 'pid title time')
       .sort({ time: -1 })
@@ -175,7 +175,7 @@ class PostService {
     return data
   }
 
-  // 检索帖子，用于搜索框
+  // 检索话题，用于搜索框
   async searchPosts(keywords, page, limit, sortBy, sortOrder) {
     const skip = (parseInt(page) - 1) * parseInt(limit)
 
@@ -215,7 +215,7 @@ class PostService {
     }
   }
 
-  // 删除帖子，根据 pid
+  // 删除话题，根据 pid
   async deletePost(pid) {
     const deletedPost = await PostModel.findOneAndDelete({ pid })
 

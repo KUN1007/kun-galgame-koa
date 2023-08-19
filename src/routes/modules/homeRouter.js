@@ -5,15 +5,15 @@ const router = new Router()
 
 router.prefix('/home')
 
-// 获取首页帖子
+// 获取首页话题
 router.get('/topic', PostController.getPosts)
 
-// 首页搜索帖子
+// 首页搜索话题
 router.get('/topic/search', PostController.searchPosts)
 
-// 获取首页左侧热门帖子
+// 获取首页左侧热门话题
 router.get('/nav/hot', PostController.getNavTopPosts)
 
-// 获取首页左侧新发布帖子
+// 获取首页左侧新发布话题
 router.get('/nav/new', PostController.getNavNewPosts)
 export default router

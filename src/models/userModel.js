@@ -39,11 +39,11 @@ const UserSchema = new Schema(
     reply: { type: Array, default: [] },
     // 用户的评论 ID
     comment: { type: Array, default: [] },
-    // 用户点赞的帖子 ID
+    // 用户点赞的话题 ID
     like_topic: { type: Array, default: [] },
-    // 用户推的帖子 ID
+    // 用户推的话题 ID
     upvote_topic: { type: Array, default: [] },
-    // 用户回复的帖子 ID
+    // 用户回复的话题 ID
     reply_topic: { type: Array, default: [] },
   },
   // 时间戳，自动生成

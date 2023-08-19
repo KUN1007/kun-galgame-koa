@@ -9,7 +9,7 @@ import UserService from './userService'
 class ReplyService {
   // 创建回帖
   async createReply(pid, r_uid, to_uid, tags, content) {
-    // 获取楼层数，以楼主帖子的一楼为基准
+    // 获取楼层数，以楼主话题的一楼为基准
     const maxFloorReply = await ReplyModel.findOne({ pid })
       .sort('-floor')
       .lean()
@@ -30,7 +30,7 @@ class ReplyService {
     // 在用户的回帖数组里保存回帖
     await UserService.updateUserArray(r_uid, 'reply', savedReply.rid)
 
-    // 更新帖子的 rid 数组
+    // 更新话题的 rid 数组
     await PostModel.updateOne({ pid }, { $push: { rid: savedReply.rid } })
 
     // 保存 tags
@@ -72,7 +72,7 @@ class ReplyService {
   async deleteReply(rid) {
     const deletedReply = await ReplyModel.findOneAndDelete({ rid }).lean()
 
-    // 删除回帖的时候也要把帖子 rid 数组里对应的 pid 删除
+    // 删除回帖的时候也要把话题 rid 数组里对应的 pid 删除
     if (deletedReply) {
       const post = await PostModel.findOne({ pid: deletedReply.pid })
       if (post) {
