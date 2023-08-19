@@ -14,6 +14,12 @@ router.prefix('/topic')
 // 获取单个帖子
 router.get('/detail/:pid', PostController.getPostByPid)
 
+// 左侧相同标签下的其它帖子
+router.get('/nav/same', PostController.getRelatedPostsByTags)
+
+// 楼主的其它帖子
+router.get('/nav/master', PostController.getPopularPostsByUserUid)
+
 /*
  * 回帖相关
  */

@@ -7,13 +7,70 @@ import TagService from './tagService'
 import UserService from './userService'
 
 class PostService {
+  /*
+   * 帖子页面
+   */
+
+  // 根据 pid 获取单个帖子信息
+  async getPostByPid(pid) {
+    const post = await PostModel.findOne({ pid }).lean()
+    return post
+  }
+
+  // 楼主的其它帖子，按热度
+  async getPopularPostsByUserUid(uid, currentPid) {
+    const user = await UserService.getUserByUid(uid)
+    // 返回 5 条数据，不包括当前帖子
+    const popularPIDs = user.topic
+      .filter((pid) => pid !== currentPid)
+      .slice(0, 5)
+    const popularPosts = await PostModel.find({ pid: { $in: popularPIDs } })
+      .sort({ popularity: -1 })
+      .limit(5)
+      .select('title pid')
+
+    // 去除 _id，保留 title 和 pid 即可
+    const post = popularPosts.map((post) => ({
+      title: post.title,
+      pid: post.pid,
+    }))
+
+    return post
+  }
+
+  // 相同标签下的其它帖子，按热度
+  async getRelatedPostsByTags(tags, pidToExclude) {
+    // 将传过来的字符串转为数组
+    const tagsArray = JSON.parse(tags)
+    const relatedPosts = await PostModel.find({
+      tags: { $in: tagsArray },
+      // 返回相同标签的帖子中排除当前帖子
+      pid: { $ne: pidToExclude },
+    })
+      .sort({ popularity: -1 })
+      .limit(5)
+      .select('title pid')
+
+    // 去除 _id，保留 title 和 pid 即可
+    const post = relatedPosts.map((post) => ({
+      title: post.title,
+      pid: post.pid,
+    }))
+
+    return post
+  }
+
+  /*
+   * 编辑页面
+   */
+
   // 创建帖子，用于编辑界面
   async createPost(title, content, time, tags, category, uid) {
     const newPost = new PostModel({
       title,
       content,
       time,
-      tags,
+      tags: JSON.parse(tags),
       category,
       uid,
     })
@@ -29,6 +86,28 @@ class PostService {
 
     return savedPost
   }
+
+  // 更新帖子（标题，内容，标签，分类）
+  async updatePost(pid, title, content, tags, category) {
+    try {
+      const updatedPost = await PostModel.findOneAndUpdate(
+        { pid },
+        { title, content, tags, category },
+        { new: true }
+      )
+
+      // 使用 TagService 更新标签的使用次数
+      await TagService.updateTagsByPidAndRid(pid, 0, tags, category)
+
+      return updatedPost
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  /*
+   * 主页
+   */
 
   // 按照关键词获取帖子，用于主页帖子列表
   async getPosts(sortField, sortOrder, page, limit) {
@@ -62,36 +141,6 @@ class PostService {
     }))
 
     return data
-  }
-
-  async getPostByPid(pid) {
-    const post = await PostModel.findOne({ pid }).lean()
-    return post
-  }
-
-  // 更新帖子（标题和内容）
-  async updatePost(pid, title, content, tags, category) {
-    try {
-      const updatedPost = await PostModel.findOneAndUpdate(
-        { pid },
-        { title, content, tags, category },
-        { new: true }
-      )
-
-      // 使用 TagService 更新标签的使用次数
-      await TagService.updateTagsByPidAndRid(pid, 0, tags, category)
-
-      return updatedPost
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  // 删除帖子，根据 pid
-  async deletePost(pid) {
-    const deletedPost = await PostModel.findOneAndDelete({ pid })
-
-    return deletedPost
   }
 
   // 首页左边获取热度最高的 10 条帖子数据
@@ -164,6 +213,13 @@ class PostService {
       // totalPages: Math.ceil(totalResults / parseInt(limit)),
       posts,
     }
+  }
+
+  // 删除帖子，根据 pid
+  async deletePost(pid) {
+    const deletedPost = await PostModel.findOneAndDelete({ pid })
+
+    return deletedPost
   }
 }
 

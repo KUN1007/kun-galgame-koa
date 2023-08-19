@@ -1,42 +1,11 @@
 import PostService from '@/service/postService'
 
 class PostController {
-  // 创建帖子
-  async createPost(ctx) {
-    try {
-      const { title, content, time, tags, category, uid } = ctx.request.body
+  /*
+   * 帖子页面
+   */
 
-      const postData = await PostService.createPost(
-        title,
-        content,
-        time,
-        tags,
-        category,
-        uid
-      )
-
-      ctx.body = { code: 200, message: 'OK', data: postData }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to create post' }
-    }
-  }
-
-  // 根据关键词获取帖子数据
-  async getPosts(ctx) {
-    try {
-      const { sortField, sortOrder, page, limit } = ctx.query
-
-      const data = await PostService.getPosts(sortField, sortOrder, page, limit)
-
-      ctx.body = { code: 200, message: 'OK', data: data }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to fetch posts' }
-    }
-  }
-
-  // 根据关键词获取单条帖子数据
+  // 根据帖子 id 获取单条帖子数据
   async getPostByPid(ctx) {
     try {
       const pid = parseInt(ctx.params.pid)
@@ -59,7 +28,69 @@ class PostController {
     }
   }
 
-  // 更新帖子（标题和内容）
+  // 楼主的其它帖子，按热度
+  async getPopularPostsByUserUid(ctx) {
+    try {
+      const { uid, pid } = ctx.query
+      const popularPosts = await PostService.getPopularPostsByUserUid(uid, pid)
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: popularPosts,
+      }
+    } catch (error) {
+      console.error('Failed to get popular posts by user:', error)
+      ctx.status = 500
+      ctx.body = { error: 'Failed to get popular posts by user' }
+    }
+  }
+
+  // 相同标签下的其它帖子，按热度
+  async getRelatedPostsByTags(ctx) {
+    try {
+      // 传 pid 的目的是过滤掉当前帖子
+      const { tags, pid } = ctx.query
+      const relatedPosts = await PostService.getRelatedPostsByTags(tags, pid)
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: relatedPosts,
+      }
+    } catch (error) {
+      console.error('Failed to get related posts by tags:', error)
+      ctx.status = 500
+      ctx.body = { error: 'Failed to get related posts by tags' }
+    }
+  }
+
+  /*
+   * 编辑界面
+   */
+
+  // 创建帖子
+  async createPost(ctx) {
+    try {
+      const { title, content, time, tags, category, uid } = ctx.request.body
+
+      const postData = await PostService.createPost(
+        title,
+        content,
+        time,
+        tags,
+        category,
+        uid
+      )
+
+      ctx.body = { code: 200, message: 'OK', data: postData }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = { error: 'Failed to create post' }
+    }
+  }
+
+  // 更新帖子（标题，内容，标签，分类）
   async updatePost(ctx) {
     try {
       const pid = ctx.params.pid
@@ -84,17 +115,21 @@ class PostController {
     }
   }
 
-  // 删除帖子
-  async deletePost(ctx) {
+  /*
+   * 主页
+   */
+
+  // 获取帖子分页数据，排序
+  async getPosts(ctx) {
     try {
-      const pid = ctx.params.pid
+      const { sortField, sortOrder, page, limit } = ctx.query
 
-      const deletedPost = await PostService.deletePost(pid)
+      const data = await PostService.getPosts(sortField, sortOrder, page, limit)
 
-      ctx.body = deletedPost
+      ctx.body = { code: 200, message: 'OK', data: data }
     } catch (error) {
       ctx.status = 500
-      ctx.body = { error: 'Failed to delete post' }
+      ctx.body = { error: 'Failed to fetch posts' }
     }
   }
 
@@ -153,6 +188,24 @@ class PostController {
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to fetch search results' }
+    }
+  }
+
+  /*
+   * 后台管理系统，待定
+   */
+
+  // 删除帖子
+  async deletePost(ctx) {
+    try {
+      const pid = ctx.params.pid
+
+      const deletedPost = await PostService.deletePost(pid)
+
+      ctx.body = deletedPost
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = { error: 'Failed to delete post' }
     }
   }
 }
