@@ -9,7 +9,7 @@ const CommentSchema = new mongoose.Schema(
     // 评论所属的回复 ID，标识了这个评论是属于哪个回复的
     rid: { type: Number, required: true },
     // 评论所属的话题 ID，标识了这个评论是哪个话题底下的
-    pid: { type: Number, required: true },
+    tid: { type: Number, required: true },
     // 评论者的 uid，和用户关联，标识了这是谁发的评论
     c_uid: { type: Number, required: true, ref: 'user' },
     // 被评论者的 uid，和用户关联，标识了这个评论是发给谁的

@@ -4,12 +4,12 @@ class CommentController {
   // 发布单条评论
   async createComment(ctx) {
     try {
-      const pid = ctx.params.pid
+      const tid = ctx.params.tid
       const { c_uid, rid, to_uid, content } = ctx.request.body
 
       const newComment = await CommentService.createComment(
         rid,
-        pid,
+        tid,
         c_uid,
         to_uid,
         content

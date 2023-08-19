@@ -1,67 +1,70 @@
-import PostService from '@/service/postService'
+import TopicService from '@/service/topicService'
 
-class PostController {
+class TopicController {
   /*
    * 话题页面
    */
 
   // 根据话题 id 获取单条话题数据
-  async getPostByPid(ctx) {
+  async getTopicByTid(ctx) {
     try {
-      const pid = parseInt(ctx.params.pid)
-      const post = await PostService.getPostByPid(pid)
+      const tid = parseInt(ctx.params.tid)
+      const topic = await TopicService.getTopicByTid(tid)
 
-      if (!post) {
+      if (!topic) {
         ctx.status = 404
-        ctx.body = { error: 'Post not found' }
+        ctx.body = { error: 'Topic not found' }
         return
       }
 
       ctx.body = {
         code: 200,
         message: 'OK',
-        data: post,
+        data: topic,
       }
     } catch (error) {
       ctx.status = 500
-      ctx.body = { error: 'Failed to fetch post' }
+      ctx.body = { error: 'Failed to fetch topic' }
     }
   }
 
   // 楼主的其它话题，按热度
-  async getPopularPostsByUserUid(ctx) {
+  async getPopularTopicsByUserUid(ctx) {
     try {
-      const { uid, pid } = ctx.query
-      const popularPosts = await PostService.getPopularPostsByUserUid(uid, pid)
+      const { uid, tid } = ctx.query
+      const popularTopics = await TopicService.getPopularTopicsByUserUid(
+        uid,
+        tid
+      )
 
       ctx.body = {
         code: 200,
         message: 'OK',
-        data: popularPosts,
+        data: popularTopics,
       }
     } catch (error) {
-      console.error('Failed to get popular posts by user:', error)
+      console.error('Failed to get popular topics by user:', error)
       ctx.status = 500
-      ctx.body = { error: 'Failed to get popular posts by user' }
+      ctx.body = { error: 'Failed to get popular topics by user' }
     }
   }
 
   // 相同标签下的其它话题，按热度
-  async getRelatedPostsByTags(ctx) {
+  async getRelatedTopicsByTags(ctx) {
     try {
-      // 传 pid 的目的是过滤掉当前话题
-      const { tags, pid } = ctx.query
-      const relatedPosts = await PostService.getRelatedPostsByTags(tags, pid)
+      // 传 tid 的目的是过滤掉当前话题
+      const { tags, tid } = ctx.query
+      const relatedTopics = await TopicService.getRelatedTopicsByTags(tags, tid)
 
       ctx.body = {
         code: 200,
         message: 'OK',
-        data: relatedPosts,
+        data: relatedTopics,
       }
     } catch (error) {
-      console.error('Failed to get related posts by tags:', error)
+      console.error('Failed to get related topics by tags:', error)
       ctx.status = 500
-      ctx.body = { error: 'Failed to get related posts by tags' }
+      ctx.body = { error: 'Failed to get related topics by tags' }
     }
   }
 
@@ -70,11 +73,11 @@ class PostController {
    */
 
   // 创建话题
-  async createPost(ctx) {
+  async createTopic(ctx) {
     try {
       const { title, content, time, tags, category, uid } = ctx.request.body
 
-      const postData = await PostService.createPost(
+      const topicData = await TopicService.createTopic(
         title,
         content,
         time,
@@ -83,21 +86,21 @@ class PostController {
         uid
       )
 
-      ctx.body = { code: 200, message: 'OK', data: postData }
+      ctx.body = { code: 200, message: 'OK', data: topicData }
     } catch (error) {
       ctx.status = 500
-      ctx.body = { error: 'Failed to create post' }
+      ctx.body = { error: 'Failed to create topic' }
     }
   }
 
   // 更新话题（标题，内容，标签，分类）
-  async updatePost(ctx) {
+  async updateTopic(ctx) {
     try {
-      const pid = ctx.params.pid
+      const tid = ctx.params.tid
       const { title, content, tags, category } = ctx.request.body
 
-      const updatedPost = await PostService.updatePost(
-        pid,
+      const updatedTopic = await TopicService.updateTopic(
+        tid,
         title,
         content,
         tags,
@@ -107,11 +110,11 @@ class PostController {
       ctx.body = {
         code: 200,
         message: 'OK',
-        data: updatedPost,
+        data: updatedTopic,
       }
     } catch (error) {
       ctx.status = 500
-      ctx.body = { error: 'Failed to update post' }
+      ctx.body = { error: 'Failed to update topic' }
     }
   }
 
@@ -120,24 +123,29 @@ class PostController {
    */
 
   // 获取话题分页数据，排序
-  async getPosts(ctx) {
+  async getTopics(ctx) {
     try {
       const { sortField, sortOrder, page, limit } = ctx.query
 
-      const data = await PostService.getPosts(sortField, sortOrder, page, limit)
+      const data = await TopicService.getTopics(
+        sortField,
+        sortOrder,
+        page,
+        limit
+      )
 
       ctx.body = { code: 200, message: 'OK', data: data }
     } catch (error) {
       ctx.status = 500
-      ctx.body = { error: 'Failed to fetch posts' }
+      ctx.body = { error: 'Failed to fetch topics' }
     }
   }
 
   // 首页左边获取热度最高的 10 条话题数据
-  async getNavTopPosts(ctx) {
+  async getNavTopTopics(ctx) {
     try {
       const limit = 10 // 设置返回的话题数量
-      const data = await PostService.getNavTopPosts(limit)
+      const data = await TopicService.getNavTopTopics(limit)
 
       ctx.body = {
         code: 200,
@@ -154,10 +162,10 @@ class PostController {
   }
 
   // 首页左边获取最新发布的 10 条话题数据
-  async getNavNewPosts(ctx) {
+  async getNavNewTopics(ctx) {
     try {
       const limit = 10 // 设置返回的话题数量
-      const data = await PostService.getNavNewPosts(limit)
+      const data = await TopicService.getNavNewTopics(limit)
 
       ctx.body = {
         code: 200,
@@ -174,10 +182,10 @@ class PostController {
   }
 
   // 按关键词搜索话题
-  async searchPosts(ctx) {
+  async searchTopics(ctx) {
     try {
       const { keywords, page, limit, sortBy, sortOrder } = ctx.query
-      const data = await PostService.searchPosts(
+      const data = await TopicService.searchTopics(
         keywords,
         page,
         limit,
@@ -196,18 +204,18 @@ class PostController {
    */
 
   // 删除话题
-  async deletePost(ctx) {
+  async deleteTopic(ctx) {
     try {
-      const pid = ctx.params.pid
+      const tid = ctx.params.tid
 
-      const deletedPost = await PostService.deletePost(pid)
+      const deletedTopic = await TopicService.deleteTopic(tid)
 
-      ctx.body = deletedPost
+      ctx.body = deletedTopic
     } catch (error) {
       ctx.status = 500
-      ctx.body = { error: 'Failed to delete post' }
+      ctx.body = { error: 'Failed to delete topic' }
     }
   }
 }
 
-export default new PostController()
+export default new TopicController()

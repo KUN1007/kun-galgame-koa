@@ -2,10 +2,10 @@ import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
 // 话题 schema 结构
-const PostSchema = new mongoose.Schema(
+const TopicSchema = new mongoose.Schema(
   {
     // 话题的 ID，在创建话题的时候自动生成，从 1 开始
-    pid: { type: Number, unique: true },
+    tid: { type: Number, unique: true },
     // 话题的标题
     title: { type: String, required: true },
     // 话题的内容，富文本
@@ -46,15 +46,15 @@ const PostSchema = new mongoose.Schema(
 )
 
 // 创建虚拟字段 'users'
-PostSchema.virtual('user', {
+TopicSchema.virtual('user', {
   ref: 'user', // 关联的模型名称
   localField: 'uid', // 当前模型中用于关联的字段
   foreignField: 'uid', // 关联模型中用于关联的字段
 })
 
-// pre-save 钩子，在保存文档之前自动递增 upid 字段
-PostSchema.pre('save', increasingSequence('pid'))
+// pre-save 钩子，在保存文档之前自动递增 tid 字段
+TopicSchema.pre('save', increasingSequence('tid'))
 
-const PostModel = mongoose.model('post', PostSchema)
+const TopicModel = mongoose.model('topic', TopicSchema)
 
-export default PostModel
+export default TopicModel

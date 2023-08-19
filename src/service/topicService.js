@@ -2,62 +2,62 @@
  * 话题的 CRUD，定义了一些对话题数据的数据库交互操作
  */
 
-import PostModel from '@/models/postModel'
+import TopicModel from '@/models/topicModel'
 import TagService from './tagService'
 import UserService from './userService'
 
-class PostService {
+class TopicService {
   /*
    * 话题页面
    */
 
-  // 根据 pid 获取单个话题信息
-  async getPostByPid(pid) {
-    const post = await PostModel.findOne({ pid }).lean()
-    return post
+  // 根据 tid 获取单个话题信息
+  async getTopicByTid(tid) {
+    const topic = await TopicModel.findOne({ tid }).lean()
+    return topic
   }
 
   // 楼主的其它话题，按热度
-  async getPopularPostsByUserUid(uid, currentPid) {
+  async getPopularTopicsByUserUid(uid, currentTid) {
     const user = await UserService.getUserByUid(uid)
     // 返回 5 条数据，不包括当前话题
-    const popularPIDs = user.topic
-      .filter((pid) => pid !== currentPid)
+    const popularTIDs = user.topic
+      .filter((tid) => tid !== currentTid)
       .slice(0, 5)
-    const popularPosts = await PostModel.find({ pid: { $in: popularPIDs } })
+    const popularTopics = await TopicModel.find({ tid: { $in: popularTIDs } })
       .sort({ popularity: -1 })
       .limit(5)
-      .select('title pid')
+      .select('title tid')
 
-    // 去除 _id，保留 title 和 pid 即可
-    const post = popularPosts.map((post) => ({
-      title: post.title,
-      pid: post.pid,
+    // 去除 _id，保留 title 和 tid 即可
+    const topic = popularTopics.map((topic) => ({
+      title: topic.title,
+      tid: topic.tid,
     }))
 
-    return post
+    return topic
   }
 
   // 相同标签下的其它话题，按热度
-  async getRelatedPostsByTags(tags, pidToExclude) {
+  async getRelatedTopicsByTags(tags, tidToExclude) {
     // 将传过来的字符串转为数组
     const tagsArray = JSON.parse(tags)
-    const relatedPosts = await PostModel.find({
+    const relatedTopics = await TopicModel.find({
       tags: { $in: tagsArray },
       // 返回相同标签的话题中排除当前话题
-      pid: { $ne: pidToExclude },
+      tid: { $ne: tidToExclude },
     })
       .sort({ popularity: -1 })
       .limit(5)
-      .select('title pid')
+      .select('title tid')
 
-    // 去除 _id，保留 title 和 pid 即可
-    const post = relatedPosts.map((post) => ({
-      title: post.title,
-      pid: post.pid,
+    // 去除 _id，保留 title 和 tid 即可
+    const topic = relatedTopics.map((topic) => ({
+      title: topic.title,
+      tid: topic.tid,
     }))
 
-    return post
+    return topic
   }
 
   /*
@@ -65,8 +65,8 @@ class PostService {
    */
 
   // 创建话题，用于编辑界面
-  async createPost(title, content, time, tags, category, uid) {
-    const newPost = new PostModel({
+  async createTopic(title, content, time, tags, category, uid) {
+    const newTopic = new TopicModel({
       title,
       content,
       time,
@@ -76,30 +76,30 @@ class PostService {
     })
 
     // 保存话题
-    const savedPost = await newPost.save()
+    const savedTopic = await newTopic.save()
 
     // 在用户的发帖数组里保存话题
-    await UserService.updateUserArray(uid, 'topic', savedPost.pid)
+    await UserService.updateUserArray(uid, 'topic', savedTopic.tid)
 
     // 保存话题 tag
-    await TagService.createTagsByPidAndRid(savedPost.pid, 0, tags, category)
+    await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
 
-    return savedPost
+    return savedTopic
   }
 
   // 更新话题（标题，内容，标签，分类）
-  async updatePost(pid, title, content, tags, category) {
+  async updateTopic(tid, title, content, tags, category) {
     try {
-      const updatedPost = await PostModel.findOneAndUpdate(
-        { pid },
+      const updatedTopic = await TopicModel.findOneAndUpdate(
+        { tid },
         { title, content, tags, category },
         { new: true }
       )
 
       // 使用 TagService 更新标签的使用次数
-      await TagService.updateTagsByPidAndRid(pid, 0, tags, category)
+      await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
 
-      return updatedPost
+      return updatedTopic
     } catch (error) {
       console.log(error)
     }
@@ -110,33 +110,33 @@ class PostService {
    */
 
   // 按照关键词获取话题，用于主页话题列表
-  async getPosts(sortField, sortOrder, page, limit) {
+  async getTopics(sortField, sortOrder, page, limit) {
     const skip = (parseInt(page) - 1) * limit
     const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
 
-    const posts = await PostModel.find()
+    const topics = await TopicModel.find()
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
       .populate('user', 'uid avatar name')
       .lean()
 
-    const data = posts.map((post) => ({
-      tid: post.pid,
-      title: post.title,
-      views: post.views,
-      likes: post.likes,
-      replies: post.replies,
-      comments: post.comments,
-      time: post.time,
-      content: post.content,
-      upvotes: post.upvotes,
+    const data = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      views: topic.views,
+      likes: topic.likes,
+      replies: topic.replies,
+      comments: topic.comments,
+      time: topic.time,
+      content: topic.content,
+      upvotes: topic.upvotes,
       // 这里 populate 后的结果是一个数组，取第一个用户数据
       uid: {
         // 这里去掉了 _id
-        uid: post.user[0].uid,
-        avatar: post.user[0].avatar,
-        name: post.user[0].name,
+        uid: topic.user[0].uid,
+        avatar: topic.user[0].avatar,
+        name: topic.user[0].name,
       },
     }))
 
@@ -144,39 +144,39 @@ class PostService {
   }
 
   // 首页左边获取热度最高的 10 条话题数据
-  async getNavTopPosts(limit) {
-    const posts = await PostModel.find({}, 'pid title popularity')
+  async getNavTopTopics(limit) {
+    const topics = await TopicModel.find({}, 'tid title popularity')
       .sort({ popularity: -1 })
       .limit(limit)
       .lean()
 
-    const data = posts.map((post) => ({
-      pid: post.pid,
-      title: post.title,
-      popularity: post.popularity,
+    const data = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      popularity: topic.popularity,
     }))
 
     return data
   }
 
   // 首页左边获取最新发布的 10 条话题数据
-  async getNavNewPosts(limit) {
-    const posts = await PostModel.find({}, 'pid title time')
+  async getNavNewTopics(limit) {
+    const topics = await TopicModel.find({}, 'tid title time')
       .sort({ time: -1 })
       .limit(limit)
       .lean()
 
-    const data = posts.map((post) => ({
-      pid: post.pid,
-      title: post.title,
-      time: post.time,
+    const data = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      time: topic.time,
     }))
 
     return data
   }
 
   // 检索话题，用于搜索框
-  async searchPosts(keywords, page, limit, sortBy, sortOrder) {
+  async searchTopics(keywords, page, limit, sortBy, sortOrder) {
     const skip = (parseInt(page) - 1) * parseInt(limit)
 
     // 将传过来的搜索内容按照空格分开搜索
@@ -195,13 +195,13 @@ class PostService {
       ],
     }
 
-    // const totalResults = await PostModel.countDocuments(searchQuery)
+    // const totalResults = await topicModel.countDocuments(searchQuery)
     let sortOptions = {}
     if (sortBy) {
       sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1
     }
 
-    const posts = await PostModel.find(searchQuery)
+    const topics = await TopicModel.find(searchQuery)
       .sort(sortOptions)
       .skip(skip)
       .limit(parseInt(limit))
@@ -211,16 +211,16 @@ class PostService {
       // totalResults,
       // currentPage: parseInt(page),
       // totalPages: Math.ceil(totalResults / parseInt(limit)),
-      posts,
+      topics,
     }
   }
 
-  // 删除话题，根据 pid
-  async deletePost(pid) {
-    const deletedPost = await PostModel.findOneAndDelete({ pid })
+  // 删除话题，根据 tid
+  async deleteTopic(tid) {
+    const deletedTopic = await TopicModel.findOneAndDelete({ tid })
 
-    return deletedPost
+    return deletedTopic
   }
 }
 
-export default new PostService()
+export default new TopicService()

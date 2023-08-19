@@ -1,14 +1,14 @@
 import Router from 'koa-router'
-import PostController from '@/controller/postController'
+import TopicController from '@/controller/topicController'
 
 const router = new Router()
 
 router.prefix('/edit')
 
 // 发布话题
-router.post('/topic', PostController.createPost)
+router.post('/topic', TopicController.createTopic)
 
 // 更新话题
-router.put('/topic/:pid', PostController.updatePost)
+router.put('/topic/:tid', TopicController.updateTopic)
 
 export default router

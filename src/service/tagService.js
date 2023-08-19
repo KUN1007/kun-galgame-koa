@@ -5,7 +5,7 @@
 import TagModel from '@/models/tagModel'
 
 class TagService {
-  async createTagsByPidAndRid(pid, rid, tagNames, category) {
+  async createTagsByTidAndRid(tid, rid, tagNames, category) {
     try {
       // 这里接收的是字符串，将其转为数组
       const tagsArray = Array.isArray(tagNames)
@@ -16,7 +16,7 @@ class TagService {
       const createdTags = []
 
       for (const tagName of uniqueTagNames) {
-        const newTag = new TagModel({ name: tagName, pid, rid, category })
+        const newTag = new TagModel({ name: tagName, tid, rid, category })
         const savedTag = await newTag.save()
         createdTags.push(savedTag)
       }
@@ -28,14 +28,14 @@ class TagService {
     }
   }
 
-  // 根据 pid 和 rid 更新 tags
-  async updateTagsByPidAndRid(pid, rid, tags, category) {
+  // 根据 tid 和 rid 更新 tags
+  async updateTagsByTidAndRid(tid, rid, tags, category) {
     try {
       // 这里接收的是字符串，将其转为数组
       const tagsArray = JSON.parse(tags)
 
-      // 找出相同 pid 和 rid 下已经存在的 tag
-      const existingTags = await TagModel.find({ pid, rid })
+      // 找出相同 tid 和 rid 下已经存在的 tag
+      const existingTags = await TagModel.find({ tid, rid })
       const existingTagNames = existingTags.map((tag) => tag.name)
 
       // 找出需要增加的 tag
@@ -49,11 +49,11 @@ class TagService {
       )
 
       // 创建要增加的 tag
-      await this.createTagsByPidAndRid(pid, rid, tagsToAdd, category)
+      await this.createTagsByTidAndRid(tid, rid, tagsToAdd, category)
 
       // 删除要删除的 tag
       for (const tagToRemove of tagsToRemove) {
-        await TagModel.deleteOne({ pid, rid, name: tagToRemove })
+        await TagModel.deleteOne({ tid, rid, name: tagToRemove })
       }
     } catch (error) {
       console.error('Failed to update tags:', error)

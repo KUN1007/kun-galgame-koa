@@ -13,12 +13,12 @@ const increasingSequence = (fieldName, startSeq = 1) =>
     }
 
     try {
-      const lastPost = await doc.constructor
+      const lastTopic = await doc.constructor
         .findOne({}, { [fieldName]: 1 })
         .sort({ [fieldName]: -1 })
 
-      if (lastPost) {
-        doc[fieldName] = lastPost[fieldName] + 1
+      if (lastTopic) {
+        doc[fieldName] = lastTopic[fieldName] + 1
       } else {
         doc[fieldName] = startSeq
       }

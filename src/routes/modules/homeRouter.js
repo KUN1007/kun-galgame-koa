@@ -1,19 +1,19 @@
 import Router from 'koa-router'
-import PostController from '@/controller/postController'
+import TopicController from '@/controller/topicController'
 
 const router = new Router()
 
 router.prefix('/home')
 
 // 获取首页话题
-router.get('/topic', PostController.getPosts)
+router.get('/topic', TopicController.getTopics)
 
 // 首页搜索话题
-router.get('/topic/search', PostController.searchPosts)
+router.get('/topic/search', TopicController.searchTopics)
 
 // 获取首页左侧热门话题
-router.get('/nav/hot', PostController.getNavTopPosts)
+router.get('/nav/hot', TopicController.getNavTopTopics)
 
 // 获取首页左侧新发布话题
-router.get('/nav/new', PostController.getNavNewPosts)
+router.get('/nav/new', TopicController.getNavNewTopics)
 export default router

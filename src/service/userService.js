@@ -108,7 +108,7 @@ class UserService {
     }
   }
 
-  // 更新用户的发帖，回帖，评论，点赞，不喜欢，推
+  // 更新用户的发帖，回复，评论，点赞，不喜欢，推
   async updateUserArray(uid, updateField, itemId) {
     await UserModel.updateOne(
       { uid: uid },

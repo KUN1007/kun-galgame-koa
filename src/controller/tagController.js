@@ -3,10 +3,10 @@ import TagService from '@/service/tagService'
 class TagController {
   // 创建标签，暂时没有用
   async createTags(ctx) {
-    const { tagNames, pid } = ctx.request.body
+    const { tagNames, tid } = ctx.request.body
 
     try {
-      const createdTags = await TagService.createTags(tagNames, pid)
+      const createdTags = await TagService.createTags(tagNames, tid)
       ctx.body = { message: 'Tags created successfully', tags: createdTags }
     } catch (error) {
       ctx.status = 500

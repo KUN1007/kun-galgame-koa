@@ -1,15 +1,15 @@
 import ReplyService from '@/service/replyService'
 
 class ReplyController {
-  // 创建回帖
+  // 创建回复
   async createReply(ctx) {
     try {
-      // 请求的是 /topic/detail/{pid}/reply，pid 会通过 params 拿到
-      const pid = parseInt(ctx.params.pid)
+      // 请求的是 /topic/detail/{tid}/reply，tid 会通过 params 拿到
+      const tid = parseInt(ctx.params.tid)
       const { r_uid, to_uid, tags, content } = ctx.request.body
 
       const savedReply = await ReplyService.createReply(
-        pid,
+        tid,
         r_uid,
         to_uid,
         tags,
@@ -23,7 +23,7 @@ class ReplyController {
     }
   }
 
-  // 获取单个回帖详情
+  // 获取单个回复详情
   async getReplyByRid(ctx) {
     try {
       const rid = parseInt(ctx.params.rid)
@@ -44,14 +44,14 @@ class ReplyController {
     }
   }
 
-  // 更新回帖
+  // 更新回复
   async updateReply(ctx) {
     try {
       const rid = parseInt(ctx.params.rid)
-      const pid = parseInt(ctx.params.pid)
+      const tid = parseInt(ctx.params.tid)
       const { content, tags } = ctx.request.body
       const updatedReply = await ReplyService.updateReply(
-        pid,
+        tid,
         rid,
         content,
         tags
@@ -67,7 +67,7 @@ class ReplyController {
     }
   }
 
-  // 删除回帖
+  // 删除回复
   async deleteReply(ctx) {
     try {
       const rid = parseInt(ctx.params.rid)
@@ -79,16 +79,16 @@ class ReplyController {
     }
   }
 
-  // 获取回帖列表
+  // 获取回复列表
   async getReplies(ctx) {
     try {
-      const pid = parseInt(ctx.params.pid)
+      const tid = parseInt(ctx.params.tid)
       const page = parseInt(ctx.query.page) || 1
       const limit = parseInt(ctx.query.limit) || 5
       const { sortField, sortOrder } = ctx.query
 
       const data = await ReplyService.getReplies(
-        pid,
+        tid,
         page,
         limit,
         sortField,

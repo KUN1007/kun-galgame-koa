@@ -35,7 +35,7 @@ const UserSchema = new Schema(
     dislike: { type: Number, default: 0 },
     // 用户的发帖 ID
     topic: { type: Array, default: [] },
-    // 用户的回帖 ID
+    // 用户的回复 ID
     reply: { type: Array, default: [] },
     // 用户的评论 ID
     comment: { type: Array, default: [] },
@@ -50,7 +50,7 @@ const UserSchema = new Schema(
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 )
 
-// pre-save 钩子，在保存文档之前自动递增 upid 字段
+// pre-save 钩子，在保存文档之前自动递增 utid 字段
 UserSchema.pre('save', increasingSequence('uid'))
 
 const UserModel = mongoose.model('user', UserSchema)

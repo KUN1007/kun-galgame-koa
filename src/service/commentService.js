@@ -8,10 +8,10 @@ import UserService from './userService'
 
 class CommentService {
   // 创建一条评论
-  async createComment(rid, pid, c_uid, to_uid, content) {
+  async createComment(rid, tid, c_uid, to_uid, content) {
     const newComment = new CommentModel({
       rid,
-      pid,
+      tid,
       c_uid,
       to_uid,
       content,
@@ -19,10 +19,10 @@ class CommentService {
 
     const savedComment = await newComment.save()
 
-    // 在用户的回帖数组里保存回帖
+    // 在用户的回复数组里保存回复
     await UserService.updateUserArray(c_uid, 'comment', savedComment.cid)
 
-    // 更新回帖的评论数组
+    // 更新回复的评论数组
     await ReplyService.addCommentToReply(rid, savedComment.cid)
 
     return savedComment
@@ -32,7 +32,7 @@ class CommentService {
   async deleteComment(rid, cid) {
     const deletedComment = await CommentModel.findOneAndDelete({ cid }).lean()
 
-    // 更新回帖的评论数组
+    // 更新回复的评论数组
     await ReplyService.removeCommentFromReply(rid, cid)
 
     return deletedComment
@@ -53,17 +53,17 @@ class CommentService {
     }
   }
 
-  // 根据回帖的 rid 获取回帖的所有评论
+  // 根据回复的 rid 获取回复的所有评论
   async getCommentsByReplyRid(rid) {
     const comment = await CommentModel.find({ rid })
       .populate('cuid', 'uid avatar name')
       .populate('touid', 'uid name')
       .lean()
 
-    // 返回回帖下评论的所有数据
+    // 返回回复下评论的所有数据
     const replyComments = comment.map((comment) => ({
       rid: comment.rid,
-      pid: comment.pid,
+      tid: comment.tid,
       c_uid: {
         uid: comment.cuid[0].uid,
         avatar: comment.cuid[0].avatar,
