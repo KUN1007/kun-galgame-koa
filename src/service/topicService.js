@@ -5,6 +5,7 @@
 import TopicModel from '@/models/topicModel'
 import TagService from './tagService'
 import UserService from './userService'
+// 用户输入的字符为 $ 或者 \ 时可能出现未预料的结果，需要处理
 
 class TopicService {
   /*
@@ -143,13 +144,13 @@ class TopicService {
 
   // 检索话题，用于搜索框
   /**
-   * @param {String} keywords
-   * @param {Array} category
-   * @param {Number} page
-   * @param {Number} limit
-   * @param {String} sortField
-   * @param {String} sortOrder
-   * @returns {Any} topicData
+   * @param {String} keywords - 搜索关键词，不填默认全部
+   * @param {Array} category - 话题的分类，目前有三种，Galgame, Technique, Others
+   * @param {Number} page - 分页页数
+   * @param {Number} limit - 每页的数据数
+   * @param {String} sortField - 按照哪个字段排序
+   * @param {String} sortOrder - 排序的顺序，有 `asc`, `desc`
+   * @returns {HomeTopicResponseData} topicData
    */
   async searchTopics(keywords, category, page, limit, sortField, sortOrder) {
     const skip = (parseInt(page) - 1) * parseInt(limit)
@@ -159,16 +160,29 @@ class TopicService {
       .split(' ')
       .filter((keyword) => keyword.trim() !== '')
 
+    // 对特殊字符进行转义
+    const escapedKeywords = keywordsArray.map((keyword) =>
+      keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    )
+
     // 构建 OR 条件来检索多个字段
     // 使用 $in 条件将每个关键词分别应用于不同的字段进行匹配
+    // 提供 keywords 时的查询
     const searchQuery = {
-      $or: [
-        { title: { $regex: keywordsArray.join('|'), $options: 'i' } },
-        { content: { $regex: keywordsArray.join('|'), $options: 'i' } },
-        { category: { $in: keywordsArray } },
-        { tags: { $in: keywordsArray } },
+      $and: [
+        { category: { $in: JSON.parse(category) } },
+        {
+          $or: [
+            { title: { $regex: escapedKeywords.join('|'), $options: 'i' } },
+            { content: { $regex: escapedKeywords.join('|'), $options: 'i' } },
+            { category: { $in: escapedKeywords } },
+            { tags: { $in: escapedKeywords } },
+          ],
+        },
       ],
     }
+
+    // 不提供 keyword 时的查询
     const getQuery = {
       category: { $in: JSON.parse(category) },
     }
