@@ -109,40 +109,6 @@ class TopicService {
    * 主页
    */
 
-  // 按照关键词获取话题，用于主页话题列表
-  async getTopics(sortField, sortOrder, page, limit) {
-    const skip = (parseInt(page) - 1) * limit
-    const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
-
-    const topics = await TopicModel.find()
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit)
-      .populate('user', 'uid avatar name')
-      .lean()
-
-    const data = topics.map((topic) => ({
-      tid: topic.tid,
-      title: topic.title,
-      views: topic.views,
-      likes: topic.likes,
-      replies: topic.replies,
-      comments: topic.comments,
-      time: topic.time,
-      content: topic.content,
-      upvotes: topic.upvotes,
-      // 这里 populate 后的结果是一个数组，取第一个用户数据
-      uid: {
-        // 这里去掉了 _id
-        uid: topic.user[0].uid,
-        avatar: topic.user[0].avatar,
-        name: topic.user[0].name,
-      },
-    }))
-
-    return data
-  }
-
   // 首页左边获取热度最高的 10 条话题数据
   async getNavTopTopics(limit) {
     const topics = await TopicModel.find({}, 'tid title popularity')
@@ -176,7 +142,16 @@ class TopicService {
   }
 
   // 检索话题，用于搜索框
-  async searchTopics(keywords, page, limit, sortBy, sortOrder) {
+  /**
+   * @param {String} keywords
+   * @param {Array} category
+   * @param {Number} page
+   * @param {Number} limit
+   * @param {String} sortField
+   * @param {String} sortOrder
+   * @returns {Any} topicData
+   */
+  async searchTopics(keywords, category, page, limit, sortField, sortOrder) {
     const skip = (parseInt(page) - 1) * parseInt(limit)
 
     // 将传过来的搜索内容按照空格分开搜索
@@ -189,29 +164,54 @@ class TopicService {
     const searchQuery = {
       $or: [
         { title: { $regex: keywordsArray.join('|'), $options: 'i' } },
-        { category: { $regex: keywordsArray.join('|'), $options: 'i' } },
-        { tags: { $in: keywordsArray } },
         { content: { $regex: keywordsArray.join('|'), $options: 'i' } },
+        { category: { $in: keywordsArray } },
+        { tags: { $in: keywordsArray } },
       ],
     }
-
-    // const totalResults = await topicModel.countDocuments(searchQuery)
-    let sortOptions = {}
-    if (sortBy) {
-      sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1
+    const getQuery = {
+      category: { $in: JSON.parse(category) },
     }
 
-    const topics = await TopicModel.find(searchQuery)
+    const query = keywords ? searchQuery : getQuery
+
+    const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
+    // const totalResults = await topicModel.countDocuments(query)
+
+    const topics = await TopicModel.find(query)
       .sort(sortOptions)
       .skip(skip)
       .limit(parseInt(limit))
+      .populate('user', 'uid avatar name')
       .lean()
+
+    const data = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      views: topic.views,
+      likes: topic.likes,
+      replies: topic.replies,
+      comments: topic.comments,
+      time: topic.time,
+      content: topic.content,
+      upvotes: topic.upvotes,
+      tags: topic.tags,
+      category: topic.category,
+      popularity: topic.popularity,
+      // 这里 populate 后的结果是一个数组，取第一个用户数据
+      uid: {
+        // 这里去掉了 _id
+        uid: topic.user[0].uid,
+        avatar: topic.user[0].avatar,
+        name: topic.user[0].name,
+      },
+    }))
 
     return {
       // totalResults,
       // currentPage: parseInt(page),
       // totalPages: Math.ceil(totalResults / parseInt(limit)),
-      topics,
+      data,
     }
   }
 
@@ -221,6 +221,45 @@ class TopicService {
 
     return deletedTopic
   }
+
+  /*
+   * 已废弃
+   */
+  // 按照关键词获取话题，用于主页话题列表
+
+  // async getTopics(sortField, sortOrder, page, limit) {
+  //   const skip = (parseInt(page) - 1) * limit
+  //   const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
+
+  //   const topics = await TopicModel.find()
+  //     .sort(sortOptions)
+  //     .skip(skip)
+  //     .limit(limit)
+  //     .populate('user', 'uid avatar name')
+  //     .lean()
+
+  //   const data = topics.map((topic) => ({
+  //     tid: topic.tid,
+  //     title: topic.title,
+  //     views: topic.views,
+  //     likes: topic.likes,
+  //     replies: topic.replies,
+  //     comments: topic.comments,
+  //     time: topic.time,
+  //     content: topic.content,
+  //     upvotes: topic.upvotes,
+  //     popularity: topic.popularity,
+  //     // 这里 populate 后的结果是一个数组，取第一个用户数据
+  //     uid: {
+  //       // 这里去掉了 _id
+  //       uid: topic.user[0].uid,
+  //       avatar: topic.user[0].avatar,
+  //       name: topic.user[0].name,
+  //     },
+  //   }))
+
+  //   return data
+  // }
 }
 
 export default new TopicService()

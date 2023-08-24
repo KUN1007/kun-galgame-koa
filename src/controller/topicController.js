@@ -122,25 +122,6 @@ class TopicController {
    * 主页
    */
 
-  // 获取话题分页数据，排序
-  async getTopics(ctx) {
-    try {
-      const { sortField, sortOrder, page, limit } = ctx.query
-
-      const data = await TopicService.getTopics(
-        sortField,
-        sortOrder,
-        page,
-        limit
-      )
-
-      ctx.body = { code: 200, message: 'OK', data: data }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to fetch topics' }
-    }
-  }
-
   // 首页左边获取热度最高的 10 条话题数据
   async getNavTopTopics(ctx) {
     try {
@@ -184,15 +165,17 @@ class TopicController {
   // 按关键词搜索话题
   async searchTopics(ctx) {
     try {
-      const { keywords, page, limit, sortBy, sortOrder } = ctx.query
+      const { keywords, category, page, limit, sortField, sortOrder } =
+        ctx.query
       const data = await TopicService.searchTopics(
         keywords,
+        category,
         page,
         limit,
-        sortBy,
+        sortField,
         sortOrder
       )
-      ctx.body = { code: 200, message: 'OK', data }
+      ctx.body = { code: 200, message: 'OK', data: data.data }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to fetch search results' }
@@ -216,6 +199,28 @@ class TopicController {
       ctx.body = { error: 'Failed to delete topic' }
     }
   }
+
+  /*
+   * 已废弃
+   */
+  // 获取话题分页数据，排序
+  // async getTopics(ctx) {
+  //   try {
+  //     const { sortField, sortOrder, page, limit } = ctx.query
+
+  //     const data = await TopicService.getTopics(
+  //       sortField,
+  //       sortOrder,
+  //       page,
+  //       limit
+  //     )
+
+  //     ctx.body = { code: 200, message: 'OK', data: data }
+  //   } catch (error) {
+  //     ctx.status = 500
+  //     ctx.body = { error: 'Failed to fetch topics' }
+  //   }
+  // }
 }
 
 export default new TopicController()

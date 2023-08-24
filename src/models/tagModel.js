@@ -21,7 +21,7 @@ const TagSchema = new mongoose.Schema(
 
 // 创建复合唯一索引，不允许同时重复，但是可以单独重复
 // 例如重复的 tid，不同的 name，或者重复的 name，不同的 tid
-TagSchema.index({ tid: 1, rid: 1, name: 1 }, { unique: true })
+// TagSchema.index({ tid: 1, rid: 1, name: 1 }, { unique: true })
 
 // pre-save 钩子，在保存文档之前自动递增 tid 字段
 TagSchema.pre('save', increasingSequence('tag_id'))

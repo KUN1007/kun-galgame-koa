@@ -33,6 +33,7 @@ class UserService {
 
     if (isPasswordValid) {
       // 验证通过，返回Token数据，这里剩余参数写法可以避免暴露不必要的 user 数据
+      // 这里用 _id，不用 uid，更安全
       // const { password, username, ...userObj } = user.toJSON()
       const token = generateToken({ _id: user._id }, '60m')
       const refreshToken = generateToken({ _id: user._id }, '7d')
@@ -45,6 +46,8 @@ class UserService {
         code: 200,
         message: 'OK',
         data: {
+          uid: user.uid,
+          avatar: user.avatar,
           token,
           refreshToken,
         },

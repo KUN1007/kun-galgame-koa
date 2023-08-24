@@ -33,7 +33,7 @@ const UserSchema = new Schema(
     like: { type: Number, default: 0 },
     // 用户的点踩数
     dislike: { type: Number, default: 0 },
-    // 用户的发帖 ID
+    // 用户的话题 ID
     topic: { type: Array, default: [] },
     // 用户的回复 ID
     reply: { type: Array, default: [] },
