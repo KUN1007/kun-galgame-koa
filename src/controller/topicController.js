@@ -86,7 +86,7 @@ class TopicController {
         uid
       )
 
-      ctx.body = { code: 200, message: 'OK', data: tid }
+      ctx.body = { code: 200, message: 'OK', data: { tid } }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to create topic' }

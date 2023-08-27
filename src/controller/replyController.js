@@ -15,8 +15,13 @@ class ReplyController {
         tags,
         content
       )
+
       ctx.status = 201
-      ctx.body = savedReply
+      ctx.body = ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: savedReply,
+      }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to create reply' }

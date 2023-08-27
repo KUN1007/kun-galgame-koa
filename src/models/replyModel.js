@@ -15,7 +15,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复的楼层数，标志了这个回复属于该话题的几楼
     floor: { type: Number, default: 0 },
     // 回复的 tag，可选，字符串数组
-    tags: { type: String, default: '' },
+    tags: { type: Array, default: [] },
     // 回复发布的时间
     time: { type: Number, default: Date.now },
     // 回复被再次编辑的时间

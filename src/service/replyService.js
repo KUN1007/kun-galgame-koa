@@ -21,7 +21,7 @@ class ReplyService {
       r_uid,
       to_uid,
       floor,
-      tags,
+      tags: JSON.parse(tags),
       content,
     })
 
@@ -114,6 +114,7 @@ class ReplyService {
       const responseData = replyDetails.map((reply) => ({
         rid: reply.rid,
         tid: reply.tid,
+        floor: reply.floor,
         r_user: {
           uid: reply.r_user[0].uid,
           name: reply.r_user[0].name,
@@ -130,6 +131,7 @@ class ReplyService {
         likes: reply.likes,
         dislikes: reply.dislikes,
         tags: reply.tags,
+        time: reply.time,
         cid: reply.cid,
       }))
 
