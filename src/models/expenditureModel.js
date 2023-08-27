@@ -9,7 +9,7 @@ const ExpenditureSchema = new mongoose.Schema(
     // 支出的原因
     reason: { type: String, default: '' },
     // 支出的时间
-    time: { type: String, default: Date.now },
+    time: { type: Number, default: Date.now },
     // 支出的金额
     amount: { type: Number, default: 0 },
   },

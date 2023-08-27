@@ -22,7 +22,7 @@ const UserSchema = new Schema(
     // 用户的状态
     status: { type: Number, default: 0 },
     // 用户的注册时间
-    time: { type: String, default: Date.now },
+    time: { type: Number, default: Date.now },
     // 用户的萌萌点
     moemoepoint: { type: Number, default: 1007 },
     // 用户的签名

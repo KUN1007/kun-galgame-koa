@@ -8,6 +8,8 @@ import router from '@/routes/routes'
 import koaBody from 'koa-body'
 // 允许跨域请求
 import cors from '@koa/cors'
+// 解决前端页面刷新 404
+// import historyApiFallback from 'koa2-connect-history-api-fallback'
 
 // 初始化 koa-app
 const app = new Koa()
@@ -29,6 +31,8 @@ app.use(
 )
 // 使用 koa-router
 app.use(router())
+
+// app.use(historyApiFallback({ whiteList: ['/api'] }))
 
 app.listen(env.APP_PORT, () => {
   console.log(`server is running on http://${env.APP_HOST}:${env.APP_PORT}`)

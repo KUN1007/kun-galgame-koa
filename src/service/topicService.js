@@ -5,7 +5,6 @@
 import TopicModel from '@/models/topicModel'
 import TagService from './tagService'
 import UserService from './userService'
-// 用户输入的字符为 $ 或者 \ 时可能出现未预料的结果，需要处理
 
 class TopicService {
   /*
@@ -14,13 +13,46 @@ class TopicService {
 
   // 根据 tid 获取单个话题信息
   async getTopicByTid(tid) {
-    const topic = await TopicModel.findOne({ tid }).lean()
-    return topic
+    try {
+      const topic = await TopicModel.findOne({ tid }).lean()
+
+      const userInfo = await UserService.getUserInfoByUid(topic.uid, [
+        'uid',
+        'avatar',
+        'name',
+        'moemoepoint',
+      ])
+
+      const data = {
+        tid: topic.tid,
+        title: topic.title,
+        views: topic.views,
+        likes: topic.likes,
+        dislikes: topic.dislikes,
+        replies: topic.replies,
+        time: topic.time,
+        content: topic.content,
+        upvotes: topic.upvotes,
+        tags: topic.tags,
+        edited: topic.edited,
+        user: {
+          uid: userInfo.uid,
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+          moemoepoint: userInfo.moemoepoint,
+        },
+        rid: topic.rid,
+      }
+
+      return data
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   // 楼主的其它话题，按热度
   async getPopularTopicsByUserUid(uid, currentTid) {
-    const user = await UserService.getUserByUid(uid)
+    const user = await UserService.getUserInfoByUid(uid, ['topic'])
     // 返回 5 条数据，不包括当前话题
     const popularTIDs = user.topic
       .filter((tid) => tid !== currentTid)
@@ -85,7 +117,8 @@ class TopicService {
     // 保存话题 tag
     await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
 
-    return savedTopic
+    // 返回创建好话题的 tid
+    return savedTopic.tid
   }
 
   // 更新话题（标题，内容，标签，分类）

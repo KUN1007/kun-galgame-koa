@@ -9,7 +9,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复所属话题的 ID，标志了该条回复是属于哪个话题的
     tid: { type: Number, required: true },
     // 回复人的 uid，标识了这个回复是谁发的
-    r_uid: { type: Number, required: true, ref: 'users' },
+    r_uid: { type: Number, required: true },
     // 被回复人的 uid，标志了这个回复是回给谁的
     to_uid: { type: Number, required: true },
     // 回复的楼层数，标志了这个回复属于该话题的几楼
@@ -17,7 +17,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复的 tag，可选，字符串数组
     tags: { type: String, default: '' },
     // 回复发布的时间
-    time: { type: String, default: Date.now },
+    time: { type: Number, default: Date.now },
     // 回复被再次编辑的时间
     edited: { type: String, default: '' },
     // 回复的内容
@@ -40,9 +40,16 @@ const ReplySchema = new mongoose.Schema(
 )
 
 // 创建虚拟字段 'users'，用于和用户关联
-ReplySchema.virtual('user', {
-  ref: 'users', // 关联的模型名称
-  localField: 'uid', // 当前模型中用于关联的字段
+ReplySchema.virtual('r_user', {
+  ref: 'user', // 关联的模型名称
+  localField: 'r_uid', // 当前模型中用于关联的字段
+  foreignField: 'uid', // 关联模型中用于关联的字段
+})
+
+// 创建虚拟字段 'users'，用于和用户关联
+ReplySchema.virtual('to_user', {
+  ref: 'user', // 关联的模型名称
+  localField: 'to_uid', // 当前模型中用于关联的字段
   foreignField: 'uid', // 关联模型中用于关联的字段
 })
 

@@ -77,7 +77,7 @@ class TopicController {
     try {
       const { title, content, time, tags, category, uid } = ctx.request.body
 
-      const topicData = await TopicService.createTopic(
+      const tid = await TopicService.createTopic(
         title,
         content,
         time,
@@ -86,7 +86,7 @@ class TopicController {
         uid
       )
 
-      ctx.body = { code: 200, message: 'OK', data: topicData }
+      ctx.body = { code: 200, message: 'OK', data: tid }
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to create topic' }

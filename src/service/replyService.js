@@ -86,36 +86,57 @@ class ReplyService {
   }
 
   // 获取某个话题下回复的接口，分页获取，懒加载，每次 5 条
+  /**
+   * @param {number} tid - 话题的 id，在那个话题中获取回复
+   * @param {number} page - 分页的页数，第几页
+   * @param {number} limit - 分页中每页有多少条信息
+   * @param {string} sortField - 根据哪个字段进行排序
+   * @param {string} sortOrder - 升序还是降序，`asc`, `desc`
+   */
   async getReplies(tid, page, limit, sortField, sortOrder) {
-    const post = await PostModel.findOne({ tid }).lean()
-    const totalReplies = post.rid.length
+    try {
+      const post = await PostModel.findOne({ tid }).lean()
+      const totalReplies = post.rid.length
 
-    const startIndex = (page - 1) * limit
-    const endIndex = Math.min(startIndex + limit, totalReplies)
+      const startIndex = (page - 1) * limit
+      const endIndex = Math.min(startIndex + limit, totalReplies)
 
-    const replies = post.rid.slice(startIndex, endIndex)
+      const replies = post.rid.slice(startIndex, endIndex)
 
-    const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
+      const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
 
-    const replyDetails = await ReplyModel.find({ rid: { $in: replies } })
-      .sort(sortOptions)
-      .lean()
+      const replyDetails = await ReplyModel.find({ rid: { $in: replies } })
+        .sort(sortOptions)
+        .populate('r_user', 'uid avatar name moemoepoint')
+        .populate('to_user', 'uid name')
+        .lean()
 
-    const responseData = replyDetails.map((reply) => ({
-      rid: reply.rid,
-      tid: reply.tid,
-      r_uid: reply.r_uid,
-      to_uid: reply.to_uid,
-      edited: reply.edited,
-      content: reply.content,
-      upvote: reply.upvote,
-      likes: reply.likes,
-      dislikes: reply.dislikes,
-      tags: reply.tags,
-      cid: reply.cid,
-    }))
+      const responseData = replyDetails.map((reply) => ({
+        rid: reply.rid,
+        tid: reply.tid,
+        r_user: {
+          uid: reply.r_user[0].uid,
+          name: reply.r_user[0].name,
+          avatar: reply.r_user[0].avatar,
+          moemoepoint: reply.r_user[0].moemoepoint,
+        },
+        to_user: {
+          uid: reply.to_user[0].uid,
+          name: reply.to_user[0].name,
+        },
+        edited: reply.edited,
+        content: reply.content,
+        upvote: reply.upvote,
+        likes: reply.likes,
+        dislikes: reply.dislikes,
+        tags: reply.tags,
+        cid: reply.cid,
+      }))
 
-    return responseData
+      return responseData
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 

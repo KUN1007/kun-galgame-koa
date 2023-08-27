@@ -8,14 +8,23 @@ import UserModel from '@/models/userModel'
 import { setValue } from '@/config/redisConfig' // 导入存储到 Redis 的函数
 
 class UserService {
-  // 获取单个用户信息
+  // 获取单个用户全部信息
   async getUserByUid(uid) {
     const user = await UserModel.findOne({ uid })
-    if (!user) {
-      throw new Error('User not found')
-    }
     return user
   }
+
+  // 获取用户的部分信息
+  /**
+   * @param {number} uid - 用户名
+   * @param {string[]} fieldsToSelect - 要选择的字段
+   */
+  async getUserInfoByUid(uid, fieldsToSelect) {
+    const userProjection = fieldsToSelect.join(' ')
+    const user = await UserModel.findOne({ uid }).select(userProjection)
+    return user
+  }
+
   /*
    * 接受用户传过来的数据并返回 token
    */

@@ -1,4 +1,5 @@
 import mongoose from '@/db/connection'
+const Schema = mongoose.Schema
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
 // 话题 schema 结构
@@ -19,7 +20,7 @@ const TopicSchema = new mongoose.Schema(
     // 话题下方回复的 ID，标识了这个话题底下有多少回复
     rid: { type: Array, default: [] },
     // 话题发布的时间
-    time: { type: String, default: Date.now },
+    time: { type: Number, default: Date.now },
     // 话题的热度，有专门的热度计算公式
     popularity: { type: Number, default: 0 },
     // 话题的被推数量
