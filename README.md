@@ -28,6 +28,13 @@ Tips: 网站目前正在建设中······
 - 永远不会收费
 
 
+## 运行方法
+ - git clone https://github.com/KUN1007/kun-galgame-koa
+ - cd kun-galgame-koa
+ - pnpm i
+ - pnpm dev
+#### 在运行之前您需要在您的电脑上安装 redis 和 mongodb，并在 .env 文件内更改您的配置信息
+
 ## 联系我们
 如果您想参与我们的开发，可以加入我们的开发群组
 
