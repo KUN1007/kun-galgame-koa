@@ -13,7 +13,7 @@ const TagSchema = new mongoose.Schema(
     // tag 的名字
     name: { type: String, require: true },
     // tag 所属话题的分类
-    category: { type: String, default: '' },
+    category: { type: Array, default: [] },
   },
   // 时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

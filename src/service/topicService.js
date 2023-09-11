@@ -99,26 +99,30 @@ class TopicService {
 
   // 创建话题，用于编辑界面
   async createTopic(title, content, time, tags, category, uid) {
-    const newTopic = new TopicModel({
-      title,
-      content,
-      time,
-      tags: JSON.parse(tags),
-      category: JSON.parse(category),
-      uid,
-    })
+    try {
+      const newTopic = new TopicModel({
+        title,
+        content,
+        time,
+        tags,
+        category,
+        uid,
+      })
 
-    // 保存话题
-    const savedTopic = await newTopic.save()
+      // 保存话题
+      const savedTopic = await newTopic.save()
 
-    // 在用户的发帖数组里保存话题
-    await UserService.updateUserArray(uid, 'topic', savedTopic.tid)
+      // 在用户的发帖数组里保存话题
+      await UserService.updateUserArray(uid, 'topic', savedTopic.tid)
 
-    // 保存话题 tag
-    await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
+      // 保存话题 tag
+      await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
 
-    // 返回创建好话题的 tid
-    return savedTopic.tid
+      // 返回创建好话题的 tid
+      return savedTopic.tid
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   // 更新话题（标题，内容，标签，分类）
