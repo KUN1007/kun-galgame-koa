@@ -8,12 +8,16 @@ class CommentController {
       const tid = ctx.params.tid
       const { c_uid, rid, to_uid, content } = ctx.request.body
 
+      const tidNumber = parseInt(tid)
+      const cUidNumber = parseInt(c_uid.toString())
+      const ridNumber = parseInt(rid.toString())
+      const toUidNumber = parseInt(to_uid.toString())
       const newComment = await CommentService.createComment(
-        rid,
-        tid,
-        c_uid,
-        to_uid,
-        content
+        ridNumber,
+        tidNumber,
+        cUidNumber,
+        toUidNumber,
+        content.toString()
       )
 
       ctx.body = {

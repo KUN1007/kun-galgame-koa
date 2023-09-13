@@ -55,9 +55,12 @@ class TopicController {
     try {
       // 传 tid 的目的是过滤掉当前话题
       const { tags, tid } = ctx.query
+
+      const tagsArray = tags.toString().split(',')
+      const tidNumber = parseInt(tid.toString())
       const relatedTopics = await TopicService.getRelatedTopicsByTags(
-        tags as string[],
-        parseInt(tid as string)
+        tagsArray,
+        tidNumber
       )
 
       ctx.body = {
