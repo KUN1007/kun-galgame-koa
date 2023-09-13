@@ -1,8 +1,10 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
+import { ReplyAttributes } from './model'
+
 // 回复 schema 结构
-const ReplySchema = new mongoose.Schema(
+const ReplySchema = new mongoose.Schema<ReplyAttributes>(
   {
     // 回复的 ID，从 1 开始且唯一，自动生成
     rid: { type: Number, unique: true },
@@ -15,7 +17,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复的楼层数，标志了这个回复属于该话题的几楼
     floor: { type: Number, default: 0 },
     // 回复的 tag，可选，字符串数组
-    tags: { type: Array, default: [] },
+    tags: { type: [String], default: [] },
     // 回复发布的时间
     time: { type: Number, default: Date.now },
     // 回复被再次编辑的时间
@@ -33,7 +35,7 @@ const ReplySchema = new mongoose.Schema(
     // 回复的评论数
     comment: { type: Number, default: 0 },
     // 回复的评论 id
-    cid: { type: Array, default: [] },
+    cid: { type: [String], default: [] },
   },
   // 时间戳，自动创建
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
@@ -56,6 +58,6 @@ ReplySchema.virtual('to_user', {
 // pre-save 钩子，在保存文档之前自动递增 rid 字段
 ReplySchema.pre('save', increasingSequence('rid'))
 
-const ReplyModel = mongoose.model('reply', ReplySchema)
+const ReplyModel = mongoose.model<ReplyAttributes>('reply', ReplySchema)
 
 export default ReplyModel

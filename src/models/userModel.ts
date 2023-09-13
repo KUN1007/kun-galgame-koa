@@ -1,9 +1,9 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-const Schema = mongoose.Schema
+import { UserAttributes } from './model'
 
-const UserSchema = new Schema(
+const UserSchema = new mongoose.Schema<UserAttributes>(
   {
     // 用户 ID，从 1 开始递增且唯一
     uid: { type: Number, unique: true },
@@ -34,17 +34,17 @@ const UserSchema = new Schema(
     // 用户的点踩数
     dislike: { type: Number, default: 0 },
     // 用户的话题 ID
-    topic: { type: Array, default: [] },
+    topic: { type: [String], default: [] },
     // 用户的回复 ID
-    reply: { type: Array, default: [] },
+    reply: { type: [String], default: [] },
     // 用户的评论 ID
-    comment: { type: Array, default: [] },
+    comment: { type: [String], default: [] },
     // 用户点赞的话题 ID
-    like_topic: { type: Array, default: [] },
+    like_topic: { type: [String], default: [] },
     // 用户推的话题 ID
-    upvote_topic: { type: Array, default: [] },
+    upvote_topic: { type: [String], default: [] },
     // 用户回复的话题 ID
-    reply_topic: { type: Array, default: [] },
+    reply_topic: { type: [String], default: [] },
   },
   // 时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
@@ -53,6 +53,6 @@ const UserSchema = new Schema(
 // pre-save 钩子，在保存文档之前自动递增 utid 字段
 UserSchema.pre('save', increasingSequence('uid'))
 
-const UserModel = mongoose.model('user', UserSchema)
+const UserModel = mongoose.model<UserAttributes>('user', UserSchema)
 
 export default UserModel

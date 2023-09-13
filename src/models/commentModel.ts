@@ -1,8 +1,10 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
+import { CommentAttributes } from './model'
+
 // 评论 schema 结构
-const CommentSchema = new mongoose.Schema(
+const CommentSchema = new mongoose.Schema<CommentAttributes>(
   {
     // 评论的 ID，从 1 开始且要求唯一，在用户发评论时自动增加
     cid: { type: Number, unique: true },
@@ -42,6 +44,6 @@ CommentSchema.virtual('touid', {
 // pre-save 钩子，在保存文档之前自动递增 cid 字段
 CommentSchema.pre('save', increasingSequence('cid'))
 
-const CommentModel = mongoose.model('comment', CommentSchema)
+const CommentModel = mongoose.model<CommentAttributes>('comment', CommentSchema)
 
 export default CommentModel

@@ -1,9 +1,10 @@
 import mongoose from '@/db/connection'
-const Schema = mongoose.Schema
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
+import { TopicAttributes } from './model'
+
 // 话题 schema 结构
-const TopicSchema = new mongoose.Schema(
+const TopicSchema = new mongoose.Schema<TopicAttributes>(
   {
     // 话题的 ID，在创建话题的时候自动生成，从 1 开始
     tid: { type: Number, unique: true },
@@ -14,11 +15,11 @@ const TopicSchema = new mongoose.Schema(
     // 发帖人的 uid
     uid: { type: Number, required: true, ref: 'user' },
     // 话题的 tag，为一个字符串数组
-    tags: { type: Array, required: true },
+    tags: { type: [String], required: true },
     // 话题的分类，暂时有一个或两个
-    category: { type: Array, required: true },
+    category: { type: [String], required: true },
     // 话题下方回复的 ID，标识了这个话题底下有多少回复
-    rid: { type: Array, default: [] },
+    rid: { type: [String], default: [] },
     // 话题发布的时间
     time: { type: Number, default: Date.now },
     // 话题的热度，有专门的热度计算公式
@@ -56,6 +57,6 @@ TopicSchema.virtual('user', {
 // pre-save 钩子，在保存文档之前自动递增 tid 字段
 TopicSchema.pre('save', increasingSequence('tid'))
 
-const TopicModel = mongoose.model('topic', TopicSchema)
+const TopicModel = mongoose.model<TopicAttributes>('topic', TopicSchema)
 
 export default TopicModel

@@ -12,7 +12,7 @@ class TopicService {
    */
 
   // 根据 tid 获取单个话题信息
-  async getTopicByTid(tid) {
+  async getTopicByTid(tid: number) {
     try {
       const topic = await TopicModel.findOne({ tid }).lean()
 
@@ -51,11 +51,11 @@ class TopicService {
   }
 
   // 楼主的其它话题，按热度
-  async getPopularTopicsByUserUid(uid, currentTid) {
+  async getPopularTopicsByUserUid(uid: number, tidToExclude: number) {
     const user = await UserService.getUserInfoByUid(uid, ['topic'])
     // 返回 5 条数据，不包括当前话题
     const popularTIDs = user.topic
-      .filter((tid) => tid !== currentTid)
+      .filter((tid) => tid !== tidToExclude)
       .slice(0, 5)
     const popularTopics = await TopicModel.find({ tid: { $in: popularTIDs } })
       .sort({ popularity: -1 })
@@ -72,11 +72,9 @@ class TopicService {
   }
 
   // 相同标签下的其它话题，按热度
-  async getRelatedTopicsByTags(tags, tidToExclude) {
-    // 将传过来的字符串转为数组
-    const tagsArray = JSON.parse(tags)
+  async getRelatedTopicsByTags(tags: string[], tidToExclude: number) {
     const relatedTopics = await TopicModel.find({
-      tags: { $in: tagsArray },
+      tags: { $in: tags },
       // 返回相同标签的话题中排除当前话题
       tid: { $ne: tidToExclude },
     })
@@ -98,7 +96,14 @@ class TopicService {
    */
 
   // 创建话题，用于编辑界面
-  async createTopic(title, content, time, tags, category, uid) {
+  async createTopic(
+    title: string,
+    content: string,
+    time: number,
+    tags: string[],
+    category: string[],
+    uid: number
+  ) {
     try {
       const newTopic = new TopicModel({
         title,
@@ -126,7 +131,13 @@ class TopicService {
   }
 
   // 更新话题（标题，内容，标签，分类）
-  async updateTopic(tid, title, content, tags, category) {
+  async updateTopic(
+    tid: number,
+    title: string,
+    content: string,
+    tags: string[],
+    category: string[]
+  ) {
     try {
       const updatedTopic = await TopicModel.findOneAndUpdate(
         { tid },
@@ -148,7 +159,7 @@ class TopicService {
    */
 
   // 首页左边获取热度最高的 10 条话题数据
-  async getNavTopTopics(limit) {
+  async getNavTopTopics(limit: number) {
     const topics = await TopicModel.find({}, 'tid title popularity')
       .sort({ popularity: -1 })
       .limit(limit)
@@ -164,7 +175,7 @@ class TopicService {
   }
 
   // 首页左边获取最新发布的 10 条话题数据
-  async getNavNewTopics(limit) {
+  async getNavNewTopics(limit: number) {
     const topics = await TopicModel.find({}, 'tid title time')
       .sort({ time: -1 })
       .limit(limit)
@@ -189,8 +200,15 @@ class TopicService {
    * @param {String} sortOrder - 排序的顺序，有 `asc`, `desc`
    * @returns {HomeTopicResponseData} topicData
    */
-  async searchTopics(keywords, category, page, limit, sortField, sortOrder) {
-    const skip = (parseInt(page) - 1) * parseInt(limit)
+  async searchTopics(
+    keywords: string,
+    category: string[],
+    page: number,
+    limit: number,
+    sortField: string,
+    sortOrder: string
+  ) {
+    const skip = (page - 1) * limit
 
     // 将传过来的搜索内容按照空格分开搜索
     const keywordsArray = keywords
@@ -207,7 +225,7 @@ class TopicService {
     // 提供 keywords 时的查询
     const searchQuery = {
       $and: [
-        { category: { $in: JSON.parse(category) } },
+        { category: { $in: category } },
         {
           $or: [
             { title: { $regex: escapedKeywords.join('|'), $options: 'i' } },
@@ -221,18 +239,20 @@ class TopicService {
 
     // 不提供 keyword 时的查询
     const getQuery = {
-      category: { $in: JSON.parse(category) },
+      category: { $in: category },
     }
 
     const query = keywords ? searchQuery : getQuery
 
-    const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
+    const sortOptions: Record<string, 'asc' | 'desc'> = {
+      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+    }
     // const totalResults = await topicModel.countDocuments(query)
 
     const topics = await TopicModel.find(query)
       .sort(sortOptions)
       .skip(skip)
-      .limit(parseInt(limit))
+      .limit(limit)
       .populate('user', 'uid avatar name')
       .lean()
 
@@ -267,11 +287,11 @@ class TopicService {
   }
 
   // 删除话题，根据 tid
-  async deleteTopic(tid) {
-    const deletedTopic = await TopicModel.findOneAndDelete({ tid })
+  // async deleteTopic(tid) {
+  //   const deletedTopic = await TopicModel.findOneAndDelete({ tid })
 
-    return deletedTopic
-  }
+  //   return deletedTopic
+  // }
 
   /*
    * 已废弃

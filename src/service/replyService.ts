@@ -8,7 +8,13 @@ import UserService from './userService'
 
 class ReplyService {
   // 创建回复
-  async createReply(tid, r_uid, to_uid, tags, content) {
+  async createReply(
+    tid: number,
+    r_uid: number,
+    to_uid: number,
+    tags: string[],
+    content: string
+  ) {
     // 获取楼层数，以楼主话题的一楼为基准
     const maxFloorReply = await ReplyModel.findOne({ tid })
       .sort('-floor')
@@ -21,7 +27,7 @@ class ReplyService {
       r_uid,
       to_uid,
       floor,
-      tags: JSON.parse(tags),
+      tags: tags,
       content,
     })
 
@@ -34,7 +40,7 @@ class ReplyService {
     await PostModel.updateOne({ tid }, { $push: { rid: savedReply.rid } })
 
     // 保存 tags
-    await TagService.createTagsByTidAndRid(tid, savedReply.rid, tags, '')
+    await TagService.createTagsByTidAndRid(tid, savedReply.rid, tags, [])
 
     return savedReply
   }
@@ -46,7 +52,7 @@ class ReplyService {
   // }
 
   // 更新回复
-  async updateReply(tid, rid, content, tags) {
+  async updateReply(tid: number, rid: number, content: string, tags: string[]) {
     const updatedReply = await ReplyModel.findOneAndUpdate(
       { rid },
       { $set: { content, edited: new Date().toISOString(), tags } },
@@ -54,22 +60,22 @@ class ReplyService {
     ).lean()
 
     // 保存 tags
-    await TagService.updateTagsByTidAndRid(tid, rid, tags, '')
+    await TagService.updateTagsByTidAndRid(tid, rid, tags, [])
     return updatedReply
   }
 
   // 向回复 model 中的评论数组增添一条评论
-  async addCommentToReply(rid, cid) {
+  async addCommentToReply(rid: number, cid: number) {
     await ReplyModel.updateOne({ rid }, { $addToSet: { cid } })
   }
 
   // 从回复 model 中的评论数组移除一条评论
-  async removeCommentFromReply(rid, cid) {
+  async removeCommentFromReply(rid: number, cid: number) {
     await ReplyModel.updateOne({ rid }, { $pull: { cid } })
   }
 
   // 删除回复
-  async deleteReply(rid) {
+  async deleteReply(rid: number) {
     const deletedReply = await ReplyModel.findOneAndDelete({ rid }).lean()
 
     // 删除回复的时候也要把话题 rid 数组里对应的 tid 删除
@@ -93,7 +99,13 @@ class ReplyService {
    * @param {string} sortField - 根据哪个字段进行排序
    * @param {string} sortOrder - 升序还是降序，`asc`, `desc`
    */
-  async getReplies(tid, page, limit, sortField, sortOrder) {
+  async getReplies(
+    tid: number,
+    page: number,
+    limit: number,
+    sortField: string,
+    sortOrder: 'asc' | 'desc'
+  ) {
     try {
       const post = await PostModel.findOne({ tid }).lean()
       const totalReplies = post.rid.length
@@ -103,7 +115,9 @@ class ReplyService {
 
       const replies = post.rid.slice(startIndex, endIndex)
 
-      const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
+      const sortOptions: Record<string, 'asc' | 'desc'> = {
+        [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+      }
 
       const replyDetails = await ReplyModel.find({ rid: { $in: replies } })
         .sort(sortOptions)
@@ -127,7 +141,7 @@ class ReplyService {
         },
         edited: reply.edited,
         content: reply.content,
-        upvote: reply.upvote,
+        upvotes: reply.upvotes,
         likes: reply.likes,
         dislikes: reply.dislikes,
         tags: reply.tags,

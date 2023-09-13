@@ -1,8 +1,9 @@
+import { Context } from 'koa'
 import CommentService from '@/service/commentService'
 
 class CommentController {
   // 发布单条评论
-  async createComment(ctx) {
+  async createComment(ctx: Context) {
     try {
       const tid = ctx.params.tid
       const { c_uid, rid, to_uid, content } = ctx.request.body
@@ -27,7 +28,7 @@ class CommentController {
   }
 
   // 删除单条评论
-  async deleteComment(ctx) {
+  async deleteComment(ctx: Context) {
     try {
       const rid = parseInt(ctx.params.rid)
       const cid = parseInt(ctx.params.cid)
@@ -46,7 +47,7 @@ class CommentController {
   }
 
   // 更新一条评论
-  async updateComment(ctx) {
+  async updateComment(ctx: Context) {
     try {
       const cid = parseInt(ctx.params.cid)
       const { content } = ctx.request.body
@@ -62,9 +63,9 @@ class CommentController {
   }
 
   // 根据回复的 rid 获取回复下面的所有评论
-  async getCommentsByReplyRid(ctx) {
+  async getCommentsByReplyRid(ctx: Context) {
     try {
-      const rid = ctx.query.rid
+      const rid = parseInt(ctx.query.rid as string)
       const comments = await CommentService.getCommentsByReplyRid(rid)
       ctx.body = {
         code: 200,

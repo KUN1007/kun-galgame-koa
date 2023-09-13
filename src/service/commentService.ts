@@ -8,7 +8,13 @@ import UserService from './userService'
 
 class CommentService {
   // 创建一条评论
-  async createComment(rid, tid, c_uid, to_uid, content) {
+  async createComment(
+    rid: number,
+    tid: number,
+    c_uid: number,
+    to_uid: number,
+    content: string
+  ) {
     const newComment = new CommentModel({
       rid,
       tid,
@@ -29,7 +35,7 @@ class CommentService {
   }
 
   // 删除一条评论
-  async deleteComment(rid, cid) {
+  async deleteComment(rid: number, cid: number) {
     const deletedComment = await CommentModel.findOneAndDelete({ cid }).lean()
 
     // 更新回复的评论数组
@@ -38,7 +44,7 @@ class CommentService {
     return deletedComment
   }
 
-  async updateComment(cid, content) {
+  async updateComment(cid: number, content: string) {
     try {
       const updatedComment = await CommentModel.findOneAndUpdate(
         { cid },
@@ -54,7 +60,7 @@ class CommentService {
   }
 
   // 根据回复的 rid 获取回复的所有评论
-  async getCommentsByReplyRid(rid) {
+  async getCommentsByReplyRid(rid: number) {
     const comment = await CommentModel.find({ rid })
       .populate('cuid', 'uid avatar name')
       .populate('touid', 'uid name')

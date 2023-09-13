@@ -9,7 +9,7 @@ import { setValue } from '@/config/redisConfig' // 导入存储到 Redis 的函�
 
 class UserService {
   // 获取单个用户全部信息
-  async getUserByUid(uid) {
+  async getUserByUid(uid: number) {
     const user = await UserModel.findOne({ uid })
     return user
   }
@@ -19,7 +19,7 @@ class UserService {
    * @param {number} uid - 用户名
    * @param {string[]} fieldsToSelect - 要选择的字段
    */
-  async getUserInfoByUid(uid, fieldsToSelect) {
+  async getUserInfoByUid(uid: number, fieldsToSelect: string[]) {
     const userProjection = fieldsToSelect.join(' ')
     const user = await UserModel.findOne({ uid }).select(userProjection)
     return user
@@ -29,7 +29,7 @@ class UserService {
    * 接受用户传过来的数据并返回 token
    */
 
-  async loginUser(name, password) {
+  async loginUser(name: string, password: string) {
     // 通过 mongodb 的 $or 运算符检查用户名或邮箱
     const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
 
@@ -67,8 +67,13 @@ class UserService {
   }
 
   // 注册逻辑
-  async registerUser(name, email, password, ip) {
-    const msg = {}
+  async registerUser(
+    name: string,
+    email: string,
+    password: string,
+    ip: string
+  ) {
+    const msg: Record<string, string> = {}
     let check = true
 
     // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
@@ -121,7 +126,7 @@ class UserService {
   }
 
   // 更新用户的发帖，回复，评论，点赞，不喜欢，推
-  async updateUserArray(uid, updateField, itemId) {
+  async updateUserArray(uid: number, updateField: string, itemId: number) {
     await UserModel.updateOne(
       { uid: uid },
       { $addToSet: { [updateField]: itemId } }

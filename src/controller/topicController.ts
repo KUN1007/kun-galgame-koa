@@ -1,3 +1,4 @@
+import { Context } from 'koa'
 import TopicService from '@/service/topicService'
 
 class TopicController {
@@ -6,7 +7,7 @@ class TopicController {
    */
 
   // 根据话题 id 获取单条话题数据
-  async getTopicByTid(ctx) {
+  async getTopicByTid(ctx: Context) {
     try {
       const tid = parseInt(ctx.params.tid)
       const topic = await TopicService.getTopicByTid(tid)
@@ -29,12 +30,12 @@ class TopicController {
   }
 
   // 楼主的其它话题，按热度
-  async getPopularTopicsByUserUid(ctx) {
+  async getPopularTopicsByUserUid(ctx: Context) {
     try {
       const { uid, tid } = ctx.query
       const popularTopics = await TopicService.getPopularTopicsByUserUid(
-        uid,
-        tid
+        parseInt(uid as string),
+        parseInt(tid as string)
       )
 
       ctx.body = {
@@ -50,11 +51,14 @@ class TopicController {
   }
 
   // 相同标签下的其它话题，按热度
-  async getRelatedTopicsByTags(ctx) {
+  async getRelatedTopicsByTags(ctx: Context) {
     try {
       // 传 tid 的目的是过滤掉当前话题
       const { tags, tid } = ctx.query
-      const relatedTopics = await TopicService.getRelatedTopicsByTags(tags, tid)
+      const relatedTopics = await TopicService.getRelatedTopicsByTags(
+        tags as string[],
+        parseInt(tid as string)
+      )
 
       ctx.body = {
         code: 200,
@@ -73,7 +77,7 @@ class TopicController {
    */
 
   // 创建话题
-  async createTopic(ctx) {
+  async createTopic(ctx: Context) {
     try {
       const { title, content, time, tags, category, uid } = ctx.request.body
 
@@ -94,7 +98,7 @@ class TopicController {
   }
 
   // 更新话题（标题，内容，标签，分类）
-  async updateTopic(ctx) {
+  async updateTopic(ctx: Context) {
     try {
       const tid = ctx.params.tid
       const { title, content, tags, category } = ctx.request.body
@@ -123,7 +127,7 @@ class TopicController {
    */
 
   // 首页左边获取热度最高的 10 条话题数据
-  async getNavTopTopics(ctx) {
+  async getNavTopTopics(ctx: Context) {
     try {
       const limit = 10 // 设置返回的话题数量
       const data = await TopicService.getNavTopTopics(limit)
@@ -143,7 +147,7 @@ class TopicController {
   }
 
   // 首页左边获取最新发布的 10 条话题数据
-  async getNavNewTopics(ctx) {
+  async getNavNewTopics(ctx: Context) {
     try {
       const limit = 10 // 设置返回的话题数量
       const data = await TopicService.getNavNewTopics(limit)
@@ -163,17 +167,17 @@ class TopicController {
   }
 
   // 按关键词搜索话题
-  async searchTopics(ctx) {
+  async searchTopics(ctx: Context) {
     try {
       const { keywords, category, page, limit, sortField, sortOrder } =
         ctx.query
       const data = await TopicService.searchTopics(
-        keywords,
-        category,
-        page,
-        limit,
-        sortField,
-        sortOrder
+        keywords as string,
+        category as string[],
+        parseInt(page as string),
+        parseInt(limit as string),
+        sortField as string,
+        <'asc' | 'desc'>sortOrder
       )
       ctx.body = { code: 200, message: 'OK', data: data.data }
     } catch (error) {
@@ -187,7 +191,7 @@ class TopicController {
    */
 
   // 删除话题
-  async deleteTopic(ctx) {
+  /*   async deleteTopic(ctx: Context) {
     try {
       const tid = ctx.params.tid
 
@@ -198,13 +202,13 @@ class TopicController {
       ctx.status = 500
       ctx.body = { error: 'Failed to delete topic' }
     }
-  }
+  } */
 
   /*
    * 已废弃
    */
   // 获取话题分页数据，排序
-  // async getTopics(ctx) {
+  // async getTopics(ctx: Context) {
   //   try {
   //     const { sortField, sortOrder, page, limit } = ctx.query
 

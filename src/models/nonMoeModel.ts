@@ -1,8 +1,10 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
+import { NonMoeAttributes } from './model'
+
 // 不萌记录 schema 结构
-const NonMoeSchema = new mongoose.Schema(
+const NonMoeSchema = new mongoose.Schema<NonMoeAttributes>(
   {
     // 不萌记录的 ID，从 1 开始，在创建记录的时候自动生成
     nid: { type: Number, unique: true },
@@ -22,6 +24,6 @@ const NonMoeSchema = new mongoose.Schema(
 // pre-save 钩子，在保存文档之前自动递增 nid 字段
 NonMoeSchema.pre('save', increasingSequence('nid'))
 
-const NonMoeModel = mongoose.model('NonMoe', NonMoeSchema)
+const NonMoeModel = mongoose.model<NonMoeAttributes>('NonMoe', NonMoeSchema)
 
 export default NonMoeModel

@@ -1,8 +1,9 @@
+import { Context } from 'koa'
 import ReplyService from '@/service/replyService'
 
 class ReplyController {
   // 创建回复
-  async createReply(ctx) {
+  async createReply(ctx: Context) {
     try {
       // 请求的是 /topic/detail/{tid}/reply，tid 会通过 params 拿到
       const tid = parseInt(ctx.params.tid)
@@ -28,29 +29,8 @@ class ReplyController {
     }
   }
 
-  // 获取单个回复详情
-  async getReplyByRid(ctx) {
-    try {
-      const rid = parseInt(ctx.params.rid)
-      const reply = await ReplyService.getReplyByRid(rid)
-      if (!reply) {
-        ctx.status = 404
-        ctx.body = { error: 'Reply not found' }
-        return
-      }
-      ctx.body = {
-        code: 200,
-        message: 'OK',
-        data: reply,
-      }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to fetch reply' }
-    }
-  }
-
   // 更新回复
-  async updateReply(ctx) {
+  async updateReply(ctx: Context) {
     try {
       const rid = parseInt(ctx.params.rid)
       const tid = parseInt(ctx.params.tid)
@@ -73,7 +53,7 @@ class ReplyController {
   }
 
   // 删除回复
-  async deleteReply(ctx) {
+  async deleteReply(ctx: Context) {
     try {
       const rid = parseInt(ctx.params.rid)
       const deletedReply = await ReplyService.deleteReply(rid)
@@ -85,19 +65,20 @@ class ReplyController {
   }
 
   // 获取回复列表
-  async getReplies(ctx) {
+  async getReplies(ctx: Context) {
     try {
       const tid = parseInt(ctx.params.tid)
-      const page = parseInt(ctx.query.page) || 1
-      const limit = parseInt(ctx.query.limit) || 5
+      // 这里确定前端会传来 string 而不是 array
+      const page = parseInt(ctx.query.page as string) || 1
+      const limit = parseInt(ctx.query.limit as string) || 5
       const { sortField, sortOrder } = ctx.query
 
       const data = await ReplyService.getReplies(
         tid,
         page,
         limit,
-        sortField,
-        sortOrder
+        sortField as string,
+        <'asc' | 'desc'>sortOrder
       )
 
       ctx.body = {
@@ -110,6 +91,27 @@ class ReplyController {
       ctx.body = { error: 'Failed to fetch replies' }
     }
   }
+
+  // 获取单个回复详情，暂时用不到
+  /*   async getReplyByRid(ctx: Context) {
+    try {
+      const rid = parseInt(ctx.params.rid)
+      const reply = await ReplyService.getReplyByRid(rid)
+      if (!reply) {
+        ctx.status = 404
+        ctx.body = { error: 'Reply not found' }
+        return
+      }
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: reply,
+      }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = { error: 'Failed to fetch reply' }
+    }
+  } */
 }
 
 export default new ReplyController()

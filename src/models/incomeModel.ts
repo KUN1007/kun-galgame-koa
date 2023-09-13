@@ -1,8 +1,10 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
+import { IncomeAttributes } from './model'
+
 // 收入 schema 结构
-const IncomeSchema = new mongoose.Schema(
+const IncomeSchema = new mongoose.Schema<IncomeAttributes>(
   {
     // 单条收入的 id，从 1 开始且唯一，在收入创建时自动加一
     iid: { type: Number, unique: true },
@@ -20,6 +22,6 @@ const IncomeSchema = new mongoose.Schema(
 // pre-save 钩子，在保存文档之前自动递增 iid 字段
 IncomeSchema.pre('save', increasingSequence('iid'))
 
-const IncomeModel = mongoose.model('income', IncomeSchema)
+const IncomeModel = mongoose.model<IncomeAttributes>('income', IncomeSchema)
 
 export default IncomeModel

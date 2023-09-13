@@ -9,8 +9,8 @@ import env from '@/config/config.dev'
 
 // 创建单个 redis 客户端实例并 promisify
 const redisClient = new Redis({
+  port: parseInt(env.REDIS_PORT),
   host: env.REDIS_HOST,
-  port: env.REDIS_PORT,
 })
 
 // 监听 'ready' 事件
@@ -25,7 +25,7 @@ redisClient.on('error', (err) => {
 })
 
 // 创建值
-const setValue = async (key, value, time) => {
+const setValue = async (key: string, value: string, time?: number) => {
   if (typeof value === 'undefined' || value == null || value === '') {
     return
   }
@@ -43,7 +43,7 @@ const setValue = async (key, value, time) => {
 }
 
 // 获取值
-const getValue = async (key) => {
+const getValue = async (key: string) => {
   try {
     const value = await redisClient.get(key)
     console.log('Value retrieved from Redis:', key, value)
@@ -55,7 +55,7 @@ const getValue = async (key) => {
 }
 
 // 示例：从 Redis 删除值
-const delValue = async (key) => {
+const delValue = async (key: string) => {
   try {
     await redisClient.del(key)
     console.log('Value deleted from Redis:', key)

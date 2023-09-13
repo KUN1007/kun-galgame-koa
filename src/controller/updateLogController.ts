@@ -1,7 +1,8 @@
+import { Context } from 'koa'
 import UpdateLogService from '@/service/updateLogService'
 
 class UpdateLogController {
-  async createUpdateLog(ctx) {
+  async createUpdateLog(ctx: Context) {
     try {
       const { body } = ctx.request
       const savedUpdateLog = await UpdateLogService.createUpdateLog(body)
@@ -13,9 +14,10 @@ class UpdateLogController {
     }
   }
 
-  async getUpdateLogs(ctx) {
+  async getUpdateLogs(ctx: Context) {
     try {
-      const { page, limit } = ctx.query
+      const page = parseInt(ctx.query.page as string)
+      const limit = parseInt(ctx.query.limit as string)
       const data = await UpdateLogService.getUpdateLogs(page, limit)
       ctx.body = { code: 200, message: 'OK', data: data }
     } catch (error) {
@@ -24,7 +26,7 @@ class UpdateLogController {
     }
   }
 
-  async updateUpdateLog(ctx) {
+  async updateUpdateLog(ctx: Context) {
     try {
       const { id } = ctx.params
       const { description, version } = ctx.request.body
@@ -40,7 +42,7 @@ class UpdateLogController {
     }
   }
 
-  async deleteUpdateLog(ctx) {
+  async deleteUpdateLog(ctx: Context) {
     try {
       const { id } = ctx.params
       const deletedUpdateLog = await UpdateLogService.deleteUpdateLog(id)

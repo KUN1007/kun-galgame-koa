@@ -8,7 +8,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const webPackConfig = {
   target: 'node',
   entry: {
-    server: path.join(utils.APP_PATH, 'index.js'),
+    server: path.join(utils.APP_PATH, 'index.ts'),
   },
   resolve: {
     ...utils.getWebpackResolveConfig(),
@@ -20,10 +20,13 @@ const webPackConfig = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        use: {
-          loader: 'babel-loader',
-        },
+        test: /\.(ts|tsx)$/,
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+          'ts-loader',
+        ],
         exclude: [path.join(__dirname, '/node_modules')],
       },
     ],

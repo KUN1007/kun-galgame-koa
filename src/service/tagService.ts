@@ -5,7 +5,12 @@
 import TagModel from '@/models/tagModel'
 
 class TagService {
-  async createTagsByTidAndRid(tid, rid, tagNames, category) {
+  async createTagsByTidAndRid(
+    tid: number,
+    rid: number,
+    tagNames: string[],
+    category: string[]
+  ) {
     try {
       // 这里接收的是字符串，将其转为数组
       const tagsArray = Array.isArray(tagNames)
@@ -29,10 +34,15 @@ class TagService {
   }
 
   // 根据 tid 和 rid 更新 tags
-  async updateTagsByTidAndRid(tid, rid, tags, category) {
+  async updateTagsByTidAndRid(
+    tid: number,
+    rid: number,
+    tags: string[],
+    category: string[]
+  ) {
     try {
       // 这里接收的是字符串，将其转为数组
-      const tagsArray = JSON.parse(tags)
+      const tagsArray = tags
 
       // 找出相同 tid 和 rid 下已经存在的 tag
       const existingTags = await TagModel.find({ tid, rid })
@@ -73,10 +83,10 @@ class TagService {
   }
 
   // 删除标签，暂时没用
-  async deleteTag(tagId) {
-    const deletedTag = await TagModel.findOneAndDelete({ tag_id: tagId })
-    return deletedTag
-  }
+  // async deleteTag(tagId) {
+  //   const deletedTag = await TagModel.findOneAndDelete({ tag_id: tagId })
+  //   return deletedTag
+  // }
 }
 
 export default new TagService()

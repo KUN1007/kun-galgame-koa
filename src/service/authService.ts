@@ -3,10 +3,10 @@
  */
 
 import { generateToken } from '@/middleware/jwtMiddleware'
-import { setValue } from '@/utils/redis'
+import { setValue } from '@/config/redisConfig'
 
 class AuthService {
-  async generateTokens(uid) {
+  async generateTokens(uid: number) {
     const token = generateToken({ _id: uid }, '60m')
     const refreshToken = generateToken({ _id: uid }, '7d')
 

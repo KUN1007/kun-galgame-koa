@@ -1,8 +1,9 @@
+import { Context } from 'koa'
 import UserService from '@/service/userService'
 
 class UserController {
   // 登录
-  async login(ctx) {
+  async login(ctx: Context) {
     try {
       const { name, password } = ctx.request.body
 
@@ -18,7 +19,7 @@ class UserController {
   }
 
   // 注册
-  async register(ctx) {
+  async register(ctx: Context) {
     try {
       const { name, email, password, ip } = ctx.request.body
 

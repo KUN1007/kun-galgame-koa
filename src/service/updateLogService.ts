@@ -3,19 +3,20 @@
  */
 
 import UpdateLogModel from '@/models/updateLogModel'
+import { UpdateLogAttributes } from '@/models/model'
 
 class UpdateLogService {
   // 创建单条更新数据
-  async createUpdateLog(updateLogData) {
+  async createUpdateLog(updateLogData: UpdateLogAttributes) {
     const newUpdateLog = new UpdateLogModel(updateLogData)
     const savedUpdateLog = await newUpdateLog.save()
     return savedUpdateLog
   }
 
   // 每次返回 5 条历史更新记录，按照时间排序
-  async getUpdateLogs(page, limit) {
+  async getUpdateLogs(page: number, limit: number) {
     // 根据请求参数计算跳过的步幅
-    const skip = (parseInt(page) - 1) * limit
+    const skip = (page - 1) * limit
 
     // 根据时间排列好五条数据
     const updateLogs = await UpdateLogModel.find()
@@ -39,9 +40,9 @@ class UpdateLogService {
   }
 
   // 更新单条更新数据
-  async updateUpdateLog(id, description, version) {
+  async updateUpdateLog(upid: number, description: string, version: string) {
     const updatedUpdateLog = await UpdateLogModel.findByIdAndUpdate(
-      id,
+      upid,
       { description, version },
       { new: true }
     )
@@ -49,7 +50,7 @@ class UpdateLogService {
   }
 
   // 删除单条更新数据
-  async deleteUpdateLog(id) {
+  async deleteUpdateLog(id: number) {
     const deletedUpdateLog = await UpdateLogModel.findByIdAndDelete(id)
     return deletedUpdateLog
   }

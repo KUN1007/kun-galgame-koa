@@ -1,6 +1,9 @@
-import { getJWTPayload, generateToken } from '@/middleware/jwtMiddleware'
+import env from '@/config/config.dev'
+import jwt from 'jsonwebtoken'
+import { Context } from 'koa'
+// import { getJWTPayload, generateToken } from '@/middleware/jwtMiddleware'
 
-const verifyTokenMiddleware = async (ctx, next) => {
+const verifyTokenMiddleware = async (ctx: Context, next?: any) => {
   const authorizationHeader = ctx.headers.authorization
 
   if (authorizationHeader) {

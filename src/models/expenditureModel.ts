@@ -1,8 +1,10 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
+import { ExpenditureAttributes } from './model'
+
 // 支出 schema 结构
-const ExpenditureSchema = new mongoose.Schema(
+const ExpenditureSchema = new mongoose.Schema<ExpenditureAttributes>(
   {
     // 支持的 id，从 1 开始，在支出发成的时候自动生成
     eid: { type: Number, unique: true },
@@ -20,6 +22,9 @@ const ExpenditureSchema = new mongoose.Schema(
 // pre-save 钩子，在保存文档之前自动递增 eid 字段
 ExpenditureSchema.pre('save', increasingSequence('eid'))
 
-const ExpenditureModel = mongoose.model('expenditure', ExpenditureSchema)
+const ExpenditureModel = mongoose.model<ExpenditureAttributes>(
+  'expenditure',
+  ExpenditureSchema
+)
 
 export default ExpenditureModel

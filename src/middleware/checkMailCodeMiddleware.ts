@@ -14,7 +14,7 @@
 }
  */
 
-const checkMailCode = (key, value) => {
+const checkMailCode = (key: string, value: string) => {
   if (key != null) {
     if (key.toLowerCase() === value.toLowerCase()) {
       return true
