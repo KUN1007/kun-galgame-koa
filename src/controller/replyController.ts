@@ -67,16 +67,16 @@ class ReplyController {
   // 获取回复列表
   async getReplies(ctx: Context) {
     try {
-      const tid = parseInt(ctx.params.tid)
+      const tidNumber = parseInt(ctx.params.tid as string)
       // 这里确定前端会传来 string 而不是 array
-      const page = parseInt(ctx.query.page as string) || 1
-      const limit = parseInt(ctx.query.limit as string) || 5
+      const pageNumber = parseInt(ctx.query.page as string)
+      const limitNumber = parseInt(ctx.query.limit as string)
       const { sortField, sortOrder } = ctx.query
 
       const data = await ReplyService.getReplies(
-        tid,
-        page,
-        limit,
+        tidNumber,
+        pageNumber,
+        limitNumber,
         sortField as string,
         <'asc' | 'desc'>sortOrder
       )

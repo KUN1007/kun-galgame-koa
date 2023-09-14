@@ -106,53 +106,49 @@ class ReplyService {
     sortField: string,
     sortOrder: 'asc' | 'desc'
   ) {
-    try {
-      const post = await PostModel.findOne({ tid }).lean()
-      const totalReplies = post.rid.length
+    const post = await PostModel.findOne({ tid }).lean()
+    const totalReplies = post.rid.length
 
-      const startIndex = (page - 1) * limit
-      const endIndex = Math.min(startIndex + limit, totalReplies)
+    const startIndex = (page - 1) * limit
+    const endIndex = Math.min(startIndex + limit, totalReplies)
 
-      const replies = post.rid.slice(startIndex, endIndex)
+    const replies = post.rid.slice(startIndex, endIndex)
 
-      const sortOptions: Record<string, 'asc' | 'desc'> = {
-        [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
-      }
-
-      const replyDetails = await ReplyModel.find({ rid: { $in: replies } })
-        .sort(sortOptions)
-        .populate('r_user', 'uid avatar name moemoepoint')
-        .populate('to_user', 'uid name')
-        .lean()
-
-      const responseData = replyDetails.map((reply) => ({
-        rid: reply.rid,
-        tid: reply.tid,
-        floor: reply.floor,
-        r_user: {
-          uid: reply.r_user[0].uid,
-          name: reply.r_user[0].name,
-          avatar: reply.r_user[0].avatar,
-          moemoepoint: reply.r_user[0].moemoepoint,
-        },
-        to_user: {
-          uid: reply.to_user[0].uid,
-          name: reply.to_user[0].name,
-        },
-        edited: reply.edited,
-        content: reply.content,
-        upvotes: reply.upvotes,
-        likes: reply.likes,
-        dislikes: reply.dislikes,
-        tags: reply.tags,
-        time: reply.time,
-        cid: reply.cid,
-      }))
-
-      return responseData
-    } catch (error) {
-      console.log(error)
+    const sortOptions: Record<string, 'asc' | 'desc'> = {
+      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
     }
+
+    const replyDetails = await ReplyModel.find({ rid: { $in: replies } })
+      .sort(sortOptions)
+      .populate('r_user', 'uid avatar name moemoepoint')
+      .populate('to_user', 'uid name')
+      .lean()
+
+    const responseData = replyDetails.map((reply) => ({
+      rid: reply.rid,
+      tid: reply.tid,
+      floor: reply.floor,
+      r_user: {
+        uid: reply.r_user[0].uid,
+        name: reply.r_user[0].name,
+        avatar: reply.r_user[0].avatar,
+        moemoepoint: reply.r_user[0].moemoepoint,
+      },
+      to_user: {
+        uid: reply.to_user[0].uid,
+        name: reply.to_user[0].name,
+      },
+      edited: reply.edited,
+      content: reply.content,
+      upvotes: reply.upvotes,
+      likes: reply.likes,
+      dislikes: reply.dislikes,
+      tags: reply.tags,
+      time: reply.time,
+      cid: reply.cid,
+    }))
+
+    return responseData
   }
 }
 
