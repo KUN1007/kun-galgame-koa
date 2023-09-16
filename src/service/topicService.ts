@@ -58,9 +58,9 @@ class TopicService {
     const user = await UserService.getUserInfoByUid(uid, ['topic'])
     // 返回 5 条数据，不包括当前话题
     const popularTIDs = user.topic
-      .filter((tid) => tid !== tidToExclude)
-      .slice(0, 5)
-    const popularTopics = await TopicModel.find({ tid: { $in: popularTIDs } })
+    const popularTopics = await TopicModel.find({
+      tid: { $in: popularTIDs, $ne: tidToExclude },
+    })
       .sort({ popularity: -1 })
       .limit(5)
       .select('title tid')
