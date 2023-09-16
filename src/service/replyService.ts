@@ -12,6 +12,7 @@ class ReplyService {
     tid: number,
     r_uid: number,
     to_uid: number,
+    to_floor: number,
     tags: string[],
     content: string
   ) {
@@ -26,6 +27,7 @@ class ReplyService {
       tid,
       r_uid,
       to_uid,
+      to_floor,
       floor,
       tags: tags,
       content,
@@ -126,6 +128,7 @@ class ReplyService {
       rid: reply.rid,
       tid: reply.tid,
       floor: reply.floor,
+      to_floor: reply.to_floor,
       r_user: {
         uid: reply.r_user[0].uid,
         name: reply.r_user[0].name,

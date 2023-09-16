@@ -45,6 +45,7 @@ interface ReplyAttributes {
   r_uid: number
   to_uid: number
   floor: number
+  to_floor: number
   tags: string[]
   time: number
   edited: string

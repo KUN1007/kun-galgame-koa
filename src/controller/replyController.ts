@@ -7,12 +7,13 @@ class ReplyController {
     try {
       // 请求的是 /topic/detail/{tid}/reply，tid 会通过 params 拿到
       const tid = parseInt(ctx.params.tid)
-      const { r_uid, to_uid, tags, content } = ctx.request.body
+      const { r_uid, to_uid, to_floor, tags, content } = ctx.request.body
 
       const savedReply = await ReplyService.createReply(
         tid,
         r_uid,
         to_uid,
+        to_floor,
         tags,
         content
       )
