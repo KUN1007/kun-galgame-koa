@@ -106,20 +106,18 @@ class ReplyService {
     sortField: string,
     sortOrder: 'asc' | 'desc'
   ) {
-    const post = await PostModel.findOne({ tid }).lean()
-    const totalReplies = post.rid.length
+    const replyId = (await PostModel.findOne({ tid }).lean()).rid
 
-    const startIndex = (page - 1) * limit
-    const endIndex = Math.min(startIndex + limit, totalReplies)
-
-    const replies = post.rid.slice(startIndex, endIndex)
+    const skip = (page - 1) * limit
 
     const sortOptions: Record<string, 'asc' | 'desc'> = {
       [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
     }
 
-    const replyDetails = await ReplyModel.find({ rid: { $in: replies } })
+    const replyDetails = await ReplyModel.find({ rid: { $in: replyId } })
       .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
       .populate('r_user', 'uid avatar name moemoepoint')
       .populate('to_user', 'uid name')
       .lean()
