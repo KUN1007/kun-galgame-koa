@@ -19,9 +19,9 @@ const CommentSchema = new mongoose.Schema<CommentAttributes>(
     // 评论的内容，纯文字，无富文本
     content: { type: String, default: '' },
     // 评论的点赞数
-    likes: { type: Number, default: 0 },
+    likes: { type: [Number], default: [] },
     // 评论的点踩数
-    dislikes: { type: Number, default: 0 },
+    dislikes: { type: [Number], default: [] },
   },
   // 时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

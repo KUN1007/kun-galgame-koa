@@ -6,8 +6,8 @@ export interface CommentAttributes {
   c_uid: number
   to_uid: number
   content: string
-  likes: number
-  dislikes: number
+  likes: number[]
+  dislikes: number[]
   // 虚拟字段
   cuid: UserAttributes[]
   touid: UserAttributes[]
@@ -49,11 +49,10 @@ interface ReplyAttributes {
   time: number
   edited: string
   content: string
-  upvotes: number
-  likes: number
-  dislikes: number
-  share: number
-  comment: number
+  upvotes: number[]
+  likes: number[]
+  dislikes: number[]
+  share: number[]
   cid: number[]
   // 虚拟字段
   r_user: UserAttributes[]
@@ -80,15 +79,14 @@ interface TopicAttributes {
   rid: number[]
   time: number
   popularity: number
-  upvotes: number
+  upvotes: number[]
   views: number
-  likes: number
-  replies: number
-  share: number
+  likes: number[]
+  share: number[]
   comments: number
-  dislikes: number
+  dislikes: number[]
   status: number
-  edited: string
+  edited: number
   // 虚拟字段
   user: UserAttributes[]
 }
@@ -121,6 +119,7 @@ interface UserAttributes {
   reply: number[]
   comment: number[]
   like_topic: number[]
+  dislike_topic: number[]
   upvote_topic: number[]
   reply_topic: number[]
 }

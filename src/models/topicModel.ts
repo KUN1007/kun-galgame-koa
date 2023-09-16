@@ -25,23 +25,21 @@ const TopicSchema = new mongoose.Schema<TopicAttributes>(
     // 话题的热度，有专门的热度计算公式
     popularity: { type: Number, default: 0 },
     // 话题的被推数量
-    upvotes: { type: Number, default: 0 },
+    upvotes: { type: [Number], default: [] },
     // 话题被查看的次数
     views: { type: Number, default: 0 },
     // 话题的点赞数
-    likes: { type: Number, default: 0 },
-    // 话题的回复数
-    replies: { type: Number, default: 0 },
+    likes: { type: [Number], default: [] },
     // 话题的分享数
-    share: { type: Number, default: 0 },
+    share: { type: [Number], default: [] },
     // 话题的评论数
     comments: { type: Number, default: 0 },
     // 话题的点踩数
-    dislikes: { type: Number, default: 0 },
+    dislikes: { type: [Number], default: [] },
     // 话题的状态，0 正常，1 封禁, 2 被推
     status: { type: Number, default: 0 },
     // 话题被再次编辑的时间
-    edited: { type: String, default: '' },
+    edited: { type: Number, default: 0 },
   },
   // 时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

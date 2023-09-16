@@ -14,6 +14,10 @@ class TopicService {
   // 根据 tid 获取单个话题信息
   async getTopicByTid(tid: number) {
     try {
+      // 用户每次访问话题，增加 views 字段值
+      // $inc 操作符通常用于在不锁定文档的情况下对字段进行增量更新，这对于并发操作非常有用，因为它确保了原子性
+      await TopicModel.updateOne({ tid }, { $inc: { views: 1 } })
+
       const topic = await TopicModel.findOne({ tid }).lean()
 
       const userInfo = await UserService.getUserInfoByUid(topic.uid, [
@@ -29,7 +33,6 @@ class TopicService {
         views: topic.views,
         likes: topic.likes,
         dislikes: topic.dislikes,
-        replies: topic.replies,
         time: topic.time,
         content: topic.content,
         upvotes: topic.upvotes,
@@ -261,7 +264,8 @@ class TopicService {
       title: topic.title,
       views: topic.views,
       likes: topic.likes,
-      replies: topic.replies,
+      // 这里需要的仅仅是 reply 的数量而已
+      replies: topic.rid.length,
       comments: topic.comments,
       time: topic.time,
       content: topic.content,

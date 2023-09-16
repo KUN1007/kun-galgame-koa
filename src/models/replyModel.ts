@@ -25,15 +25,13 @@ const ReplySchema = new mongoose.Schema<ReplyAttributes>(
     // 回复的内容
     content: { type: String, default: '' },
     // 回复是否被推
-    upvotes: { type: Number, default: 0 },
+    upvotes: { type: [Number], default: [] },
     // 回复的点赞数
-    likes: { type: Number, default: 0 },
+    likes: { type: [Number], default: [] },
     // 回复的点踩数
-    dislikes: { type: Number, default: 0 },
+    dislikes: { type: [Number], default: [] },
     // 回复的分享数
-    share: { type: Number, default: 0 },
-    // 回复的评论数
-    comment: { type: Number, default: 0 },
+    share: { type: [Number], default: [] },
     // 回复的评论 id
     cid: { type: [String], default: [] },
   },

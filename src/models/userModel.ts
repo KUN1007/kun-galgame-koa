@@ -31,16 +31,18 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     upvote: { type: Number, default: 0 },
     // 用户的被赞数
     like: { type: Number, default: 0 },
-    // 用户的点踩数
+    // 用户的被踩数
     dislike: { type: Number, default: 0 },
-    // 用户的话题 ID
+    // 用户发表的话题 ID
     topic: { type: [String], default: [] },
-    // 用户的回复 ID
+    // 用户发表的回复 ID
     reply: { type: [String], default: [] },
-    // 用户的评论 ID
+    // 用户发表的评论 ID
     comment: { type: [String], default: [] },
     // 用户点赞的话题 ID
     like_topic: { type: [String], default: [] },
+    // 用户点踩的话题 ID
+    dislike_topic: { type: [String], default: [] },
     // 用户推的话题 ID
     upvote_topic: { type: [String], default: [] },
     // 用户回复的话题 ID
