@@ -56,6 +56,7 @@ class UserService {
         message: 'OK',
         data: {
           uid: user.uid,
+          name: user.name,
           avatar: user.avatar,
           token,
           refreshToken,

@@ -265,7 +265,7 @@ class TopicService {
       views: topic.views,
       likes: topic.likes,
       // 这里需要的仅仅是 reply 的数量而已
-      replies: topic.rid.length,
+      replies: topic.rid,
       comments: topic.comments,
       time: topic.time,
       content: topic.content,
@@ -274,7 +274,7 @@ class TopicService {
       category: topic.category,
       popularity: topic.popularity,
       // 这里 populate 后的结果是一个数组，取第一个用户数据
-      uid: {
+      user: {
         // 这里去掉了 _id
         uid: topic.user[0].uid,
         avatar: topic.user[0].avatar,

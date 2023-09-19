@@ -23,7 +23,21 @@ class CommentService {
       content,
     })
 
+    // 保存好的评论
     const savedComment = await newComment.save()
+
+    // 评论人
+    const c_user = await UserService.getUserInfoByUid(savedComment.c_uid, [
+      'uid',
+      'avatar',
+      'name',
+    ])
+
+    // 被评论人
+    const to_user = await UserService.getUserInfoByUid(savedComment.to_uid, [
+      'uid',
+      'name',
+    ])
 
     // 在用户的回复数组里保存回复
     await UserService.updateUserArray(c_uid, 'comment', savedComment.cid)
@@ -31,7 +45,15 @@ class CommentService {
     // 更新回复的评论数组
     await ReplyService.addCommentToReply(rid, savedComment.cid)
 
-    return savedComment
+    return {
+      rid: savedComment.rid,
+      tid: savedComment.tid,
+      c_user: c_user,
+      to_user: to_user,
+      content: savedComment.content,
+      likes: savedComment.likes,
+      dislikes: savedComment.dislikes,
+    }
   }
 
   // 删除一条评论
@@ -70,12 +92,12 @@ class CommentService {
     const replyComments = comment.map((comment) => ({
       rid: comment.rid,
       tid: comment.tid,
-      c_uid: {
+      c_user: {
         uid: comment.cuid[0].uid,
         avatar: comment.cuid[0].avatar,
         name: comment.cuid[0].name,
       },
-      to_uid: {
+      to_user: {
         uid: comment.touid[0].uid,
         name: comment.touid[0].name,
       },
