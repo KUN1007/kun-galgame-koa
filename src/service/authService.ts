@@ -5,7 +5,9 @@
 import { generateToken } from '@/middleware/jwtMiddleware'
 import { setValue, getValue } from '@/config/redisConfig'
 import nodemailer from 'nodemailer'
+import SMPTransport from 'nodemailer-smtp-transport'
 import { generateRandomCode } from '@/utils/generateRandomCode'
+import env from '@/config/config.dev'
 
 class AuthService {
   async generateTokens(uid: number) {
@@ -25,18 +27,20 @@ class AuthService {
     // 存储验证码并设置有效期为10分钟
     await setValue(email, code, 600)
 
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: 'kungalgame@gmail.com',
-        pass: 'XXXXXXXXXXXXXXXXXXXXX',
-      },
-    })
+    const transporter = nodemailer.createTransport(
+      SMPTransport({
+        service: 'gmail',
+        auth: {
+          user: env.GOOGLE_EMAIL,
+          pass: env.GOOGLE_PASSWORD,
+        },
+      })
+    )
 
     const mailOptions = {
-      from: 'kungalgame@gmail.com',
+      from: env.EMAIL,
       to: email,
-      subject: 'Verification Code',
+      subject: 'KUNGalgame Verification Code',
       text: `Your verification code is: ${code}`,
     }
 

@@ -8,6 +8,9 @@ dependencies:
   '@koa/cors':
     specifier: ^4.0.0
     version: 4.0.0
+  '@types/nodemailer-smtp-transport':
+    specifier: ^2.7.5
+    version: 2.7.5
   bcrypt:
     specifier: ^5.1.0
     version: 5.1.0
@@ -44,6 +47,9 @@ dependencies:
   nodemailer:
     specifier: ^6.9.5
     version: 6.9.5
+  nodemailer-smtp-transport:
+    specifier: ^2.7.4
+    version: 2.7.4
 
 devDependencies:
   '@babel/core':
@@ -1435,6 +1441,12 @@ packages:
     dependencies:
       '@types/node': 20.6.0
 
+  /@types/aws-sdk2-types@0.0.1:
+    resolution: {integrity: sha512-hRb2lHv4ZqMvJt86qLa0CqWnL2w97u7sezZcoiWSvECC/5zTGJHyoi1zWVR2wn4pXhUWgDWkIqT8xYRMkS5D+Q==}
+    dependencies:
+      '@types/node': 20.6.0
+    dev: false
+
   /@types/bcrypt@5.0.0:
     resolution: {integrity: sha512-agtcFKaruL8TmcvqbndlqHPSJgsolhf/qPWchFlgnW1gECTN/nKbFcoFnvKAQRFfKbh+BO6A3SWdJu9t+xF3Lw==}
     dependencies:
@@ -1580,6 +1592,35 @@ packages:
 
   /@types/node@20.6.0:
     resolution: {integrity: sha512-najjVq5KN2vsH2U/xyh2opaSEz6cZMR2SetLIlxlj08nOcmPOemJmUK2o4kUzfLqfrWE0PIrNeE16XhYDd3nqg==}
+
+  /@types/nodemailer-direct-transport@1.0.32:
+    resolution: {integrity: sha512-1S0E405ghuApKUSH3x1dJpu/4Y8cQP4kQZ6BSLsfrM5uJB+IKKJuxCUVCDJoe3OTydPtzAoKFGggseXY97jlDw==}
+    dependencies:
+      '@types/nodemailer': 3.1.11
+    dev: false
+
+  /@types/nodemailer-ses-transport@1.5.3:
+    resolution: {integrity: sha512-GZIItR7UtcXYgqQ4BO9/UVEe9uOeRt6u4YgTNVcjzowTuQCAHuueCMfXHjgYr9IiewDI87JE4xM/pNU38ip0zQ==}
+    dependencies:
+      '@types/aws-sdk2-types': 0.0.1
+      '@types/nodemailer': 3.1.11
+    dev: false
+
+  /@types/nodemailer-smtp-transport@2.7.5:
+    resolution: {integrity: sha512-TziFYmQgyO9QuKvD3j7GcC6rnbp/Js9CEROm5h3u50AAeD8d8LcwoOlhosaEeMyPmy7fVXN63ZC1/MtjvzQViQ==}
+    dependencies:
+      '@types/node': 20.6.0
+      '@types/nodemailer': 3.1.11
+    dev: false
+
+  /@types/nodemailer@3.1.11:
+    resolution: {integrity: sha512-d9juwXW8pkT+GnwCUgpRv+E3i4sigwuASNUEKQYNryI6jd+yPs33MaG5MfZnsDtJItxINmcih01FzFfSYnpfeg==}
+    dependencies:
+      '@types/node': 20.6.0
+      '@types/nodemailer-direct-transport': 1.0.32
+      '@types/nodemailer-ses-transport': 1.5.3
+      '@types/nodemailer-smtp-transport': 2.7.5
+    dev: false
 
   /@types/nodemailer@6.4.10:
     resolution: {integrity: sha512-oPW/IdhkU3FyZc1dzeqmS+MBjrjZNiiINnrEOrWALzccJlP5xTlbkNr2YnTnnyj9Eqm5ofjRoASEbrCYpA7BrA==}
@@ -2828,6 +2869,19 @@ packages:
       toidentifier: 1.0.1
     dev: false
 
+  /httpntlm@1.6.1:
+    resolution: {integrity: sha512-Tcz3Ct9efvNqw3QdTl3h6IgRRlIQxwKkJELN/aAIGnzi2xvb3pDHdnMs8BrxWLV6OoT4DlVyhzSVhFt/tk0lIw==}
+    engines: {node: '>=0.8.0'}
+    dependencies:
+      httpreq: 1.1.0
+      underscore: 1.7.0
+    dev: false
+
+  /httpreq@1.1.0:
+    resolution: {integrity: sha512-P2ROAc2JG4Y1+EL8vRusYb3p6BK5WRZLVj8WLrvtQJL9qQgocqieU9+0cWWwrL2FroUjXGtUDo4lOKXoq+Et+g==}
+    engines: {node: '>= 6.15.1'}
+    dev: false
+
   /https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
     engines: {node: '>= 6'}
@@ -3489,6 +3543,28 @@ packages:
     resolution: {integrity: sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==}
     dev: true
 
+  /nodemailer-fetch@1.6.0:
+    resolution: {integrity: sha512-P7S5CEVGAmDrrpn351aXOLYs1R/7fD5NamfMCHyi6WIkbjS2eeZUB/TkuvpOQr0bvRZicVqo59+8wbhR3yrJbQ==}
+    dev: false
+
+  /nodemailer-shared@1.1.0:
+    resolution: {integrity: sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==}
+    dependencies:
+      nodemailer-fetch: 1.6.0
+    dev: false
+
+  /nodemailer-smtp-transport@2.7.4:
+    resolution: {integrity: sha512-1e86YhJ633OZWk3OHWS5TpuoYXG/LtY2/RzNiB5+EkFifDdqHCNHBnExd5cobx0ZSHJLNGM8EKnDuHRFIjFi6Q==}
+    dependencies:
+      nodemailer-shared: 1.1.0
+      nodemailer-wellknown: 0.1.10
+      smtp-connection: 2.12.0
+    dev: false
+
+  /nodemailer-wellknown@0.1.10:
+    resolution: {integrity: sha512-/VV4mjAEjfm2fn0loUvrpjvugw5rgurNjPO4WU24CuVSoeumsyLOTgaEWG8WoGdPxh1biOAp5JxDoy1hlA2zsw==}
+    dev: false
+
   /nodemailer@6.9.5:
     resolution: {integrity: sha512-/dmdWo62XjumuLc5+AYQZeiRj+PRR8y8qKtFCOyuOl1k/hckZd8durUUHs/ucKx6/8kN+wFxqKJlQ/LK/qR5FA==}
     engines: {node: '>=6.0.0'}
@@ -4038,6 +4114,13 @@ packages:
     engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
     dev: false
 
+  /smtp-connection@2.12.0:
+    resolution: {integrity: sha512-UP5jK4s5SGcUcqPN4U9ingqKt9mXYSKa52YhqxPuMecAnUOsVJpOmtgGaOm1urUBJZlzDt1M9WhZZkgbhxQlvg==}
+    dependencies:
+      httpntlm: 1.6.1
+      nodemailer-shared: 1.1.0
+    dev: false
+
   /socks@2.7.1:
     resolution: {integrity: sha512-7maUZy1N7uo6+WVEX6psASxtNlKaNVMlGQKkG/63nEDdLOWNbiUMoLK7X4uYoLhQstau72mLgfEWcXcwsaHbYQ==}
     engines: {node: '>= 10.13.0', npm: '>= 3.0.0'}
@@ -4355,6 +4438,10 @@ packages:
   /undefsafe@2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
     dev: true
+
+  /underscore@1.7.0:
+    resolution: {integrity: sha512-cp0oQQyZhUM1kpJDLdGO1jPZHgS/MpzoWYfe9+CM2h/QGDZlqwT2T3YGukuBdaNJ/CAPoeyAZRRHz8JFo176vA==}
+    dev: false
 
   /unicode-canonical-property-names-ecmascript@2.0.0:
     resolution: {integrity: sha512-yY5PpDlfVIU5+y/BSCxAJRBIS1Zc2dDG3Ujq+sR0U+JjUevW2JhocOF+soROYDSaAezOzOKuyyixhD6mBknSmQ==}
