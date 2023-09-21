@@ -45,6 +45,8 @@ class TopicService {
           moemoepoint: userInfo.moemoepoint,
         },
         rid: topic.rid,
+        status: topic.status,
+        share: topic.share,
       }
 
       return data
@@ -135,6 +137,7 @@ class TopicService {
 
   // 更新话题（标题，内容，标签，分类）
   async updateTopic(
+    uid: number,
     tid: number,
     title: string,
     content: string,
@@ -151,7 +154,14 @@ class TopicService {
       // 使用 TagService 更新标签的使用次数
       await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
 
-      return updatedTopic
+      const updatedData = {
+        title: updatedTopic.title,
+        content: updatedTopic.content,
+        tags: updatedTopic.tags,
+        category: updatedTopic.category,
+      }
+
+      return updatedData
     } catch (error) {
       console.log(error)
     }

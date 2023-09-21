@@ -104,9 +104,10 @@ class TopicController {
   async updateTopic(ctx: Context) {
     try {
       const tid = ctx.params.tid
-      const { title, content, tags, category } = ctx.request.body
+      const { uid, title, content, tags, category } = ctx.request.body
 
       const updatedTopic = await TopicService.updateTopic(
+        uid,
         tid,
         title,
         content,

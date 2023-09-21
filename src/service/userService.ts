@@ -35,12 +35,12 @@ class UserService {
 
     // 用户不存在
     if (!user) {
-      return { code: 404, message: '用户不存在' }
+      return { code: 404, message: 'User not found!' }
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isValidPassword = await bcrypt.compare(password, user.password)
 
-    if (isPasswordValid) {
+    if (isValidPassword) {
       // 验证通过，返回Token数据，这里剩余参数写法可以避免暴露不必要的 user 数据
       // 这里用 _id，不用 uid，更安全
       // const { password, username, ...userObj } = user.toJSON()
@@ -63,7 +63,7 @@ class UserService {
         },
       }
     } else {
-      return { code: 404, message: '用户名或者密码错误' }
+      return { code: 404, message: 'Username or password error!' }
     }
   }
 
@@ -72,16 +72,12 @@ class UserService {
     name: string,
     email: string,
     password: string,
-    ip: string
+    ip?: string
   ) {
-    const msg: Record<string, string> = {}
-    let check = true
-
     // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
     const emailCount = await UserModel.countDocuments({ email })
     if (emailCount > 0) {
-      msg.email = '该邮箱已被注册，请修改'
-      check = false
+      return { code: 500, message: '该邮箱已被注册，请修改' }
     }
 
     /*
@@ -92,38 +88,35 @@ class UserService {
      * 已注册 `kun` 则 `KUN` 会显示已占用
      * 但是如果注册时注册为 `KUN` 则数据库中也保存的是 `KUN` 而不是 `kun`
      */
-
     const usernameCount = await UserModel.countDocuments({
       name: { $regex: new RegExp('^' + name + '$', 'i') },
     })
     if (usernameCount > 0) {
-      msg.name = '用户名已经存在，请修改'
-      check = false
+      return { code: 500, message: '用户名已经存在，请修改' }
     }
 
     // 写入数据到数据库
-    if (check) {
-      try {
-        // bcrypt.hash 的第二个参数为哈希函数的迭代次数，越大加密效果越好但运算越慢
-        const hashedPassword = await bcrypt.hash(password, 7)
+    // bcrypt.hash 的第二个参数为哈希函数的迭代次数，越大加密效果越好但运算越慢
+    const hashedPassword = await bcrypt.hash(password, 7)
 
-        // 新建一个 User 数据
-        const user = new UserModel({
-          name,
-          email,
-          password: hashedPassword,
-          ip,
-        })
+    // 新建一个 User 数据
+    const user = new UserModel({
+      name,
+      email,
+      password: hashedPassword,
+      ip,
+    })
 
-        const result = await user.save()
+    // 新建用户后自动登陆
+    const registeredUser = await user.save()
 
-        return { code: 200, message: 'OK', data: result }
-      } catch (error) {
-        return { code: 500, message: '写入数据库出错' }
-      }
-    } else {
-      return { code: 500, message: msg }
-    }
+    // 登陆接口拿到的 token 等数据
+    const loginData = (
+      await this.loginUser(registeredUser.name, registeredUser.password)
+    ).data
+
+    // 返回数据
+    return { code: 200, message: 'OK', data: loginData }
   }
 
   // 更新用户的发帖，回复，评论，点赞，不喜欢，推
