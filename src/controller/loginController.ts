@@ -21,9 +21,15 @@ class UserController {
   // 注册
   async register(ctx: Context) {
     try {
-      const { name, email, password, ip } = ctx.request.body
+      const { name, email, password, code, ip } = ctx.request.body
 
-      const result = await UserService.registerUser(name, email, password, ip)
+      const result = await UserService.registerUser(
+        name,
+        email,
+        password,
+        code,
+        ip
+      )
 
       ctx.body = result
     } catch (error) {

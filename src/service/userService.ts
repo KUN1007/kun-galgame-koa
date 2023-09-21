@@ -5,7 +5,9 @@
 import bcrypt from 'bcrypt'
 import { generateToken } from '@/middleware/jwtMiddleware'
 import UserModel from '@/models/userModel'
-import { setValue } from '@/config/redisConfig' // 导入存储到 Redis 的函数
+import { setValue } from '@/config/redisConfig'
+// 导入发送验证码和验证的 Service
+import AuthService from './authService'
 
 class UserService {
   // 获取单个用户全部信息
@@ -72,8 +74,15 @@ class UserService {
     name: string,
     email: string,
     password: string,
+    code: string,
     ip?: string
   ) {
+    // 验证邮箱验证码是否正确且有效
+    const isCodeValid = await AuthService.verifyVerificationCode(email, code)
+    if (!isCodeValid) {
+      return { code: 500, message: '邮箱验证码错误' }
+    }
+
     // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
     const emailCount = await UserModel.countDocuments({ email })
     if (emailCount > 0) {
