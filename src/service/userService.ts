@@ -117,12 +117,10 @@ class UserService {
     })
 
     // 新建用户后自动登陆
-    const registeredUser = await user.save()
+    await user.save()
 
-    // 登陆接口拿到的 token 等数据
-    const loginData = (
-      await this.loginUser(registeredUser.name, registeredUser.password)
-    ).data
+    // 登陆接口拿到的 token 等数据，这里的 password 是用户传过来的 password
+    const loginData = (await this.loginUser(name, password)).data
 
     // 返回数据
     return { code: 200, message: 'OK', data: loginData }

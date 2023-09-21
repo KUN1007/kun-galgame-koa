@@ -151,6 +151,9 @@ class TopicService {
         { new: true }
       )
 
+      // TODO:
+      console.log(uid)
+
       // 使用 TagService 更新标签的使用次数
       await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
 
@@ -278,7 +281,8 @@ class TopicService {
       replies: topic.rid,
       comments: topic.comments,
       time: topic.time,
-      content: topic.content,
+      // 首页预览文本
+      content: topic.content.slice(0, 1777),
       upvotes: topic.upvotes,
       tags: topic.tags,
       category: topic.category,
@@ -290,6 +294,7 @@ class TopicService {
         avatar: topic.user[0].avatar,
         name: topic.user[0].name,
       },
+      status: topic.status,
     }))
 
     return {
