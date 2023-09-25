@@ -2,7 +2,7 @@
  * 鉴权服务，用户 jwt 路由接口鉴权
  */
 
-import { generateToken } from '@/middleware/jwtMiddleware'
+import { generateToken } from '@/utils/jwt'
 import { setValue, getValue } from '@/config/redisConfig'
 import nodemailer from 'nodemailer'
 import SMPTransport from 'nodemailer-smtp-transport'
@@ -11,8 +11,8 @@ import env from '@/config/config.dev'
 
 class AuthService {
   async generateTokens(uid: number) {
-    const token = generateToken({ _id: uid }, '60m')
-    const refreshToken = generateToken({ _id: uid }, '7d')
+    const token = generateToken(uid, '60m')
+    const refreshToken = generateToken(uid, '7d')
 
     // 存储 refresh token 到 Redis，key 为用户的 uid
     await setValue(`refreshToken:${uid}`, refreshToken, 7 * 24 * 60 * 60) // 存储 7 天

@@ -3,9 +3,7 @@
  */
 
 import bcrypt from 'bcrypt'
-import { generateToken } from '@/middleware/jwtMiddleware'
 import UserModel from '@/models/userModel'
-import { setValue } from '@/config/redisConfig'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
 
@@ -43,14 +41,8 @@ class UserService {
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (isValidPassword) {
-      // 验证通过，返回Token数据，这里剩余参数写法可以避免暴露不必要的 user 数据
-      // 这里用 _id，不用 uid，更安全
-      // const { password, username, ...userObj } = user.toJSON()
-      const token = generateToken({ _id: user._id }, '60m')
-      const refreshToken = generateToken({ _id: user._id }, '7d')
-
-      // 存储 token 到 Redis，key 为用户的 uid
-      await setValue(`user:${user._id}`, token, 60 * 60) // 存储 60 分钟
+      // 生成 token
+      const { token, refreshToken } = await AuthService.generateTokens(user.uid)
 
       // 规范化成接口定义的数据结构
       return {
