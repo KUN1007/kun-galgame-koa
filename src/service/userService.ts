@@ -44,17 +44,15 @@ class UserService {
       // 生成 token
       const { token, refreshToken } = await AuthService.generateTokens(user.uid)
 
-      // 规范化成接口定义的数据结构
+      // 返回 access token 和必要信息，refreshToken 用于 http only token
       return {
-        code: 200,
-        message: 'OK',
         data: {
           uid: user.uid,
           name: user.name,
           avatar: user.avatar,
           token,
-          refreshToken,
         },
+        refreshToken,
       }
     } else {
       return { code: 404, message: 'Username or password error!' }
@@ -72,13 +70,13 @@ class UserService {
     // 验证邮箱验证码是否正确且有效
     const isCodeValid = await AuthService.verifyVerificationCode(email, code)
     if (!isCodeValid) {
-      return { code: 500, message: '邮箱验证码错误' }
+      return 5001
     }
 
     // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
     const emailCount = await UserModel.countDocuments({ email })
     if (emailCount > 0) {
-      return { code: 500, message: '该邮箱已被注册，请修改' }
+      return 5002
     }
 
     /*
@@ -93,7 +91,7 @@ class UserService {
       name: { $regex: new RegExp('^' + name + '$', 'i') },
     })
     if (usernameCount > 0) {
-      return { code: 500, message: '用户名已经存在，请修改' }
+      return 5003
     }
 
     // 写入数据到数据库
@@ -112,10 +110,10 @@ class UserService {
     await user.save()
 
     // 登陆接口拿到的 token 等数据，这里的 password 是用户传过来的 password
-    const loginData = (await this.loginUser(name, password)).data
+    const loginData = await this.loginUser(name, password)
 
     // 返回数据
-    return { code: 200, message: 'OK', data: loginData }
+    return loginData
   }
 
   // 更新用户的发帖，回复，评论，点赞，不喜欢，推

@@ -5,9 +5,6 @@ const router = new Router()
 
 router.prefix('/home')
 
-// 获取首页话题，已废弃，和搜索话题合并
-// router.get('/topic', TopicController.getTopics)
-
 // 首页搜索话题
 router.get('/topic', TopicController.searchTopics)
 

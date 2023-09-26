@@ -5,10 +5,6 @@ import env from '@/config/config.dev'
 const DB_URL = `mongodb://${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`
 
 // 创建连接
-// mongoose.connect(DB_URL, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
 mongoose.connect(DB_URL)
 
 // 连接成功

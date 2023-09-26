@@ -1,14 +1,9 @@
 import { Context } from 'koa'
 import AuthService from '@/service/authService'
 
-// 发送验证码的响应
-type SendVerificationCodeEmailResponse = KUNGalgameResponseData<{}>
-
 class AuthController {
   // 发送验证码
-  async sendVerificationCodeEmail(
-    ctx: Context
-  ): Promise<SendVerificationCodeEmailResponse> {
+  async sendVerificationCodeEmail(ctx: Context) {
     const email: string = ctx.request.body.email
 
     if (!email) {
@@ -24,7 +19,30 @@ class AuthController {
     } catch (error) {
       ctx.status = 500
       ctx.body = { code: 500, message: 'Failed to send verification code' }
-      console.error(error)
+    }
+  }
+
+  // 根据 refresh token 获取 access token
+  async generateTokenByRefreshToken(ctx: Context) {
+    // refreshToken 就存在 ctx.cookies 中，每次请求都会发送
+    const refreshToken = ctx.cookies.get('kungalgame-moemoe-refresh-token')
+
+    try {
+      const newToken = await AuthService.generateTokenByRefreshToken(
+        refreshToken
+      )
+      ctx.status = 200
+      ctx.body = {
+        code: 200,
+        message: 'Token refresh successfully',
+        data: newToken,
+      }
+    } catch (error) {
+      ctx.status = 500
+      ctx.body = {
+        code: 500,
+        message: 'Failed to generate refresh token',
+      }
     }
   }
 }

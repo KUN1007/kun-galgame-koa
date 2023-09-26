@@ -17,10 +17,21 @@ interface Payload {
   uid: number
 }
 
-export function getJWTPayload(authHeader: string) {
+// 根据前端请求头验证 jwt
+export function verifyJWTPayloadByHeader(authHeader: string) {
   // Bearer 标头为 Authorization: Bearer <token>，所以要这样获取 jwt
   const token = authHeader.split(' ')[1]
 
+  try {
+    const payload = jwt.verify(token, env.JWT_SECRET) as Payload
+    return payload
+  } catch (error) {
+    console.error('JWT Verification Error:', error)
+  }
+}
+
+// 验证 jwt
+export function verifyJWTPayload(token: string) {
   try {
     const payload = jwt.verify(token, env.JWT_SECRET) as Payload
     return payload

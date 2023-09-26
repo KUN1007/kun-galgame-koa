@@ -8,6 +8,8 @@ import router from '@/routes/routes'
 import koaBody from 'koa-body'
 // 允许跨域请求
 import cors from '@koa/cors'
+// session
+// import session from 'koa-session'
 // 解决前端页面刷新 404
 // import historyApiFallback from 'koa2-connect-history-api-fallback'
 // 鉴权中间件
@@ -17,7 +19,14 @@ import { kungalgameAuth } from '@/middleware/authMiddleware'
 const app = new Koa()
 
 // 使用 koa 跨域请求中间件
-app.use(cors())
+app.use(
+  cors({
+    origin: env.APP_DOMAIN, // 允许的域名
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true, // 允许携带凭据
+  })
+)
+
 // 使用 koa-body
 app.use(
   koaBody({
@@ -31,6 +40,10 @@ app.use(
     },
   })
 )
+
+// 使用 session
+// app.keys = [env.APP_SESSION]
+// app.use(session(app))
 
 // 鉴权
 app.use(kungalgameAuth())

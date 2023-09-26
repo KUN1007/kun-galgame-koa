@@ -2,7 +2,7 @@
  * 鉴权服务，用户 jwt 路由接口鉴权
  */
 
-import { generateToken } from '@/utils/jwt'
+import { verifyJWTPayload, generateToken } from '@/utils/jwt'
 import { setValue, getValue } from '@/config/redisConfig'
 import nodemailer from 'nodemailer'
 import SMPTransport from 'nodemailer-smtp-transport'
@@ -10,6 +10,7 @@ import { generateRandomCode } from '@/utils/generateRandomCode'
 import env from '@/config/config.dev'
 
 class AuthService {
+  // 生成 token
   async generateTokens(uid: number) {
     const token = generateToken(uid, '60m')
     const refreshToken = generateToken(uid, '7d')
@@ -18,6 +19,32 @@ class AuthService {
     await setValue(`refreshToken:${uid}`, refreshToken, 7 * 24 * 60 * 60) // 存储 7 天
 
     return { token, refreshToken }
+  }
+
+  // 根据 refresh token 生成 token
+  async generateTokenByRefreshToken(refreshToken: string) {
+    try {
+      // 将 refreshToken 解码获取用户的 uid
+      const decoded = verifyJWTPayload(refreshToken)
+
+      // 没有获取到直接返回
+      if (!decoded || !decoded.uid) {
+        return null
+      }
+
+      // 不是由 kungalgame 签发的萌萌 token
+      if (decoded.iss !== 'kungalgame' || decoded.aud !== 'kungalgamer') {
+        return null
+      }
+
+      // 新生成的 token
+      const accessToken = generateToken(decoded.uid, '60m')
+
+      return accessToken
+    } catch (error) {
+      console.error('Get New Access Token Error:', error)
+      return null
+    }
   }
 
   // 发送验证码邮件
