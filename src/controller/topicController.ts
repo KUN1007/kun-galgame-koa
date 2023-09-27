@@ -1,5 +1,7 @@
 import { Context } from 'koa'
 import TopicService from '@/service/topicService'
+// 操作 cookie 的函数
+import { getCookieTokenInfo } from '@/utils/cookies'
 
 class TopicController {
   /*
@@ -32,9 +34,11 @@ class TopicController {
   // 楼主的其它话题，按热度
   async getPopularTopicsByUserUid(ctx: Context) {
     try {
-      const { uid, tid } = ctx.query
+      // 从 cookie 获取用户信息
+      const uid = getCookieTokenInfo(ctx).uid
+      const { tid } = ctx.query
       const popularTopics = await TopicService.getPopularTopicsByUserUid(
-        parseInt(uid as string),
+        uid,
         parseInt(tid as string)
       )
 

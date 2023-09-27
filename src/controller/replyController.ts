@@ -1,11 +1,15 @@
 import { Context } from 'koa'
 import ReplyService from '@/service/replyService'
+// 操作 cookie 的函数
+import { getCookieTokenInfo } from '@/utils/cookies'
 
 class ReplyController {
   // 创建回复
   async createReply(ctx: Context) {
     try {
-      const { tid, r_uid, to_uid, to_floor, tags, content } = ctx.request.body
+      // 从 cookie 获取用户信息
+      const r_uid = getCookieTokenInfo(ctx).uid
+      const { tid, to_uid, to_floor, tags, content } = ctx.request.body
 
       const savedReply = await ReplyService.createReply(
         tid,

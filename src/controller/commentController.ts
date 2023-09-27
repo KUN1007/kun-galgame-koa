@@ -3,13 +3,13 @@ import CommentService from '@/service/commentService'
 // 操作 cookie 的函数
 import { getCookieTokenInfo } from '@/utils/cookies'
 
-interface TopicCreateCommentRequestData {
-  tid: number
-  rid: number
-  c_uid: number
-  to_uid: number
-  content: string
-}
+// interface TopicCreateCommentRequestData {
+//   tid: number
+//   rid: number
+//   c_uid: number
+//   to_uid: number
+//   content: string
+// }
 
 class CommentController {
   // 发布单条评论
@@ -17,9 +17,10 @@ class CommentController {
     try {
       const { tid, rid, to_uid, content } = ctx.request.body
 
-      // 当前用户的 uid
-      const tidNumber = parseInt(tid)
+      // 从 cookie 获取当前用户的 uid
       const c_uid = getCookieTokenInfo(ctx).uid
+
+      const tidNumber = parseInt(tid)
       const ridNumber = parseInt(rid.toString())
       const toUidNumber = parseInt(to_uid.toString())
       const newComment = await CommentService.createComment(
