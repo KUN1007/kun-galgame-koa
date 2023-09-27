@@ -35,7 +35,9 @@ class AuthController {
       ctx.body = {
         code: 200,
         message: 'Token refresh successfully',
-        data: newToken,
+        data: {
+          token: newToken,
+        },
       }
     } catch (error) {
       ctx.status = 500

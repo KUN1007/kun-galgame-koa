@@ -9,10 +9,14 @@ class TagController {
 
     try {
       const topTags = await TagService.getTopTags(limit)
-      ctx.body = topTags
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: topTags,
+      }
     } catch (error) {
       ctx.status = 500
-      ctx.body = { error: 'Failed to get top tags' }
+      ctx.body = { code: 500, message: 'Failed to get top tags' }
     }
   }
   // 删除标签，暂时没有用

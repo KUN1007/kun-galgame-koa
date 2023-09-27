@@ -72,14 +72,17 @@ class TagService {
   }
 
   // 获取出现次数最多的 10 个 tag
-  async getTopTags(limit = 10) {
+  async getTopTags(limit: number) {
     const topTags = await TagModel.aggregate([
       { $group: { _id: '$name', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: limit },
     ])
 
-    return topTags
+    // 提取出结果中的 name 字段并返回
+    const topTagNames = topTags.map((tag) => tag._id)
+
+    return topTagNames
   }
 
   // 删除标签，暂时没用
