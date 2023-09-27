@@ -1,5 +1,6 @@
 import { Context } from 'koa'
 import UserService from '@/service/userService'
+import { setCookieRefreshToken } from '@/utils/cookies'
 
 class UserController {
   // 登录
@@ -9,11 +10,8 @@ class UserController {
 
       const result = await UserService.loginUser(name, password)
 
-      // 设置刷新 token，有效期 7 天
-      ctx.cookies.set('kungalgame-moemoe-refresh-token', result.refreshToken, {
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      })
+      // 将 refresh token 设置到 cookie
+      setCookieRefreshToken(ctx, result.refreshToken)
 
       ctx.body = {
         code: 200,
@@ -68,8 +66,8 @@ class UserController {
         return
       }
 
-      // 设置 httpOnly Cookie，仅限 refresh
-      ctx.cookies.set('authToken', result.refreshToken, { httpOnly: true })
+      // 将 refresh token 设置到 cookie
+      setCookieRefreshToken(ctx, result.refreshToken)
 
       ctx.body = {
         code: 200,

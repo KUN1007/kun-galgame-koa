@@ -5,9 +5,7 @@ class ReplyController {
   // 创建回复
   async createReply(ctx: Context) {
     try {
-      // 请求的是 /topic/detail/{tid}/reply，tid 会通过 params 拿到
-      const tid = parseInt(ctx.params.tid)
-      const { r_uid, to_uid, to_floor, tags, content } = ctx.request.body
+      const { tid, r_uid, to_uid, to_floor, tags, content } = ctx.request.body
 
       const savedReply = await ReplyService.createReply(
         tid,
@@ -33,9 +31,7 @@ class ReplyController {
   // 更新回复
   async updateReply(ctx: Context) {
     try {
-      const rid = parseInt(ctx.params.rid)
-      const tid = parseInt(ctx.params.tid)
-      const { content, tags } = ctx.request.body
+      const { tid, rid, content, tags } = ctx.request.body
       const updatedReply = await ReplyService.updateReply(
         tid,
         rid,
@@ -68,7 +64,7 @@ class ReplyController {
   // 获取回复列表
   async getReplies(ctx: Context) {
     try {
-      const tidNumber = parseInt(ctx.params.tid as string)
+      const tidNumber = parseInt(ctx.query.tid as string)
       // 这里确定前端会传来 string 而不是 array
       const pageNumber = parseInt(ctx.query.page as string)
       const limitNumber = parseInt(ctx.query.limit as string)

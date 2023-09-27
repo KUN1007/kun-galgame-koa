@@ -15,6 +15,7 @@ interface Payload {
   iss: string
   aud: string
   uid: number
+  name: string
 }
 
 // 根据前端请求头验证 jwt
@@ -40,9 +41,9 @@ export function verifyJWTPayload(token: string) {
   }
 }
 
-// 生成 token 返回给客户端
-export function generateToken(uid: number, expire: string) {
-  const payload: Payload = { iss: env.JWT_ISS, aud: env.JWT_AUD, uid }
+// 生成 token 返回给客户端，payload 里存放用户的 uid 和 name
+export function generateToken(uid: number, name: string, expire: string) {
+  const payload: Payload = { iss: env.JWT_ISS, aud: env.JWT_AUD, uid, name }
   const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: expire })
 
   return token

@@ -28,10 +28,9 @@ class UpdateLogController {
 
   async updateUpdateLog(ctx: Context) {
     try {
-      const { id } = ctx.params
-      const { description, version } = ctx.request.body
+      const { upid, description, version } = ctx.request.body
       const updatedUpdateLog = await UpdateLogService.updateUpdateLog(
-        id,
+        upid,
         description,
         version
       )
@@ -44,8 +43,8 @@ class UpdateLogController {
 
   async deleteUpdateLog(ctx: Context) {
     try {
-      const { id } = ctx.params
-      const deletedUpdateLog = await UpdateLogService.deleteUpdateLog(id)
+      const upid = parseInt(ctx.query.upid as string)
+      const deletedUpdateLog = await UpdateLogService.deleteUpdateLog(upid)
       ctx.body = deletedUpdateLog
     } catch (error) {
       ctx.status = 500

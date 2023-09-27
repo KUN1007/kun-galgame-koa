@@ -41,8 +41,11 @@ class UserService {
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (isValidPassword) {
-      // 生成 token
-      const { token, refreshToken } = await AuthService.generateTokens(user.uid)
+      // 生成 token，需要用户的 uid 和 name
+      const { token, refreshToken } = await AuthService.generateTokens(
+        user.uid,
+        user.name
+      )
 
       // 返回 access token 和必要信息，refreshToken 用于 http only token
       return {

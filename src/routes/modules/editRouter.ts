@@ -9,6 +9,6 @@ router.prefix('/edit')
 router.post('/topic', TopicController.createTopic)
 
 // 更新话题
-router.put('/topic/:tid', TopicController.updateTopic)
+router.put('/topic', TopicController.updateTopic)
 
 export default router

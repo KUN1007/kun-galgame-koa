@@ -12,7 +12,7 @@ router.prefix('/topic')
  */
 
 // 获取单个话题
-router.get('/detail/:tid', TopicController.getTopicByTid)
+router.get('/detail', TopicController.getTopicByTid)
 
 // 左侧相同标签下的其它话题
 router.get('/nav/same', TopicController.getRelatedTopicsByTags)
@@ -25,28 +25,22 @@ router.get('/nav/master', TopicController.getPopularTopicsByUserUid)
  */
 
 // 发布单个回复
-router.post('/detail/:tid/reply', ReplyController.createReply)
+router.post('/detail/reply', ReplyController.createReply)
 
 // 根据话题 id 获取话题回复
-router.get('/detail/:tid/reply', ReplyController.getReplies)
+router.get('/detail/reply', ReplyController.getReplies)
 
 // 更新单个回复
-router.put('/detail/:tid/reply/:rid', ReplyController.updateReply)
+router.put('/detail/reply', ReplyController.updateReply)
 
 /*
  * 评论相关
  */
 
 // 发布单个评论
-router.post('/detail/:tid/comment', CommentController.createComment)
+router.post('/detail/comment', CommentController.createComment)
 
-// 获取一个回复下面的评论
-router.get('/detail/:tid/comment', CommentController.getCommentsByReplyRid)
-
-// 更新单个评论
-router.put('/detail/:tid/comment/:cid', CommentController.updateComment)
-
-// 删除单个评论
-// router.delete('/detail/:tid/comment/:cid', CommentController.deleteComment)
+// 获取一个回复下面的所有评论
+router.get('/detail/comment', CommentController.getCommentsByReplyRid)
 
 export default router

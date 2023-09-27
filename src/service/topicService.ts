@@ -311,45 +311,6 @@ class TopicService {
 
   //   return deletedTopic
   // }
-
-  /*
-   * 已废弃
-   */
-  // 按照关键词获取话题，用于主页话题列表
-
-  // async getTopics(sortField, sortOrder, page, limit) {
-  //   const skip = (parseInt(page) - 1) * limit
-  //   const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 }
-
-  //   const topics = await TopicModel.find()
-  //     .sort(sortOptions)
-  //     .skip(skip)
-  //     .limit(limit)
-  //     .populate('user', 'uid avatar name')
-  //     .lean()
-
-  //   const data = topics.map((topic) => ({
-  //     tid: topic.tid,
-  //     title: topic.title,
-  //     views: topic.views,
-  //     likes: topic.likes,
-  //     replies: topic.replies,
-  //     comments: topic.comments,
-  //     time: topic.time,
-  //     content: topic.content,
-  //     upvotes: topic.upvotes,
-  //     popularity: topic.popularity,
-  //     // 这里 populate 后的结果是一个数组，取第一个用户数据
-  //     uid: {
-  //       // 这里去掉了 _id
-  //       uid: topic.user[0].uid,
-  //       avatar: topic.user[0].avatar,
-  //       name: topic.user[0].name,
-  //     },
-  //   }))
-
-  //   return data
-  // }
 }
 
 export default new TopicService()

@@ -9,7 +9,7 @@ class TopicController {
   // 根据话题 id 获取单条话题数据
   async getTopicByTid(ctx: Context) {
     try {
-      const tid = parseInt(ctx.params.tid)
+      const tid = parseInt(ctx.query.tid as string)
       const topic = await TopicService.getTopicByTid(tid)
 
       if (!topic) {
@@ -103,8 +103,7 @@ class TopicController {
   // 更新话题（标题，内容，标签，分类）
   async updateTopic(ctx: Context) {
     try {
-      const tid = ctx.params.tid
-      const { uid, title, content, tags, category } = ctx.request.body
+      const { tid, uid, title, content, tags, category } = ctx.request.body
 
       const updatedTopic = await TopicService.updateTopic(
         uid,

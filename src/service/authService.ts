@@ -11,9 +11,9 @@ import env from '@/config/config.dev'
 
 class AuthService {
   // 生成 token
-  async generateTokens(uid: number) {
-    const token = generateToken(uid, '60m')
-    const refreshToken = generateToken(uid, '7d')
+  async generateTokens(uid: number, name: string) {
+    const token = generateToken(uid, name, '60m')
+    const refreshToken = generateToken(uid, name, '7d')
 
     // 存储 refresh token 到 Redis，key 为用户的 uid
     await setValue(`refreshToken:${uid}`, refreshToken, 7 * 24 * 60 * 60) // 存储 7 天
@@ -38,7 +38,7 @@ class AuthService {
       }
 
       // 新生成的 token
-      const accessToken = generateToken(decoded.uid, '60m')
+      const accessToken = generateToken(decoded.uid, decoded.name, '60m')
 
       return accessToken
     } catch (error) {

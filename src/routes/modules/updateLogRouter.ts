@@ -9,8 +9,8 @@ router.post('/history', UpdateLogController.createUpdateLog)
 
 router.get('/history', UpdateLogController.getUpdateLogs)
 
-router.put('/history/:id', UpdateLogController.updateUpdateLog)
+router.put('/history', UpdateLogController.updateUpdateLog)
 
-router.delete('/history/:id', UpdateLogController.deleteUpdateLog)
+router.delete('/history', UpdateLogController.deleteUpdateLog)
 
 export default router
