@@ -86,7 +86,9 @@ class TopicController {
   // 创建话题
   async createTopic(ctx: Context) {
     try {
-      const { title, content, time, tags, category, uid } = ctx.request.body
+      // 从 cookie 获取用户信息
+      const uid = getCookieTokenInfo(ctx).uid
+      const { title, content, time, tags, category } = ctx.request.body
 
       const tid = await TopicService.createTopic(
         title,
@@ -107,21 +109,16 @@ class TopicController {
   // 更新话题（标题，内容，标签，分类）
   async updateTopic(ctx: Context) {
     try {
-      const { tid, uid, title, content, tags, category } = ctx.request.body
+      // 从 cookie 获取用户信息
+      const uid = getCookieTokenInfo(ctx).uid
+      const { tid, title, content, tags, category } = ctx.request.body
 
-      const updatedTopic = await TopicService.updateTopic(
-        uid,
-        tid,
-        title,
-        content,
-        tags,
-        category
-      )
+      await TopicService.updateTopic(uid, tid, title, content, tags, category)
 
       ctx.body = {
         code: 200,
         message: 'OK',
-        data: updatedTopic,
+        data: {},
       }
     } catch (error) {
       ctx.status = 500

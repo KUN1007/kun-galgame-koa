@@ -47,6 +47,7 @@ class TopicService {
         rid: topic.rid,
         status: topic.status,
         share: topic.share,
+        category: topic.category,
       }
 
       return data
@@ -145,26 +146,15 @@ class TopicService {
     category: string[]
   ) {
     try {
-      const updatedTopic = await TopicModel.findOneAndUpdate(
-        { tid },
-        { title, content, tags, category },
+      // 直接根据 tid 更新也可以，这里是保险起见
+      await TopicModel.findOneAndUpdate(
+        { tid, uid },
+        { title, content, tags, category, edited: Date.now() },
         { new: true }
       )
 
-      // TODO:
-      console.log(uid)
-
       // 使用 TagService 更新标签的使用次数
       await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
-
-      const updatedData = {
-        title: updatedTopic.title,
-        content: updatedTopic.content,
-        tags: updatedTopic.tags,
-        category: updatedTopic.category,
-      }
-
-      return updatedData
     } catch (error) {
       console.log(error)
     }
