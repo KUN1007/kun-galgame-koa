@@ -15,17 +15,19 @@ class CommentController {
   // 发布单条评论
   async createComment(ctx: Context) {
     try {
-      const { tid, rid, to_uid, content } = ctx.request.body
+      // 从路径获取 tid
+      const tid = parseInt(ctx.params.tid as string)
+
+      const { rid, to_uid, content } = ctx.request.body
 
       // 从 cookie 获取当前用户的 uid
       const c_uid = getCookieTokenInfo(ctx).uid
 
-      const tidNumber = parseInt(tid)
       const ridNumber = parseInt(rid.toString())
       const toUidNumber = parseInt(to_uid.toString())
       const newComment = await CommentService.createComment(
         ridNumber,
-        tidNumber,
+        tid,
         c_uid,
         toUidNumber,
         content.toString()
@@ -57,41 +59,6 @@ class CommentController {
       ctx.body = { error: 'Failed to fetch comments' }
     }
   }
-
-  // 删除单条评论，暂时用不到
-  // async deleteComment(ctx: Context) {
-  //   try {
-  //     const rid = parseInt(ctx.params.rid)
-  //     const cid = parseInt(ctx.params.cid)
-
-  //     const deletedComment = await CommentService.deleteComment(rid, cid)
-
-  //     ctx.body = {
-  //       code: 200,
-  //       message: 'Comment deleted successfully',
-  //       data: deletedComment,
-  //     }
-  //   } catch (error) {
-  //     ctx.status = 500
-  //     ctx.body = { error: 'Failed to delete comment' }
-  //   }
-  // }
-
-  // 更新一条评论，暂时用不到
-  // async updateComment(ctx: Context) {
-  //   try {
-  //     const cid = parseInt(ctx.params.cid)
-  //     const { content } = ctx.request.body
-
-  //     const updatedComment = await CommentService.updateComment(cid, content)
-
-  //     ctx.body = updatedComment
-  //   } catch (error) {
-  //     console.error('Failed to update comment:', error)
-  //     ctx.status = 500
-  //     ctx.body = { error: 'Failed to update comment' }
-  //   }
-  // }
 }
 
 export default new CommentController()

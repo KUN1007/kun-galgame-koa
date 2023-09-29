@@ -9,7 +9,11 @@ class ReplyController {
     try {
       // 从 cookie 获取用户信息
       const r_uid = getCookieTokenInfo(ctx).uid
-      const { tid, to_uid, to_floor, tags, content } = ctx.request.body
+
+      // 从路径获取 tid
+      const tid = parseInt(ctx.params.tid as string)
+
+      const { to_uid, to_floor, tags, content } = ctx.request.body
 
       const savedReply = await ReplyService.createReply(
         tid,
@@ -35,7 +39,10 @@ class ReplyController {
   // 更新回复
   async updateReply(ctx: Context) {
     try {
-      const { tid, rid, content, tags } = ctx.request.body
+      // 从路径获取 tid
+      const tid = parseInt(ctx.params.tid as string)
+
+      const { rid, content, tags } = ctx.request.body
       const updatedReply = await ReplyService.updateReply(
         tid,
         rid,
@@ -53,29 +60,18 @@ class ReplyController {
     }
   }
 
-  // 删除回复
-  async deleteReply(ctx: Context) {
-    try {
-      const rid = parseInt(ctx.params.rid)
-      const deletedReply = await ReplyService.deleteReply(rid)
-      ctx.body = deletedReply
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to delete reply' }
-    }
-  }
-
   // 获取回复列表
   async getReplies(ctx: Context) {
     try {
-      const tidNumber = parseInt(ctx.query.tid as string)
-      // 这里确定前端会传来 string 而不是 array
+      // 从路径获取 tid
+      const tid = parseInt(ctx.params.tid as string)
+
       const pageNumber = parseInt(ctx.query.page as string)
       const limitNumber = parseInt(ctx.query.limit as string)
       const { sortField, sortOrder } = ctx.query
 
       const data = await ReplyService.getReplies(
-        tidNumber,
+        tid,
         pageNumber,
         limitNumber,
         sortField as string,
@@ -92,27 +88,6 @@ class ReplyController {
       ctx.body = { error: 'Failed to fetch replies' }
     }
   }
-
-  // 获取单个回复详情，暂时用不到
-  /*   async getReplyByRid(ctx: Context) {
-    try {
-      const rid = parseInt(ctx.params.rid)
-      const reply = await ReplyService.getReplyByRid(rid)
-      if (!reply) {
-        ctx.status = 404
-        ctx.body = { error: 'Reply not found' }
-        return
-      }
-      ctx.body = {
-        code: 200,
-        message: 'OK',
-        data: reply,
-      }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to fetch reply' }
-    }
-  } */
 }
 
 export default new ReplyController()

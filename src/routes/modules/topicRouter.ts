@@ -14,7 +14,7 @@ router.prefix('/topics')
 // 发布话题
 router.post('/', TopicController.createTopic)
 
-// 获取单个话题
+// 获取话题
 router.get('/:tid', TopicController.getTopicByTid)
 
 // 更新话题
@@ -27,7 +27,7 @@ router.put('/:tid/like', TopicController.updateTopicLike)
 router.get('/:tid/related', TopicController.getRelatedTopicsByTags)
 
 // 楼主的其它话题
-router.get('/:uid/popular', TopicController.getPopularTopicsByUserUid)
+router.get('/:tid/popular', TopicController.getPopularTopicsByUserUid)
 
 /*
  * 回复相关

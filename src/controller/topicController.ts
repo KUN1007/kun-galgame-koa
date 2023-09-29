@@ -11,7 +11,7 @@ class TopicController {
   // 根据话题 id 获取单条话题数据
   async getTopicByTid(ctx: Context) {
     try {
-      const tid = parseInt(ctx.query.tid as string)
+      const tid = parseInt(ctx.params.tid as string)
       const topic = await TopicService.getTopicByTid(tid)
 
       if (!topic) {
@@ -39,8 +39,9 @@ class TopicController {
       // 从 cookie 获取用户信息
       const uid = getCookieTokenInfo(ctx).uid
 
+      const tid = parseInt(ctx.params.tid as string)
+
       const to_uid = parseInt(ctx.query.to_uid as string)
-      const tid = parseInt(ctx.query.tid as string)
       const isPush = ctx.query.isPush === 'true'
       await TopicService.updateTopicLike(uid, to_uid, tid, isPush)
 
@@ -63,10 +64,12 @@ class TopicController {
     try {
       // 从 cookie 获取用户信息
       const uid = getCookieTokenInfo(ctx).uid
-      const { tid } = ctx.query
+
+      const tid = parseInt(ctx.params.tid as string)
+
       const popularTopics = await TopicService.getPopularTopicsByUserUid(
         uid,
-        parseInt(tid as string)
+        tid
       )
 
       ctx.body = {
@@ -84,14 +87,14 @@ class TopicController {
   // 相同标签下的其它话题，按热度
   async getRelatedTopicsByTags(ctx: Context) {
     try {
+      const tid = parseInt(ctx.params.tid as string)
       // 传 tid 的目的是过滤掉当前话题
-      const { tags, tid } = ctx.query
+      const { tags } = ctx.query
 
       const tagsArray = tags.toString().split(',')
-      const tidNumber = parseInt(tid.toString())
       const relatedTopics = await TopicService.getRelatedTopicsByTags(
         tagsArray,
-        tidNumber
+        tid
       )
 
       ctx.body = {
@@ -138,7 +141,10 @@ class TopicController {
     try {
       // 从 cookie 获取用户信息
       const uid = getCookieTokenInfo(ctx).uid
-      const { tid, title, content, tags, category } = ctx.request.body
+
+      const tid = parseInt(ctx.params.tid as string)
+
+      const { title, content, tags, category } = ctx.request.body
 
       await TopicService.updateTopic(uid, tid, title, content, tags, category)
 
@@ -216,24 +222,6 @@ class TopicController {
       ctx.body = { error: 'Failed to fetch search results' }
     }
   }
-
-  /*
-   * 后台管理系统，待定
-   */
-
-  // 删除话题
-  /*   async deleteTopic(ctx: Context) {
-    try {
-      const tid = ctx.params.tid
-
-      const deletedTopic = await TopicService.deleteTopic(tid)
-
-      ctx.body = deletedTopic
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to delete topic' }
-    }
-  } */
 }
 
 export default new TopicController()
