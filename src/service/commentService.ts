@@ -6,6 +6,9 @@ import CommentModel from '@/models/commentModel'
 import ReplyService from './replyService'
 import UserService from './userService'
 
+// 回复可供更新的字段名
+type UpdateField = 'likes' | 'dislikes'
+
 class CommentService {
   // 创建一条评论
   async createComment(
@@ -39,11 +42,11 @@ class CommentService {
       'name',
     ])
 
-    // 在用户的回复数组里保存回复
-    await UserService.updateUserArray(c_uid, 'comment', savedComment.cid)
+    // 在用户的回复数组里保存回复，这里只是保存，没有撤销操作，所以是 true
+    await UserService.updateUserArray(c_uid, 'comment', savedComment.cid, true)
 
     // 更新回复的评论数组
-    await ReplyService.addCommentToReply(rid, savedComment.cid)
+    await ReplyService.updateReplyArray(rid, 'cid', savedComment.cid, true)
 
     return {
       rid: savedComment.rid,
@@ -54,16 +57,6 @@ class CommentService {
       likes: savedComment.likes,
       dislikes: savedComment.dislikes,
     }
-  }
-
-  // 删除一条评论
-  async deleteComment(rid: number, cid: number) {
-    const deletedComment = await CommentModel.findOneAndDelete({ cid }).lean()
-
-    // 更新回复的评论数组
-    await ReplyService.removeCommentFromReply(rid, cid)
-
-    return deletedComment
   }
 
   async updateComment(cid: number, content: string) {
@@ -107,6 +100,34 @@ class CommentService {
     }))
 
     return replyComments
+  }
+
+  // 更新回复数组，用于推，点赞，点踩，分享等
+  /**
+   * @param {number} rid - 回复 id
+   * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
+   * @param {number} uid - 要将哪个用户的 uid push 进回复对应的数组里
+   * example: await updateCommentArray(1, likes, 1)
+   */
+  async updateCommentArray(cid: number, updateField: UpdateField, uid: number) {
+    await CommentModel.updateOne(
+      { cid: cid },
+      { $addToSet: { [updateField]: uid } }
+    )
+  }
+
+  // 删除回复数组，用于删除回复等
+  /**
+   * @param {number} rid - 回复 id
+   * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
+   * @param {number} uid - 要将哪个用户的 uid push 进回复对应的数组里
+   * example: await removeCommentArray(1, likes, 1)
+   */
+  async removeCommentArray(cid: number, updateField: UpdateField, uid: number) {
+    await CommentModel.updateOne(
+      { cid: cid },
+      { $pull: { [updateField]: uid } }
+    )
   }
 }
 

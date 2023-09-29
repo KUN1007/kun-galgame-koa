@@ -6,6 +6,9 @@ import PostModel from '@/models/topicModel'
 import TagService from './tagService'
 import UserService from './userService'
 
+// 回复可供更新的字段名
+type UpdateField = 'upvotes' | 'likes' | 'dislikes' | 'share' | 'cid'
+
 class ReplyService {
   // 创建回复
   async createReply(
@@ -35,8 +38,8 @@ class ReplyService {
 
     const savedReply = await newReply.save()
 
-    // 在用户的回复数组里保存回复
-    await UserService.updateUserArray(r_uid, 'reply', savedReply.rid)
+    // 在用户的回复数组里保存回复，这里只是保存，没有撤销操作，所以是 true
+    await UserService.updateUserArray(r_uid, 'reply', savedReply.rid, true)
 
     // 更新话题的 rid 数组
     await PostModel.updateOne({ tid }, { $push: { rid: savedReply.rid } })
@@ -47,50 +50,17 @@ class ReplyService {
     return savedReply
   }
 
-  // 获取单个回复详情，暂时用不到
-  // async getReplyByRid(rid) {
-  //   const reply = await ReplyModel.findOne({ rid }).lean()
-  //   return reply
-  // }
-
   // 更新回复
   async updateReply(tid: number, rid: number, content: string, tags: string[]) {
     const updatedReply = await ReplyModel.findOneAndUpdate(
       { rid },
-      { $set: { content, edited: new Date().toISOString(), tags } },
+      { $set: { content, edited: Date.now(), tags } },
       { new: true }
     ).lean()
 
     // 保存 tags
     await TagService.updateTagsByTidAndRid(tid, rid, tags, [])
     return updatedReply
-  }
-
-  // 向回复 model 中的评论数组增添一条评论
-  async addCommentToReply(rid: number, cid: number) {
-    await ReplyModel.updateOne({ rid }, { $addToSet: { cid } })
-  }
-
-  // 从回复 model 中的评论数组移除一条评论
-  async removeCommentFromReply(rid: number, cid: number) {
-    await ReplyModel.updateOne({ rid }, { $pull: { cid } })
-  }
-
-  // 删除回复
-  async deleteReply(rid: number) {
-    const deletedReply = await ReplyModel.findOneAndDelete({ rid }).lean()
-
-    // 删除回复的时候也要把话题 rid 数组里对应的 tid 删除
-    if (deletedReply) {
-      const post = await PostModel.findOne({ tid: deletedReply.tid })
-      if (post) {
-        const updatedRids = post.rid.filter((r) => r !== rid)
-        post.rid = updatedRids
-        await post.save()
-      }
-    }
-
-    return deletedReply
   }
 
   // 获取某个话题下回复的接口，分页获取，懒加载，每次 5 条
@@ -150,6 +120,34 @@ class ReplyService {
     }))
 
     return responseData
+  }
+
+  // 更新回复数组，用于推，点赞，点踩，分享等
+  /**
+   * @param {number} rid - 回复 id
+   * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
+   * @param {number} uid - uid
+   * @param {boolean} isCancel - 移除还是 push，用于撤销点赞等操作
+   */
+  async updateReplyArray(
+    rid: number,
+    updateField: UpdateField,
+    uid: number,
+    isCancel: boolean
+  ) {
+    // 取消则 pull
+    if (isCancel) {
+      await ReplyModel.updateOne(
+        { rid: rid },
+        { $pull: { [updateField]: uid } }
+      )
+      // 不取消则 push
+    } else {
+      await ReplyModel.updateOne(
+        { rid: rid },
+        { $addToSet: { [updateField]: uid } }
+      )
+    }
   }
 }
 

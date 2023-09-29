@@ -7,6 +7,22 @@ import UserModel from '@/models/userModel'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
 
+// 用户可供更新的数组型字段名
+type UpdateFieldArray =
+  | 'topic'
+  | 'reply'
+  | 'comment'
+  | 'like_topic'
+  | 'dislike_topic'
+  | 'upvote_topic'
+  | 'reply_topic'
+
+// 用户可供更新的数值型字段名
+type UpdateFieldNumber = 'moemoepoint' | 'upvote' | 'like' | 'dislike'
+
+// 用户可供更新的字符串型字段名
+type UpdateFieldString = 'avatar' | 'bio'
+
 class UserService {
   // 获取单个用户全部信息
   async getUserByUid(uid: number) {
@@ -119,11 +135,58 @@ class UserService {
     return loginData
   }
 
-  // 更新用户的发帖，回复，评论，点赞，不喜欢，推
-  async updateUserArray(uid: number, updateField: string, itemId: number) {
+  // 更新用户的数值型字段，萌萌点，被推数，被赞数，被踩数，amount 可以是负数
+  async updateUserNumber(
+    uid: number,
+    updateFieldNumber: UpdateFieldNumber,
+    amount: number
+  ) {
     await UserModel.updateOne(
       { uid: uid },
-      { $addToSet: { [updateField]: itemId } }
+      { $inc: { [updateFieldNumber]: amount } }
+    )
+  }
+
+  // 更新用户的发帖，回复，评论，点赞，不喜欢，推
+  /**
+   * @param {number} uid - 用户 uid
+   * @param {UpdateField} updateFieldArray - 要更新用户 Model 的哪个字段
+   * @param {number} itemId - model 的 id 字段
+   * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
+   */
+  async updateUserArray(
+    uid: number,
+    updateFieldArray: UpdateFieldArray,
+    itemId: number,
+    isPush: boolean
+  ) {
+    if (isPush) {
+      await UserModel.updateOne(
+        { uid: uid },
+        { $addToSet: { [updateFieldArray]: itemId } }
+      )
+    } else {
+      await UserModel.updateOne(
+        { uid: uid },
+        { $pull: { [updateFieldArray]: itemId } }
+      )
+    }
+  }
+
+  // 更新用户的其它信息，头像，签名等，都为字符串
+  /**
+   * @param {number} uid - 用户 uid
+   * @param {UpdateFieldString} updateFieldString - 要更新用户 Model 的哪个字段
+   * @param {string} newValue - 新签名或头像的值
+   */
+  async updateUserInfo(
+    uid: number,
+    updateFieldString: UpdateFieldString,
+    newValue: string
+  ) {
+    await UserModel.updateOne(
+      { uid: uid },
+      { $set: { [updateFieldString]: newValue } }
     )
   }
 }

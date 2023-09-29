@@ -5,42 +5,51 @@ import CommentController from '@/controller/commentController'
 
 const router = new Router()
 
-router.prefix('/topic')
+router.prefix('/topics')
 
 /*
  * 话题相关
  */
 
+// 发布话题
+router.post('/', TopicController.createTopic)
+
 // 获取单个话题
-router.get('/detail', TopicController.getTopicByTid)
+router.get('/:tid', TopicController.getTopicByTid)
+
+// 更新话题
+router.put('/:tid', TopicController.updateTopic)
+
+// 点赞话题
+router.put('/:tid/like', TopicController.updateTopicLike)
 
 // 左侧相同标签下的其它话题
-router.get('/nav/same', TopicController.getRelatedTopicsByTags)
+router.get('/:tid/related', TopicController.getRelatedTopicsByTags)
 
 // 楼主的其它话题
-router.get('/nav/master', TopicController.getPopularTopicsByUserUid)
+router.get('/:uid/popular', TopicController.getPopularTopicsByUserUid)
 
 /*
  * 回复相关
  */
 
 // 发布单个回复
-router.post('/detail/reply', ReplyController.createReply)
+router.post('/:tid/reply', ReplyController.createReply)
 
 // 根据话题 id 获取话题回复
-router.get('/detail/reply', ReplyController.getReplies)
+router.get('/:tid/replies', ReplyController.getReplies)
 
 // 更新单个回复
-router.put('/detail/reply', ReplyController.updateReply)
+router.put('/:tid/reply', ReplyController.updateReply)
 
 /*
  * 评论相关
  */
 
 // 发布单个评论
-router.post('/detail/comment', CommentController.createComment)
+router.post('/:tid/comment', CommentController.createComment)
 
 // 获取一个回复下面的所有评论
-router.get('/detail/comment', CommentController.getCommentsByReplyRid)
+router.get('/:tid/comment', CommentController.getCommentsByReplyRid)
 
 export default router

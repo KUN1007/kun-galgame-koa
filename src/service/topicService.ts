@@ -6,6 +6,9 @@ import TopicModel from '@/models/topicModel'
 import TagService from './tagService'
 import UserService from './userService'
 
+// 话题可供更新的字段名
+type UpdateField = 'rid' | 'upvotes' | 'likes' | 'share' | 'dislikes'
+
 class TopicService {
   /*
    * 话题页面
@@ -123,8 +126,8 @@ class TopicService {
       // 保存话题
       const savedTopic = await newTopic.save()
 
-      // 在用户的发帖数组里保存话题
-      await UserService.updateUserArray(uid, 'topic', savedTopic.tid)
+      // 在用户的发帖数组里保存话题，这里只是保存，没有撤销操作，所以是 true
+      await UserService.updateUserArray(uid, 'topic', savedTopic.tid, true)
 
       // 保存话题 tag
       await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
@@ -158,6 +161,35 @@ class TopicService {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  // 更新话题（推，点赞，点踩，分享）
+  /**
+   * @param {number} uid - 点赞用户的 uid
+   * @param {number} to_uid - 被点赞用户的 uid
+   * @param {number} tid - 话题的 tid
+   * @param {boolean} isCancel - 点赞还是取消点赞
+   */
+  async updateTopicLike(
+    uid: number,
+    to_uid: number,
+    tid: number,
+    isCancel: boolean
+  ): Promise<void> {
+    // 取消则 -3， 否则为 3
+    const amount = isCancel ? -3 : 3
+
+    // 将用户的 uid 作用于话题的 likes 数组中
+    await this.updateTopicArray(tid, 'likes', uid, isCancel)
+
+    // 更新话题的热度
+    await this.updateTopicPop(tid, amount)
+
+    // 将话题的 tid 作用于用户的 like_topic 数组中
+    await UserService.updateUserArray(uid, 'like_topic', tid, isCancel)
+
+    // 更新被点赞用户的萌萌点
+    await UserService.updateUserNumber(to_uid, 'moemoepoint', amount)
   }
 
   /*
@@ -295,12 +327,45 @@ class TopicService {
     }
   }
 
-  // 删除话题，根据 tid
-  // async deleteTopic(tid) {
-  //   const deletedTopic = await TopicModel.findOneAndDelete({ tid })
+  // 更新话题数组，用于推，点赞，点踩，分享等
+  /**
+   * @param {number} tid - 话题 id
+   * @param {UpdateField} updateField - 要更新话题 Model 的哪个字段
+   * @param {number} uid - 用户 uid
+   * @param {boolean} isCancel - 移除还是 push，用于撤销点赞等操作
+   */
+  async updateTopicArray(
+    tid: number,
+    updateField: UpdateField,
+    uid: number,
+    isCancel: boolean
+  ) {
+    // 取消则 pull
+    if (isCancel) {
+      await TopicModel.updateOne(
+        { tid: tid },
+        { $pull: { [updateField]: uid } }
+      )
+      // 不取消则 push
+    } else {
+      await TopicModel.updateOne(
+        { tid: tid },
+        { $addToSet: { [updateField]: uid } }
+      )
+    }
+  }
 
-  //   return deletedTopic
-  // }
+  // 更新话题的热度值，增加传入整数，减小传入负数
+  /**
+   * @param {number} tid - 要更新话题的 id
+   * @param {number} amount - 更新的数值，可以是负数
+   */
+  async updateTopicPop(tid: number, amount: number) {
+    TopicModel.updateOne(
+      { tid: tid }, // 根据话题ID查找相应的话题
+      { $inc: { popularity: amount } }
+    ) // 使用$inc操作符增加或减少热度字段的值
+  }
 }
 
 export default new TopicService()

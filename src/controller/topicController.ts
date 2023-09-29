@@ -15,8 +15,7 @@ class TopicController {
       const topic = await TopicService.getTopicByTid(tid)
 
       if (!topic) {
-        ctx.status = 404
-        ctx.body = { error: 'Topic not found' }
+        ctx.body = { code: '404', message: 'Topic not found', data: {} }
         return
       }
 
@@ -26,8 +25,36 @@ class TopicController {
         data: topic,
       }
     } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to fetch topic' }
+      ctx.body = {
+        code: 500,
+        message: 'Failed to fetch topic',
+        data: { error },
+      }
+    }
+  }
+
+  // 点赞话题
+  async updateTopicLike(ctx: Context) {
+    try {
+      // 从 cookie 获取用户信息
+      const uid = getCookieTokenInfo(ctx).uid
+
+      const to_uid = parseInt(ctx.query.to_uid as string)
+      const tid = parseInt(ctx.query.tid as string)
+      const isPush = ctx.query.isPush === 'true'
+      await TopicService.updateTopicLike(uid, to_uid, tid, isPush)
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: {},
+      }
+    } catch (error) {
+      ctx.body = {
+        code: 500,
+        message: 'Failed to fetch topic',
+        data: { error },
+      }
     }
   }
 
@@ -207,28 +234,6 @@ class TopicController {
       ctx.body = { error: 'Failed to delete topic' }
     }
   } */
-
-  /*
-   * 已废弃
-   */
-  // 获取话题分页数据，排序
-  // async getTopics(ctx: Context) {
-  //   try {
-  //     const { sortField, sortOrder, page, limit } = ctx.query
-
-  //     const data = await TopicService.getTopics(
-  //       sortField,
-  //       sortOrder,
-  //       page,
-  //       limit
-  //     )
-
-  //     ctx.body = { code: 200, message: 'OK', data: data }
-  //   } catch (error) {
-  //     ctx.status = 500
-  //     ctx.body = { error: 'Failed to fetch topics' }
-  //   }
-  // }
 }
 
 export default new TopicController()
