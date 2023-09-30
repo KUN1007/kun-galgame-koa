@@ -127,25 +127,25 @@ class ReplyService {
    * @param {number} rid - 回复 id
    * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
    * @param {number} uid - uid
-   * @param {boolean} isCancel - 移除还是 push，用于撤销点赞等操作
+   * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
    */
   async updateReplyArray(
     rid: number,
     updateField: UpdateField,
     uid: number,
-    isCancel: boolean
+    isPush: boolean
   ) {
     // 取消则 pull
-    if (isCancel) {
+    if (isPush) {
       await ReplyModel.updateOne(
         { rid: rid },
-        { $pull: { [updateField]: uid } }
+        { $addToSet: { [updateField]: uid } }
       )
       // 不取消则 push
     } else {
       await ReplyModel.updateOne(
         { rid: rid },
-        { $addToSet: { [updateField]: uid } }
+        { $pull: { [updateField]: uid } }
       )
     }
   }

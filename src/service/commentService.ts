@@ -104,30 +104,28 @@ class CommentService {
 
   // 更新回复数组，用于推，点赞，点踩，分享等
   /**
-   * @param {number} rid - 回复 id
+   * @param {number} cid - 回复 id
    * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
    * @param {number} uid - 要将哪个用户的 uid push 进回复对应的数组里
-   * example: await updateCommentArray(1, likes, 1)
+   * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
    */
-  async updateCommentArray(cid: number, updateField: UpdateField, uid: number) {
-    await CommentModel.updateOne(
-      { cid: cid },
-      { $addToSet: { [updateField]: uid } }
-    )
-  }
-
-  // 删除回复数组，用于删除回复等
-  /**
-   * @param {number} rid - 回复 id
-   * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
-   * @param {number} uid - 要将哪个用户的 uid push 进回复对应的数组里
-   * example: await removeCommentArray(1, likes, 1)
-   */
-  async removeCommentArray(cid: number, updateField: UpdateField, uid: number) {
-    await CommentModel.updateOne(
-      { cid: cid },
-      { $pull: { [updateField]: uid } }
-    )
+  async updateCommentArray(
+    cid: number,
+    updateField: UpdateField,
+    uid: number,
+    isPush: boolean
+  ) {
+    if (isPush) {
+      await CommentModel.updateOne(
+        { cid: cid },
+        { $addToSet: { [updateField]: uid } }
+      )
+    } else {
+      await CommentModel.updateOne(
+        { cid: cid },
+        { $pull: { [updateField]: uid } }
+      )
+    }
   }
 }
 
