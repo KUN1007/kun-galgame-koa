@@ -33,6 +33,31 @@ class TopicController {
     }
   }
 
+  // 推话题
+  async updateTopicUpvote(ctx: Context) {
+    try {
+      // 从 cookie 获取用户信息
+      const uid = getCookieTokenInfo(ctx).uid
+
+      const tid = parseInt(ctx.params.tid as string)
+
+      const to_uid = parseInt(ctx.query.to_uid as string)
+      await TopicService.updateTopicUpvote(uid, to_uid, tid)
+
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: {},
+      }
+    } catch (error) {
+      ctx.body = {
+        code: 500,
+        message: 'Failed to fetch topic',
+        data: { error },
+      }
+    }
+  }
+
   // 点赞话题
   async updateTopicLike(ctx: Context) {
     try {

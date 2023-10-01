@@ -33,6 +33,16 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     like: { type: Number, default: 0 },
     // 用户的被踩数
     dislike: { type: Number, default: 0 },
+    // 用户今日发表的话题，每日发布上限 萌萌点 / 10 个，12 点重置
+    // 由于是重置属性，使用三个单词命名
+    daily_topic_count: { type: Number, default: 0 },
+
+    // 用户的好友
+    friend: { type: [Number], default: [] },
+    // 用户关注的用户
+    followed: { type: [Number], default: [] },
+    // 关注用户的用户
+    follower: { type: [Number], default: [] },
     // 用户发表的话题 ID
     topic: { type: [String], default: [] },
     // 用户发表的回复 ID

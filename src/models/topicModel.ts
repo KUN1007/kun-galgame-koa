@@ -36,7 +36,7 @@ const TopicSchema = new mongoose.Schema<TopicAttributes>(
     comments: { type: Number, default: 0 },
     // 话题的点踩数
     dislikes: { type: [Number], default: [] },
-    // 话题的状态，0 正常，1 封禁, 2 被推
+    // 话题的状态，0 正常，1 封禁, 2 被删除
     status: { type: Number, default: 0 },
     // 话题被再次编辑的时间
     edited: { type: Number, default: 0 },

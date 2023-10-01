@@ -52,6 +52,7 @@ class TopicService {
         status: topic.status,
         share: topic.share,
         category: topic.category,
+        popularity: topic.popularity,
       }
 
       return data
@@ -164,7 +165,57 @@ class TopicService {
     }
   }
 
-  // 更新话题（推，点赞，点踩，分享）
+  // 推话题，推话题不可以取消
+  /**
+   * @param {number} uid - 推话题用户的 uid
+   * @param {number} to_uid - 被推用户的 uid
+   * @param {number} tid - 话题的 tid
+   */
+  async updateTopicUpvote(
+    uid: number,
+    to_uid: number,
+    tid: number
+  ): Promise<void> {
+    // 用户无法推自己的话题
+    if (uid === to_uid) {
+      return
+    }
+
+    // 查找推话题用户的萌萌点
+    const moemoepoint = await UserService.getUserInfoByUid(uid, ['moemoepoint'])
+    // 用户的萌萌点 < 1100 无法使用推话题功能
+    if (moemoepoint.moemoepoint < 1100) {
+      return
+    }
+
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      // 将用户的 uid 放进话题的 upvotes 数组中
+      await this.updateTopicArray(tid, 'upvotes', uid, true)
+
+      // 更新话题的热度
+      await this.updateTopicPop(tid, 107)
+
+      // 将话题的 tid 放进用户的 upvote_topic 数组中
+      await UserService.updateUserArray(uid, 'upvote_topic', tid, true)
+
+      // 扣除推话题用户的萌萌点
+      await UserService.updateUserNumber(to_uid, 'moemoepoint', 17)
+
+      // 更新被推用户的萌萌点
+      await UserService.updateUserNumber(to_uid, 'moemoepoint', 7)
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  // 点赞话题
   /**
    * @param {number} uid - 点赞用户的 uid
    * @param {number} to_uid - 被点赞用户的 uid
@@ -177,8 +228,15 @@ class TopicService {
     tid: number,
     isPush: boolean
   ): Promise<void> {
-    // 取消则 -3， 否则为 3
-    const amount = isPush ? 3 : -3
+    // 不允许用户自己给自己点赞
+    if (uid === to_uid) {
+      return
+    }
+
+    // 萌萌点，取消则 -1， 否则为 1
+    const moemoepointAmount = isPush ? 1 : -1
+    // 热度
+    const popularity = isPush ? 5 : -5
 
     // 启动事务
     const session = await mongoose.startSession()
@@ -189,13 +247,17 @@ class TopicService {
       await this.updateTopicArray(tid, 'likes', uid, isPush)
 
       // 更新话题的热度
-      await this.updateTopicPop(tid, amount)
+      await this.updateTopicPop(tid, popularity)
 
       // 将话题的 tid 作用于用户的 like_topic 数组中
       await UserService.updateUserArray(uid, 'like_topic', tid, isPush)
 
       // 更新被点赞用户的萌萌点
-      await UserService.updateUserNumber(to_uid, 'moemoepoint', amount)
+      await UserService.updateUserNumber(
+        to_uid,
+        'moemoepoint',
+        moemoepointAmount
+      )
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()

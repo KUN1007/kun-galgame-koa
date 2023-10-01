@@ -20,6 +20,9 @@ router.get('/:tid', TopicController.getTopicByTid)
 // 更新话题
 router.put('/:tid', TopicController.updateTopic)
 
+// 推话题
+router.put('/:tid/upvote', TopicController.updateTopicUpvote)
+
 // 点赞话题
 router.put('/:tid/like', TopicController.updateTopicLike)
 

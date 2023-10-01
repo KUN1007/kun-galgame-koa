@@ -116,6 +116,11 @@ interface UserAttributes {
   upvote: number
   like: number
   dislike: number
+  daily_topic_count: number
+
+  friend: number[]
+  followed: number[]
+  follower: number[]
   topic: number[]
   reply: number[]
   comment: number[]

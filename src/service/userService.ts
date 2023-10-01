@@ -9,6 +9,9 @@ import AuthService from './authService'
 
 // 用户可供更新的数组型字段名
 type UpdateFieldArray =
+  | 'friend'
+  | 'followed'
+  | 'follower'
   | 'topic'
   | 'reply'
   | 'comment'
