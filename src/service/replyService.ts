@@ -2,9 +2,11 @@
  * 回复的 CRUD，定义了一些对回复数据的数据库交互操作
  */
 import ReplyModel from '@/models/replyModel'
-import PostModel from '@/models/topicModel'
+import TopicModel from '@/models/topicModel'
+import TopicService from './topicService'
 import TagService from './tagService'
 import UserService from './userService'
+import mongoose from '@/db/connection'
 
 // 回复可供更新的字段名
 type UpdateField = 'upvotes' | 'likes' | 'dislikes' | 'share' | 'cid'
@@ -19,48 +21,74 @@ class ReplyService {
     tags: string[],
     content: string
   ) {
-    // 获取楼层数，以楼主话题的一楼为基准
-    const maxFloorReply = await ReplyModel.findOne({ tid })
-      .sort('-floor')
-      .lean()
-    const baseFloor = maxFloorReply ? maxFloorReply.floor : 0
-    const floor = baseFloor + 1
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      // 获取楼层数，以楼主话题的一楼为基准
+      const maxFloorReply = await ReplyModel.findOne({ tid })
+        .sort('-floor')
+        .lean()
+      const baseFloor = maxFloorReply ? maxFloorReply.floor : 0
+      const floor = baseFloor + 1
 
-    const newReply = new ReplyModel({
-      tid,
-      r_uid,
-      to_uid,
-      to_floor,
-      floor,
-      tags: tags,
-      content,
-    })
+      const newReply = new ReplyModel({
+        tid,
+        r_uid,
+        to_uid,
+        to_floor,
+        floor,
+        tags: tags,
+        content,
+      })
 
-    const savedReply = await newReply.save()
+      const savedReply = await newReply.save()
 
-    // 在用户的回复数组里保存回复，这里只是保存，没有撤销操作，所以是 true
-    await UserService.updateUserArray(r_uid, 'reply', savedReply.rid, true)
+      // 在用户的回复数组里保存回复，这里只是保存，没有撤销操作，所以是 true
+      await UserService.updateUserArray(r_uid, 'reply', savedReply.rid, true)
 
-    // 更新话题的 rid 数组
-    await PostModel.updateOne({ tid }, { $push: { rid: savedReply.rid } })
+      // 更新被回复用户的萌萌点
+      await UserService.updateUserNumber(to_uid, 'moemoepoint', 2)
 
-    // 保存 tags
-    await TagService.createTagsByTidAndRid(tid, savedReply.rid, tags, [])
+      // 更新话题的 rid 数组
+      await TopicModel.updateOne({ tid }, { $push: { rid: savedReply.rid } })
 
-    return savedReply
+      // 话题的热度增加 5 点
+      await TopicService.updateTopicPop(tid, 5)
+
+      // 保存 tags
+      await TagService.createTagsByTidAndRid(tid, savedReply.rid, tags, [])
+
+      return savedReply
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
   }
 
   // 更新回复
   async updateReply(tid: number, rid: number, content: string, tags: string[]) {
-    const updatedReply = await ReplyModel.findOneAndUpdate(
-      { rid },
-      { $set: { content, edited: Date.now(), tags } },
-      { new: true }
-    ).lean()
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const updatedReply = await ReplyModel.findOneAndUpdate(
+        { rid },
+        { $set: { content, edited: Date.now(), tags } },
+        { new: true }
+      ).lean()
 
-    // 保存 tags
-    await TagService.updateTagsByTidAndRid(tid, rid, tags, [])
-    return updatedReply
+      // 保存 tags
+      await TagService.updateTagsByTidAndRid(tid, rid, tags, [])
+      return updatedReply
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
   }
 
   // 获取某个话题下回复的接口，分页获取，懒加载，每次 5 条
@@ -78,48 +106,58 @@ class ReplyService {
     sortField: string,
     sortOrder: 'asc' | 'desc'
   ) {
-    const replyId = (await PostModel.findOne({ tid }).lean()).rid
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const replyId = (await TopicModel.findOne({ tid }).lean()).rid
 
-    const skip = (page - 1) * limit
+      const skip = (page - 1) * limit
 
-    const sortOptions: Record<string, 'asc' | 'desc'> = {
-      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+      const sortOptions: Record<string, 'asc' | 'desc'> = {
+        [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+      }
+
+      const replyDetails = await ReplyModel.find({ rid: { $in: replyId } })
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .populate('r_user', 'uid avatar name moemoepoint')
+        .populate('to_user', 'uid name')
+        .lean()
+
+      const responseData = replyDetails.map((reply) => ({
+        rid: reply.rid,
+        tid: reply.tid,
+        floor: reply.floor,
+        to_floor: reply.to_floor,
+        r_user: {
+          uid: reply.r_user[0].uid,
+          name: reply.r_user[0].name,
+          avatar: reply.r_user[0].avatar,
+          moemoepoint: reply.r_user[0].moemoepoint,
+        },
+        to_user: {
+          uid: reply.to_user[0].uid,
+          name: reply.to_user[0].name,
+        },
+        edited: reply.edited,
+        content: reply.content,
+        upvotes: reply.upvotes,
+        likes: reply.likes,
+        dislikes: reply.dislikes,
+        tags: reply.tags,
+        time: reply.time,
+        cid: reply.cid,
+      }))
+
+      return responseData
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
     }
-
-    const replyDetails = await ReplyModel.find({ rid: { $in: replyId } })
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit)
-      .populate('r_user', 'uid avatar name moemoepoint')
-      .populate('to_user', 'uid name')
-      .lean()
-
-    const responseData = replyDetails.map((reply) => ({
-      rid: reply.rid,
-      tid: reply.tid,
-      floor: reply.floor,
-      to_floor: reply.to_floor,
-      r_user: {
-        uid: reply.r_user[0].uid,
-        name: reply.r_user[0].name,
-        avatar: reply.r_user[0].avatar,
-        moemoepoint: reply.r_user[0].moemoepoint,
-      },
-      to_user: {
-        uid: reply.to_user[0].uid,
-        name: reply.to_user[0].name,
-      },
-      edited: reply.edited,
-      content: reply.content,
-      upvotes: reply.upvotes,
-      likes: reply.likes,
-      dislikes: reply.dislikes,
-      tags: reply.tags,
-      time: reply.time,
-      cid: reply.cid,
-    }))
-
-    return responseData
   }
 
   // 更新回复数组，用于推，点赞，点踩，分享等

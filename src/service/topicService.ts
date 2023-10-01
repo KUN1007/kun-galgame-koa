@@ -17,10 +17,16 @@ class TopicService {
 
   // 根据 tid 获取单个话题信息
   async getTopicByTid(tid: number) {
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
     try {
       // 用户每次访问话题，增加 views 字段值
       // $inc 操作符通常用于在不锁定文档的情况下对字段进行增量更新，这对于并发操作非常有用，因为它确保了原子性
-      await TopicModel.updateOne({ tid }, { $inc: { views: 1 } })
+      await TopicModel.updateOne(
+        { tid },
+        { $inc: { views: 1, popularity: 0.1 } }
+      )
 
       const topic = await TopicModel.findOne({ tid }).lean()
 
@@ -57,29 +63,42 @@ class TopicService {
 
       return data
     } catch (error) {
-      console.log(error)
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
     }
   }
 
   // 楼主的其它话题，按热度
   async getPopularTopicsByUserUid(uid: number, tidToExclude: number) {
-    const user = await UserService.getUserInfoByUid(uid, ['topic'])
-    // 返回 5 条数据，不包括当前话题
-    const popularTIDs = user.topic
-    const popularTopics = await TopicModel.find({
-      tid: { $in: popularTIDs, $ne: tidToExclude },
-    })
-      .sort({ popularity: -1 })
-      .limit(5)
-      .select('title tid')
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const user = await UserService.getUserInfoByUid(uid, ['topic'])
+      // 返回 5 条数据，不包括当前话题
+      const popularTIDs = user.topic
+      const popularTopics = await TopicModel.find({
+        tid: { $in: popularTIDs, $ne: tidToExclude },
+      })
+        .sort({ popularity: -1 })
+        .limit(5)
+        .select('title tid')
 
-    // 去除 _id，保留 title 和 tid 即可
-    const topic = popularTopics.map((topic) => ({
-      title: topic.title,
-      tid: topic.tid,
-    }))
+      // 去除 _id，保留 title 和 tid 即可
+      const topic = popularTopics.map((topic) => ({
+        title: topic.title,
+        tid: topic.tid,
+      }))
 
-    return topic
+      return topic
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
   }
 
   // 相同标签下的其它话题，按热度
@@ -115,6 +134,9 @@ class TopicService {
     category: string[],
     uid: number
   ) {
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
     try {
       const newTopic = new TopicModel({
         title,
@@ -137,7 +159,10 @@ class TopicService {
       // 返回创建好话题的 tid
       return savedTopic.tid
     } catch (error) {
-      console.log(error)
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
     }
   }
 
@@ -150,6 +175,9 @@ class TopicService {
     tags: string[],
     category: string[]
   ) {
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
     try {
       // 直接根据 tid 更新也可以，这里是保险起见
       await TopicModel.findOneAndUpdate(
@@ -161,7 +189,10 @@ class TopicService {
       // 使用 TagService 更新标签的使用次数
       await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
     } catch (error) {
-      console.log(error)
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
     }
   }
 
@@ -197,13 +228,13 @@ class TopicService {
       await this.updateTopicArray(tid, 'upvotes', uid, true)
 
       // 更新话题的热度
-      await this.updateTopicPop(tid, 107)
+      await this.updateTopicPop(tid, 17)
 
       // 将话题的 tid 放进用户的 upvote_topic 数组中
       await UserService.updateUserArray(uid, 'upvote_topic', tid, true)
 
       // 扣除推话题用户的萌萌点
-      await UserService.updateUserNumber(to_uid, 'moemoepoint', 17)
+      await UserService.updateUserNumber(uid, 'moemoepoint', -17)
 
       // 更新被推用户的萌萌点
       await UserService.updateUserNumber(to_uid, 'moemoepoint', 7)
@@ -236,7 +267,7 @@ class TopicService {
     // 萌萌点，取消则 -1， 否则为 1
     const moemoepointAmount = isPush ? 1 : -1
     // 热度
-    const popularity = isPush ? 5 : -5
+    const popularity = isPush ? 2 : -2
 
     // 启动事务
     const session = await mongoose.startSession()

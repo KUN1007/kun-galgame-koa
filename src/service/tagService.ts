@@ -3,6 +3,7 @@
  */
 
 import TagModel from '@/models/tagModel'
+import mongoose from '@/db/connection'
 
 class TagService {
   async createTagsByTidAndRid(
@@ -40,6 +41,9 @@ class TagService {
     tags: string[],
     category: string[]
   ) {
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
     try {
       // 这里接收的是字符串，将其转为数组
       const tagsArray = tags
@@ -66,7 +70,9 @@ class TagService {
         await TagModel.deleteOne({ tid, rid, name: tagToRemove })
       }
     } catch (error) {
-      console.error('Failed to update tags:', error)
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
       throw error
     }
   }
@@ -84,12 +90,6 @@ class TagService {
 
     return topTagNames
   }
-
-  // 删除标签，暂时没用
-  // async deleteTag(tagId) {
-  //   const deletedTag = await TagModel.findOneAndDelete({ tag_id: tagId })
-  //   return deletedTag
-  // }
 }
 
 export default new TagService()

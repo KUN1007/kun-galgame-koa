@@ -3,8 +3,10 @@
  */
 
 import CommentModel from '@/models/commentModel'
+import TopicService from './topicService'
 import ReplyService from './replyService'
 import UserService from './userService'
+import mongoose from '@/db/connection'
 
 // 回复可供更新的字段名
 type UpdateField = 'likes' | 'dislikes'
@@ -18,59 +20,65 @@ class CommentService {
     to_uid: number,
     content: string
   ) {
-    const newComment = new CommentModel({
-      rid,
-      tid,
-      c_uid,
-      to_uid,
-      content,
-    })
-
-    // 保存好的评论
-    const savedComment = await newComment.save()
-
-    // 评论人
-    const c_user = await UserService.getUserInfoByUid(savedComment.c_uid, [
-      'uid',
-      'avatar',
-      'name',
-    ])
-
-    // 被评论人
-    const to_user = await UserService.getUserInfoByUid(savedComment.to_uid, [
-      'uid',
-      'name',
-    ])
-
-    // 在用户的回复数组里保存回复，这里只是保存，没有撤销操作，所以是 true
-    await UserService.updateUserArray(c_uid, 'comment', savedComment.cid, true)
-
-    // 更新回复的评论数组
-    await ReplyService.updateReplyArray(rid, 'cid', savedComment.cid, true)
-
-    return {
-      rid: savedComment.rid,
-      tid: savedComment.tid,
-      c_user: c_user,
-      to_user: to_user,
-      content: savedComment.content,
-      likes: savedComment.likes,
-      dislikes: savedComment.dislikes,
-    }
-  }
-
-  async updateComment(cid: number, content: string) {
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
     try {
-      const updatedComment = await CommentModel.findOneAndUpdate(
-        { cid },
-        { $set: { content, edited: new Date().toISOString() } },
-        { new: true }
-      ).lean()
+      const newComment = new CommentModel({
+        rid,
+        tid,
+        c_uid,
+        to_uid,
+        content,
+      })
 
-      return updatedComment
+      // 保存好的评论
+      const savedComment = await newComment.save()
+
+      // 评论人
+      const c_user = await UserService.getUserInfoByUid(savedComment.c_uid, [
+        'uid',
+        'avatar',
+        'name',
+      ])
+
+      // 被评论人
+      const to_user = await UserService.getUserInfoByUid(savedComment.to_uid, [
+        'uid',
+        'name',
+      ])
+
+      // 在用户的评论数组里保存回复，这里只是保存，没有撤销操作，所以是 true
+      await UserService.updateUserArray(
+        c_uid,
+        'comment',
+        savedComment.cid,
+        true
+      )
+
+      // 被评论的用户萌萌点 + 1
+      await UserService.updateUserNumber(to_uid, 'moemoepoint', 1)
+
+      // 更新话题的热度 2 点
+      await TopicService.updateTopicPop(tid, 2)
+
+      // 更新回复的评论数组
+      await ReplyService.updateReplyArray(rid, 'cid', savedComment.cid, true)
+
+      return {
+        rid: savedComment.rid,
+        tid: savedComment.tid,
+        c_user: c_user,
+        to_user: to_user,
+        content: savedComment.content,
+        likes: savedComment.likes,
+        dislikes: savedComment.dislikes,
+      }
     } catch (error) {
-      console.error('Failed to update comment:', error)
-      throw new Error('Failed to update comment')
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
     }
   }
 

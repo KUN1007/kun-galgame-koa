@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt'
 import UserModel from '@/models/userModel'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
+import mongoose from '@/db/connection'
 
 // 用户可供更新的数组型字段名
 type UpdateFieldArray =
@@ -49,35 +50,45 @@ class UserService {
    */
 
   async loginUser(name: string, password: string) {
-    // 通过 mongodb 的 $or 运算符检查用户名或邮箱
-    const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      // 通过 mongodb 的 $or 运算符检查用户名或邮箱
+      const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
 
-    // 用户不存在
-    if (!user) {
-      return { code: 404, message: 'User not found!' }
-    }
-
-    const isValidPassword = await bcrypt.compare(password, user.password)
-
-    if (isValidPassword) {
-      // 生成 token，需要用户的 uid 和 name
-      const { token, refreshToken } = await AuthService.generateTokens(
-        user.uid,
-        user.name
-      )
-
-      // 返回 access token 和必要信息，refreshToken 用于 http only token
-      return {
-        data: {
-          uid: user.uid,
-          name: user.name,
-          avatar: user.avatar,
-          token,
-        },
-        refreshToken,
+      // 用户不存在
+      if (!user) {
+        return { code: 404, message: 'User not found!' }
       }
-    } else {
-      return { code: 404, message: 'Username or password error!' }
+
+      const isValidPassword = await bcrypt.compare(password, user.password)
+
+      if (isValidPassword) {
+        // 生成 token，需要用户的 uid 和 name
+        const { token, refreshToken } = await AuthService.generateTokens(
+          user.uid,
+          user.name
+        )
+
+        // 返回 access token 和必要信息，refreshToken 用于 http only token
+        return {
+          data: {
+            uid: user.uid,
+            name: user.name,
+            avatar: user.avatar,
+            token,
+          },
+          refreshToken,
+        }
+      } else {
+        return { code: 404, message: 'Username or password error!' }
+      }
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
     }
   }
 
@@ -89,53 +100,64 @@ class UserService {
     code: string,
     ip?: string
   ) {
-    // 验证邮箱验证码是否正确且有效
-    const isCodeValid = await AuthService.verifyVerificationCode(email, code)
-    if (!isCodeValid) {
-      return 5001
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      // 验证邮箱验证码是否正确且有效
+      const isCodeValid = await AuthService.verifyVerificationCode(email, code)
+      if (!isCodeValid) {
+        return 5001
+      }
+
+      // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
+      const emailCount = await UserModel.countDocuments({ email })
+      if (emailCount > 0) {
+        return 5002
+      }
+
+      /*
+       * 正则表达式
+       * 这里的逻辑是在对单个 mongodb 的数据字段查找时，添加了 i 标志来实现不区分大小写的查询
+       * 这样可以保证把 mongodb 中存储的数据不区分大小写和 body.name 进行比较
+       * 预期实现的效果是：
+       * 已注册 `kun` 则 `KUN` 会显示已占用
+       * 但是如果注册时注册为 `KUN` 则数据库中也保存的是 `KUN` 而不是 `kun`
+       */
+      const usernameCount = await UserModel.countDocuments({
+        name: { $regex: new RegExp('^' + name + '$', 'i') },
+      })
+      if (usernameCount > 0) {
+        return 5003
+      }
+
+      // 写入数据到数据库
+      // bcrypt.hash 的第二个参数为哈希函数的迭代次数，越大加密效果越好但运算越慢
+      const hashedPassword = await bcrypt.hash(password, 7)
+
+      // 新建一个 User 数据
+      const user = new UserModel({
+        name,
+        email,
+        password: hashedPassword,
+        ip,
+      })
+
+      // 新建用户后自动登陆
+      await user.save()
+
+      // 登陆接口拿到的 token 等数据，这里的 password 是用户传过来的 password
+      const loginData = await this.loginUser(name, password)
+
+      // 返回数据
+      return loginData
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
     }
-
-    // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
-    const emailCount = await UserModel.countDocuments({ email })
-    if (emailCount > 0) {
-      return 5002
-    }
-
-    /*
-     * 正则表达式
-     * 这里的逻辑是在对单个 mongodb 的数据字段查找时，添加了 i 标志来实现不区分大小写的查询
-     * 这样可以保证把 mongodb 中存储的数据不区分大小写和 body.name 进行比较
-     * 预期实现的效果是：
-     * 已注册 `kun` 则 `KUN` 会显示已占用
-     * 但是如果注册时注册为 `KUN` 则数据库中也保存的是 `KUN` 而不是 `kun`
-     */
-    const usernameCount = await UserModel.countDocuments({
-      name: { $regex: new RegExp('^' + name + '$', 'i') },
-    })
-    if (usernameCount > 0) {
-      return 5003
-    }
-
-    // 写入数据到数据库
-    // bcrypt.hash 的第二个参数为哈希函数的迭代次数，越大加密效果越好但运算越慢
-    const hashedPassword = await bcrypt.hash(password, 7)
-
-    // 新建一个 User 数据
-    const user = new UserModel({
-      name,
-      email,
-      password: hashedPassword,
-      ip,
-    })
-
-    // 新建用户后自动登陆
-    await user.save()
-
-    // 登陆接口拿到的 token 等数据，这里的 password 是用户传过来的 password
-    const loginData = await this.loginUser(name, password)
-
-    // 返回数据
-    return loginData
   }
 
   // 更新用户的数值型字段，萌萌点，被推数，被赞数，被踩数，amount 可以是负数
