@@ -138,6 +138,17 @@ class TopicService {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
+      // 获取用户今日发布话题的个数和萌萌点
+      const user = await UserService.getUserInfoByUid(uid, [
+        'daily_topic_count',
+        'moemoepoint',
+      ])
+
+      // 这里是用户每日最多发布的话题数量，为萌萌点 / 10，需要错误处理 TODO:
+      if (user.moemoepoint / 10 < user.daily_topic_count) {
+        return
+      }
+
       const newTopic = new TopicModel({
         title,
         content,
@@ -152,6 +163,9 @@ class TopicService {
 
       // 在用户的发帖数组里保存话题，这里只是保存，没有撤销操作，所以是 true
       await UserService.updateUserArray(uid, 'topic', savedTopic.tid, true)
+
+      // 更新用户的今日发帖计数
+      await UserService.updateUserNumber(uid, 'daily_topic_count', 1)
 
       // 保存话题 tag
       await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)

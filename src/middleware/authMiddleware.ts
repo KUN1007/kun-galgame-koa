@@ -5,7 +5,7 @@ import { verifyJWTPayloadByHeader } from '@/utils/jwt'
 const whitelistRegex = /^\/(auth|public|login)/
 
 // 鉴权中间件
-export function kungalgameAuth(): Middleware {
+export function kungalgameAuthMiddleware(): Middleware {
   return async (ctx: Context, next: () => Promise<any>) => {
     try {
       // 获取当前请求的路径

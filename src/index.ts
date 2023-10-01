@@ -13,7 +13,11 @@ import cors from '@koa/cors'
 // 解决前端页面刷新 404
 // import historyApiFallback from 'koa2-connect-history-api-fallback'
 // 鉴权中间件
-import { kungalgameAuth } from '@/middleware/authMiddleware'
+import { kungalgameAuthMiddleware } from '@/middleware/authMiddleware'
+// 导入每天的定时任务，重置用户发表话题数量等
+import { useKUNGalgameTask } from '@/utils/schedule'
+
+useKUNGalgameTask()
 
 // 初始化 koa-app
 const app = new Koa()
@@ -46,7 +50,7 @@ app.use(
 // app.use(session(app))
 
 // 鉴权
-app.use(kungalgameAuth())
+app.use(kungalgameAuthMiddleware())
 // app.use(historyApiFallback({ index: '' }))
 // 使用 koa-router
 app.use(router())

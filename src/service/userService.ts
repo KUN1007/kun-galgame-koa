@@ -22,7 +22,12 @@ type UpdateFieldArray =
   | 'reply_topic'
 
 // 用户可供更新的数值型字段名
-type UpdateFieldNumber = 'moemoepoint' | 'upvote' | 'like' | 'dislike'
+type UpdateFieldNumber =
+  | 'moemoepoint'
+  | 'upvote'
+  | 'like'
+  | 'dislike'
+  | 'daily_topic_count'
 
 // 用户可供更新的字符串型字段名
 type UpdateFieldString = 'avatar' | 'bio'
