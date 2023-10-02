@@ -26,6 +26,8 @@ const TopicSchema = new mongoose.Schema<TopicAttributes>(
     popularity: { type: Number, default: 0 },
     // 话题的被推数量
     upvotes: { type: [Number], default: [] },
+    // 话题被推的时间
+    upvote_time: {type: Number, default: 0},
     // 话题被查看的次数
     views: { type: Number, default: 0 },
     // 话题的点赞数

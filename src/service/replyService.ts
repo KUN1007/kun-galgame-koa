@@ -3,7 +3,6 @@
  */
 import ReplyModel from '@/models/replyModel'
 import TopicModel from '@/models/topicModel'
-import TopicService from './topicService'
 import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'
@@ -51,13 +50,23 @@ class ReplyService {
       await UserService.updateUserNumber(to_uid, 'moemoepoint', 2)
 
       // 更新话题的 rid 数组
-      await TopicModel.updateOne({ tid }, { $push: { rid: savedReply.rid } })
-
       // 话题的热度增加 5 点
-      await TopicService.updateTopicPop(tid, 5)
+      // 使用管道操作更新话题的 rid 数组和增加话题的热度
+      await TopicModel.updateOne({ tid }, [
+        {
+          $push: { rid: savedReply.rid },
+        },
+        {
+          $inc: { popularity: 5 },
+        },
+      ])
 
       // 保存 tags
       await TagService.createTagsByTidAndRid(tid, savedReply.rid, tags, [])
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
 
       return savedReply
     } catch (error) {
@@ -82,6 +91,10 @@ class ReplyService {
 
       // 保存 tags
       await TagService.updateTagsByTidAndRid(tid, rid, tags, [])
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
       return updatedReply
     } catch (error) {
       // 如果出现错误，回滚事务
@@ -150,6 +163,10 @@ class ReplyService {
         time: reply.time,
         cid: reply.cid,
       }))
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
 
       return responseData
     } catch (error) {

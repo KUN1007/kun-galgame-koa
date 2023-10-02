@@ -81,6 +81,7 @@ interface TopicAttributes {
   time: number
   popularity: number
   upvotes: number[]
+  upvote_time: number
   views: number
   likes: number[]
   share: number[]

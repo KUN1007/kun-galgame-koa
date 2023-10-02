@@ -21,14 +21,14 @@ class TopicService {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
+      const topic = await TopicModel.findOne({ tid }).lean()
+
       // 用户每次访问话题，增加 views 字段值
       // $inc 操作符通常用于在不锁定文档的情况下对字段进行增量更新，这对于并发操作非常有用，因为它确保了原子性
       await TopicModel.updateOne(
         { tid },
         { $inc: { views: 1, popularity: 0.1 } }
       )
-
-      const topic = await TopicModel.findOne({ tid }).lean()
 
       const userInfo = await UserService.getUserInfoByUid(topic.uid, [
         'uid',
@@ -59,7 +59,12 @@ class TopicService {
         share: topic.share,
         category: topic.category,
         popularity: topic.popularity,
+        upvote_time: topic.upvote_time,
       }
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
 
       return data
     } catch (error) {
@@ -76,6 +81,7 @@ class TopicService {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
+      // 查询用户信息
       const user = await UserService.getUserInfoByUid(uid, ['topic'])
       // 返回 5 条数据，不包括当前话题
       const popularTIDs = user.topic
@@ -91,6 +97,10 @@ class TopicService {
         title: topic.title,
         tid: topic.tid,
       }))
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
 
       return topic
     } catch (error) {
@@ -134,21 +144,21 @@ class TopicService {
     category: string[],
     uid: number
   ) {
+    // 获取用户今日发布话题的个数和萌萌点
+    const user = await UserService.getUserInfoByUid(uid, [
+      'daily_topic_count',
+      'moemoepoint',
+    ])
+
+    // 这里是用户每日最多发布的话题数量，为萌萌点 / 10，需要错误处理 TODO:
+    if (user.moemoepoint / 10 < user.daily_topic_count) {
+      return
+    }
+
     // 启动事务
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      // 获取用户今日发布话题的个数和萌萌点
-      const user = await UserService.getUserInfoByUid(uid, [
-        'daily_topic_count',
-        'moemoepoint',
-      ])
-
-      // 这里是用户每日最多发布的话题数量，为萌萌点 / 10，需要错误处理 TODO:
-      if (user.moemoepoint / 10 < user.daily_topic_count) {
-        return
-      }
-
       const newTopic = new TopicModel({
         title,
         content,
@@ -169,6 +179,10 @@ class TopicService {
 
       // 保存话题 tag
       await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
 
       // 返回创建好话题的 tid
       return savedTopic.tid
@@ -194,14 +208,17 @@ class TopicService {
     session.startTransaction()
     try {
       // 直接根据 tid 更新也可以，这里是保险起见
-      await TopicModel.findOneAndUpdate(
+      await TopicModel.updateOne(
         { tid, uid },
-        { title, content, tags, category, edited: Date.now() },
-        { new: true }
+        { title, content, tags, category, edited: Date.now() }
       )
 
       // 使用 TagService 更新标签的使用次数
       await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()
@@ -238,11 +255,20 @@ class TopicService {
     session.startTransaction()
 
     try {
+      // 更新话题被推的时间
       // 将用户的 uid 放进话题的 upvotes 数组中
-      await this.updateTopicArray(tid, 'upvotes', uid, true)
-
       // 更新话题的热度
-      await this.updateTopicPop(tid, 17)
+      await TopicModel.updateOne({ tid }, [
+        {
+          $set: { upvote_time: Date.now() },
+        },
+        {
+          $push: { upvotes: uid },
+        },
+        {
+          $inc: { popularity: 17 },
+        },
+      ])
 
       // 将话题的 tid 放进用户的 upvote_topic 数组中
       await UserService.updateUserArray(uid, 'upvote_topic', tid, true)
@@ -252,6 +278,10 @@ class TopicService {
 
       // 更新被推用户的萌萌点
       await UserService.updateUserNumber(to_uid, 'moemoepoint', 7)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()
@@ -303,6 +333,10 @@ class TopicService {
         'moemoepoint',
         moemoepointAmount
       )
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()
@@ -436,6 +470,7 @@ class TopicService {
         name: topic.user[0].name,
       },
       status: topic.status,
+      upvote_time: topic.upvote_time,
     }))
 
     return {

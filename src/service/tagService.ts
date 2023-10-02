@@ -69,6 +69,10 @@ class TagService {
       for (const tagToRemove of tagsToRemove) {
         await TagModel.deleteOne({ tid, rid, name: tagToRemove })
       }
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()

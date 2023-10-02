@@ -65,6 +65,10 @@ class CommentService {
       // 更新回复的评论数组
       await ReplyService.updateReplyArray(rid, 'cid', savedComment.cid, true)
 
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+
       return {
         rid: savedComment.rid,
         tid: savedComment.tid,
