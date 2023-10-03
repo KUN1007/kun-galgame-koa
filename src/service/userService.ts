@@ -7,34 +7,19 @@ import UserModel from '@/models/userModel'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
 import mongoose from '@/db/connection'
-
-// 用户可供更新的数组型字段名
-type UpdateFieldArray =
-  | 'friend'
-  | 'followed'
-  | 'follower'
-  | 'topic'
-  | 'reply'
-  | 'comment'
-  | 'like_topic'
-  | 'dislike_topic'
-  | 'upvote_topic'
-  | 'reply_topic'
-
-// 用户可供更新的数值型字段名
-type UpdateFieldNumber =
-  | 'moemoepoint'
-  | 'upvote'
-  | 'like'
-  | 'dislike'
-  | 'daily_topic_count'
+import type {
+  UpdateFieldArray,
+  UpdateFieldNumber,
+  LoginResponseData,
+} from './types/userService'
+import type { UserAttributes } from '@/models/model'
 
 // 用户可供更新的字符串型字段名
 type UpdateFieldString = 'avatar' | 'bio'
 
 class UserService {
   // 获取单个用户全部信息
-  async getUserByUid(uid: number) {
+  async getUserByUid(uid: number): Promise<UserAttributes> {
     const user = await UserModel.findOne({ uid })
     return user
   }
@@ -54,19 +39,22 @@ class UserService {
    * 接受用户传过来的数据并返回 token
    */
 
-  async loginUser(name: string, password: string) {
-    // TODO: 抛出自定义错误对象
+  async loginUser(
+    name: string,
+    password: string
+  ): Promise<number | LoginResponseData> {
     // 通过 mongodb 的 $or 运算符检查用户名或邮箱
     const user = await UserModel.findOne({ $or: [{ name }, { email: name }] })
 
     // 用户不存在
     if (!user) {
-      return 10001
+      return 10101
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password)
+    const isCorrectPassword = await bcrypt.compare(password, user.password)
 
-    if (isValidPassword) {
+    // 密码错误
+    if (isCorrectPassword) {
       // 生成 token，需要用户的 uid 和 name
       const { token, refreshToken } = await AuthService.generateTokens(
         user.uid,
@@ -74,17 +62,20 @@ class UserService {
       )
 
       // 返回 access token 和必要信息，refreshToken 用于 http only token
+      const userInfo = {
+        uid: user.uid,
+        name: user.name,
+        avatar: user.avatar,
+        token,
+      }
+
       return {
-        data: {
-          uid: user.uid,
-          name: user.name,
-          avatar: user.avatar,
-          token,
-        },
+        data: userInfo,
         refreshToken,
       }
     } else {
-      return 10002
+      // 密码错误
+      return 10102
     }
   }
 
@@ -95,18 +86,19 @@ class UserService {
     password: string,
     code: string,
     ip?: string
-  ) {
-    // TODO: 抛出自定义错误对象
+  ): Promise<number | LoginResponseData> {
     // 验证邮箱验证码是否正确且有效
     const isCodeValid = await AuthService.verifyVerificationCode(email, code)
     if (!isCodeValid) {
-      return 10003
+      // 邮箱验证码错误
+      return 10103
     }
 
     // 邮箱已被注册，使用 UserModel.countDocuments 会比 UserModel.findOne 效率更好
     const emailCount = await UserModel.countDocuments({ email })
     if (emailCount > 0) {
-      return 10004
+      // 邮箱已被注册错误
+      return 10104
     }
 
     /*
@@ -121,7 +113,8 @@ class UserService {
       name: { $regex: new RegExp('^' + name + '$', 'i') },
     })
     if (usernameCount > 0) {
-      return 10005
+      // 用户名已被注册错误
+      return 10105
     }
 
     // 启动事务

@@ -20,8 +20,8 @@ redisClient.on('connect', () => {
   )
 })
 
-redisClient.on('error', (err) => {
-  console.error('Redis Client Error:', err)
+redisClient.on('error', (error) => {
+  console.error('Redis Client Error:', error)
 })
 
 // 创建值
@@ -36,7 +36,6 @@ const setValue = async (key: string, value: string, time?: number) => {
     } else {
       await redisClient.set(key, value)
     }
-    console.log('Value set in Redis:', key, value)
   } catch (error) {
     console.error('Error setting value in Redis:', error)
   }
@@ -46,7 +45,6 @@ const setValue = async (key: string, value: string, time?: number) => {
 const getValue = async (key: string) => {
   try {
     const value = await redisClient.get(key)
-    console.log('Value retrieved from Redis:', key, value)
     return value
   } catch (error) {
     console.error('Error getting value from Redis:', error)
@@ -58,7 +56,6 @@ const getValue = async (key: string) => {
 const delValue = async (key: string) => {
   try {
     await redisClient.del(key)
-    console.log('Value deleted from Redis:', key)
   } catch (error) {
     console.error('Error deleting value from Redis:', error)
   }

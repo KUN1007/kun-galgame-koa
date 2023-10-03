@@ -16,6 +16,8 @@ import cors from '@koa/cors'
 import { kungalgameAuthMiddleware } from '@/middleware/authMiddleware'
 // 导入每天的定时任务，重置用户发表话题数量等
 import { useKUNGalgameTask } from '@/utils/schedule'
+// 错误处理
+import { kungalgameErrorHandler } from '@/error/kunErrorHandler'
 
 useKUNGalgameTask()
 
@@ -54,6 +56,9 @@ app.use(kungalgameAuthMiddleware())
 // app.use(historyApiFallback({ index: '' }))
 // 使用 koa-router
 app.use(router())
+
+// 应用发生错误时处理错误
+app.on('kunError', kungalgameErrorHandler)
 
 app.listen(env.APP_PORT, () => {
   console.log(`server is running on http://${env.APP_HOST}:${env.APP_PORT}`)
