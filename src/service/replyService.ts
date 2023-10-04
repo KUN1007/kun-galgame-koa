@@ -52,14 +52,13 @@ class ReplyService {
       // 更新话题的 rid 数组
       // 话题的热度增加 5 点
       // 使用管道操作更新话题的 rid 数组和增加话题的热度
-      await TopicModel.updateOne({ tid }, [
+      await TopicModel.updateOne(
+        { tid },
         {
-          $push: { rid: savedReply.rid },
-        },
-        {
+          $addToSet: { rid: savedReply.rid },
           $inc: { popularity: 5 },
-        },
-      ])
+        }
+      )
 
       // 保存 tags
       await TagService.createTagsByTidAndRid(tid, savedReply.rid, tags, [])

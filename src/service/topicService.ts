@@ -258,17 +258,14 @@ class TopicService {
       // 更新话题被推的时间
       // 将用户的 uid 放进话题的 upvotes 数组中
       // 更新话题的热度
-      await TopicModel.updateOne({ tid }, [
+      await TopicModel.updateOne(
+        { tid },
         {
           $set: { upvote_time: Date.now() },
-        },
-        {
           $push: { upvotes: uid },
-        },
-        {
           $inc: { popularity: 17 },
-        },
-      ])
+        }
+      )
 
       // 将话题的 tid 放进用户的 upvote_topic 数组中
       await UserService.updateUserArray(uid, 'upvote_topic', tid, true)
@@ -333,6 +330,60 @@ class TopicService {
         'moemoepoint',
         moemoepointAmount
       )
+
+      // 更新被点赞用户的被点赞数
+      await UserService.updateUserNumber(to_uid, 'like', moemoepointAmount)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  // 点踩话题
+  /**
+   * @param {number} uid - 点踩用户的 uid
+   * @param {number} to_uid - 被点踩用户的 uid
+   * @param {number} tid - 话题的 tid
+   * @param {boolean} isPush - 点踩还是取消点踩
+   */
+  async updateTopicDislike(
+    uid: number,
+    to_uid: number,
+    tid: number,
+    isPush: boolean
+  ): Promise<void> {
+    // 不允许用户自己给自己点踩
+    if (uid === to_uid) {
+      return
+    }
+
+    // 点踩数，取消则 -1， 否则为 1
+    const amount = isPush ? 1 : -1
+    // 热度
+    const popularity = isPush ? -5 : 5
+
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      // 将用户的 uid 作用于话题的 likes 数组中
+      await this.updateTopicArray(tid, 'dislikes', uid, isPush)
+
+      // 更新话题的热度
+      await this.updateTopicPop(tid, popularity)
+
+      // 将话题的 tid 作用于用户的 like_topic 数组中
+      await UserService.updateUserArray(uid, 'dislike_topic', tid, isPush)
+
+      // 更新被点赞用户的被点赞数
+      await UserService.updateUserNumber(to_uid, 'like', amount)
 
       // 提交事务
       await session.commitTransaction()

@@ -26,6 +26,9 @@ router.put('/:tid/upvote', TopicController.updateTopicUpvote)
 // 点赞话题
 router.put('/:tid/like', TopicController.updateTopicLike)
 
+// 点踩话题
+router.put('/:tid/dislike', TopicController.updateTopicDislike)
+
 // 左侧相同标签下的其它话题
 router.get('/:tid/related', TopicController.getRelatedTopicsByTags)
 

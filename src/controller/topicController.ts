@@ -60,27 +60,37 @@ class TopicController {
 
   // 点赞话题
   async updateTopicLike(ctx: Context) {
-    try {
-      // 从 cookie 获取用户信息
-      const uid = getCookieTokenInfo(ctx).uid
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
 
-      const tid = parseInt(ctx.params.tid as string)
+    const tid = parseInt(ctx.params.tid as string)
 
-      const to_uid = parseInt(ctx.query.to_uid as string)
-      const isPush = ctx.query.isPush === 'true'
-      await TopicService.updateTopicLike(uid, to_uid, tid, isPush)
+    const to_uid = parseInt(ctx.query.to_uid as string)
+    const isPush = ctx.query.isPush === 'true'
+    await TopicService.updateTopicLike(uid, to_uid, tid, isPush)
 
-      ctx.body = {
-        code: 200,
-        message: 'OK',
-        data: {},
-      }
-    } catch (error) {
-      ctx.body = {
-        code: 500,
-        message: 'Failed to fetch topic',
-        data: { error },
-      }
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
+    }
+  }
+
+  // 点踩话题
+  async updateTopicDislike(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+
+    const tid = parseInt(ctx.params.tid as string)
+
+    const to_uid = parseInt(ctx.query.to_uid as string)
+    const isPush = ctx.query.isPush === 'true'
+    await TopicService.updateTopicDislike(uid, to_uid, tid, isPush)
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
     }
   }
 
