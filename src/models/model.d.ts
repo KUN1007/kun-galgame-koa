@@ -51,6 +51,7 @@ interface ReplyAttributes {
   edited: string
   content: string
   upvotes: number[]
+  upvote_time: number
   likes: number[]
   dislikes: number[]
   share: number[]

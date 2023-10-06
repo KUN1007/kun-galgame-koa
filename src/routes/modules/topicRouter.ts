@@ -45,6 +45,15 @@ router.post('/:tid/reply', ReplyController.createReply)
 // 根据话题 id 获取话题回复
 router.get('/:tid/replies', ReplyController.getReplies)
 
+// 推回复
+router.put('/:tid/reply/upvote', ReplyController.updateReplyUpvote)
+
+// 点赞回复
+router.put('/:tid/reply/like', ReplyController.updateReplyLike)
+
+// 点踩回复
+router.put('/:tid/reply/dislike', ReplyController.updateReplyDislike)
+
 // 更新单个回复
 router.put('/:tid/reply', ReplyController.updateReply)
 

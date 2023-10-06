@@ -12,6 +12,102 @@ type UpdateField = 'rid' | 'upvotes' | 'likes' | 'share' | 'dislikes'
 
 class TopicService {
   /*
+   * 编辑页面
+   */
+
+  // 创建话题，用于编辑界面
+  async createTopic(
+    title: string,
+    content: string,
+    time: number,
+    tags: string[],
+    category: string[],
+    uid: number
+  ) {
+    // 获取用户今日发布话题的个数和萌萌点
+    const user = await UserService.getUserInfoByUid(uid, [
+      'daily_topic_count',
+      'moemoepoint',
+    ])
+
+    // 这里是用户每日最多发布的话题数量，为萌萌点 / 10，需要错误处理 TODO:
+    if (user.moemoepoint / 10 < user.daily_topic_count) {
+      return
+    }
+
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const newTopic = new TopicModel({
+        title,
+        content,
+        time,
+        tags,
+        category,
+        uid,
+      })
+
+      // 保存话题
+      const savedTopic = await newTopic.save()
+
+      // 在用户的发帖数组里保存话题，这里只是保存，没有撤销操作，所以是 true
+      await UserService.updateUserArray(uid, 'topic', savedTopic.tid, true)
+
+      // 更新用户的今日发帖计数
+      await UserService.updateUserNumber(uid, 'daily_topic_count', 1)
+
+      // 保存话题 tag
+      await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+
+      // 返回创建好话题的 tid
+      return savedTopic.tid
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  // 更新话题（标题，内容，标签，分类）
+  async updateTopic(
+    uid: number,
+    tid: number,
+    title: string,
+    content: string,
+    tags: string[],
+    category: string[]
+  ) {
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      // 直接根据 tid 更新也可以，这里是保险起见
+      await TopicModel.updateOne(
+        { tid, uid },
+        { title, content, tags, category, edited: Date.now() }
+      )
+
+      // 使用 TagService 更新标签的使用次数
+      await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  /*
    * 话题页面
    */
 
@@ -131,102 +227,6 @@ class TopicService {
     return topic
   }
 
-  /*
-   * 编辑页面
-   */
-
-  // 创建话题，用于编辑界面
-  async createTopic(
-    title: string,
-    content: string,
-    time: number,
-    tags: string[],
-    category: string[],
-    uid: number
-  ) {
-    // 获取用户今日发布话题的个数和萌萌点
-    const user = await UserService.getUserInfoByUid(uid, [
-      'daily_topic_count',
-      'moemoepoint',
-    ])
-
-    // 这里是用户每日最多发布的话题数量，为萌萌点 / 10，需要错误处理 TODO:
-    if (user.moemoepoint / 10 < user.daily_topic_count) {
-      return
-    }
-
-    // 启动事务
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-      const newTopic = new TopicModel({
-        title,
-        content,
-        time,
-        tags,
-        category,
-        uid,
-      })
-
-      // 保存话题
-      const savedTopic = await newTopic.save()
-
-      // 在用户的发帖数组里保存话题，这里只是保存，没有撤销操作，所以是 true
-      await UserService.updateUserArray(uid, 'topic', savedTopic.tid, true)
-
-      // 更新用户的今日发帖计数
-      await UserService.updateUserNumber(uid, 'daily_topic_count', 1)
-
-      // 保存话题 tag
-      await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
-
-      // 提交事务
-      await session.commitTransaction()
-      session.endSession()
-
-      // 返回创建好话题的 tid
-      return savedTopic.tid
-    } catch (error) {
-      // 如果出现错误，回滚事务
-      await session.abortTransaction()
-      session.endSession()
-      throw error
-    }
-  }
-
-  // 更新话题（标题，内容，标签，分类）
-  async updateTopic(
-    uid: number,
-    tid: number,
-    title: string,
-    content: string,
-    tags: string[],
-    category: string[]
-  ) {
-    // 启动事务
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-      // 直接根据 tid 更新也可以，这里是保险起见
-      await TopicModel.updateOne(
-        { tid, uid },
-        { title, content, tags, category, edited: Date.now() }
-      )
-
-      // 使用 TagService 更新标签的使用次数
-      await TagService.updateTagsByTidAndRid(tid, 0, tags, category)
-
-      // 提交事务
-      await session.commitTransaction()
-      session.endSession()
-    } catch (error) {
-      // 如果出现错误，回滚事务
-      await session.abortTransaction()
-      session.endSession()
-      throw error
-    }
-  }
-
   // 推话题，推话题不可以取消
   /**
    * @param {number} uid - 推话题用户的 uid
@@ -263,7 +263,7 @@ class TopicService {
         {
           $set: { upvote_time: Date.now() },
           $push: { upvotes: uid },
-          $inc: { popularity: 17 },
+          $inc: { popularity: 50 },
         }
       )
 
@@ -382,8 +382,8 @@ class TopicService {
       // 将话题的 tid 作用于用户的 like_topic 数组中
       await UserService.updateUserArray(uid, 'dislike_topic', tid, isPush)
 
-      // 更新被点赞用户的被点赞数
-      await UserService.updateUserNumber(to_uid, 'like', amount)
+      // 更新被点赞用户的被点踩数
+      await UserService.updateUserNumber(to_uid, 'dislike', amount)
 
       // 提交事务
       await session.commitTransaction()

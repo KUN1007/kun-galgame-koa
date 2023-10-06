@@ -76,6 +76,146 @@ class ReplyService {
     }
   }
 
+  // 推回复，推回复不可以取消
+  /**
+   * @param {number} uid - 推回复用户的 uid
+   * @param {number} to_uid - 被推用户的 uid
+   * @param {number} rid - 回复的 rid
+   */
+  async updateReplyUpvote(
+    uid: number,
+    to_uid: number,
+    rid: number
+  ): Promise<void> {
+    // 用户无法推自己的回复
+    if (uid === to_uid) {
+      return
+    }
+
+    // 查找推回复用户的萌萌点
+    const moemoepoint = await UserService.getUserInfoByUid(uid, ['moemoepoint'])
+    // 用户的萌萌点 < 1100 无法使用推回复功能
+    if (moemoepoint.moemoepoint < 1100) {
+      return
+    }
+
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      // 更新回复的被推时间，将用户的 uid 放进回复的被推数组中
+      await ReplyModel.updateOne(
+        { rid },
+        {
+          $set: { upvote_time: Date.now() },
+          $push: { upvotes: uid },
+        }
+      )
+
+      // 扣除推回复用户的萌萌点
+      await UserService.updateUserNumber(uid, 'moemoepoint', -3)
+
+      // 更新被推用户的萌萌点
+      await UserService.updateUserNumber(to_uid, 'moemoepoint', 1)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  // 点赞回复
+  /**
+   * @param {number} uid - 点赞用户的 uid
+   * @param {number} to_uid - 被点赞用户的 uid
+   * @param {number} rid - 回复的 rid
+   * @param {boolean} isPush - 点赞还是取消点赞
+   */
+  async updateReplyLike(
+    uid: number,
+    to_uid: number,
+    rid: number,
+    isPush: boolean
+  ): Promise<void> {
+    if (uid === to_uid) {
+      return
+    }
+
+    const moemoepointAmount = isPush ? 1 : -1
+
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      await this.updateReplyArray(rid, 'likes', uid, isPush)
+
+      // 更新被点赞用户的萌萌点
+      await UserService.updateUserNumber(
+        to_uid,
+        'moemoepoint',
+        moemoepointAmount
+      )
+
+      // 更新被点赞用户的被点赞数
+      await UserService.updateUserNumber(to_uid, 'like', moemoepointAmount)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  // 点踩回复
+  /**
+   * @param {number} uid - 点踩用户的 uid
+   * @param {number} to_uid - 被点踩用户的 uid
+   * @param {number} rid - 回复的 rid
+   * @param {boolean} isPush - 点踩还是取消点踩
+   */
+  async updateReplyDislike(
+    uid: number,
+    to_uid: number,
+    rid: number,
+    isPush: boolean
+  ): Promise<void> {
+    if (uid === to_uid) {
+      return
+    }
+
+    const amount = isPush ? 1 : -1
+
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      await this.updateReplyArray(rid, 'dislikes', uid, isPush)
+
+      // 更新被点赞用户的被踩数
+      await UserService.updateUserNumber(to_uid, 'dislike', amount)
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
   // 更新回复
   async updateReply(tid: number, rid: number, content: string, tags: string[]) {
     // 启动事务
@@ -189,13 +329,11 @@ class ReplyService {
     uid: number,
     isPush: boolean
   ) {
-    // 取消则 pull
     if (isPush) {
       await ReplyModel.updateOne(
         { rid: rid },
         { $addToSet: { [updateField]: uid } }
       )
-      // 不取消则 push
     } else {
       await ReplyModel.updateOne(
         { rid: rid },

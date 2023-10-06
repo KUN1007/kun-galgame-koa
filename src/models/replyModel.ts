@@ -28,6 +28,8 @@ const ReplySchema = new mongoose.Schema<ReplyAttributes>(
     content: { type: String, default: '' },
     // 回复是否被推
     upvotes: { type: [Number], default: [] },
+    // 回复被推的时间
+    upvote_time: { type: Number, default: 0 },
     // 回复的点赞数
     likes: { type: [Number], default: [] },
     // 回复的点踩数
