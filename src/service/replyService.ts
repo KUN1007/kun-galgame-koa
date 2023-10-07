@@ -2,6 +2,7 @@
  * 回复的 CRUD，定义了一些对回复数据的数据库交互操作
  */
 import ReplyModel from '@/models/replyModel'
+import UserModel from '@/models/userModel'
 import TopicModel from '@/models/topicModel'
 import TagService from './tagService'
 import UserService from './userService'
@@ -44,10 +45,16 @@ class ReplyService {
       const savedReply = await newReply.save()
 
       // 在用户的回复数组里保存回复，这里只是保存，没有撤销操作，所以是 true
-      await UserService.updateUserArray(r_uid, 'reply', savedReply.rid, true)
+      const replyUser = await UserModel.findOneAndUpdate(
+        { uid: savedReply.r_uid },
+        { $addToSet: { reply: savedReply.rid } }
+      )
 
       // 更新被回复用户的萌萌点
-      await UserService.updateUserNumber(to_uid, 'moemoepoint', 2)
+      const replyToUser = await UserModel.findOneAndUpdate(
+        { uid: savedReply.to_uid },
+        { $inc: { moemoepoint: 2 } }
+      )
 
       // 更新话题的 rid 数组
       // 话题的热度增加 5 点
@@ -67,7 +74,67 @@ class ReplyService {
       await session.commitTransaction()
       session.endSession()
 
-      return savedReply
+      // 返回的数据格式与 getReplies 相同
+      const responseData = {
+        rid: savedReply.rid,
+        tid: savedReply.tid,
+        floor: savedReply.floor,
+        to_floor: savedReply.to_floor,
+        r_user: {
+          uid: replyUser.uid,
+          name: replyUser.name,
+          avatar: replyUser.avatar,
+          moemoepoint: replyUser.moemoepoint,
+        },
+        to_user: {
+          uid: replyToUser.uid,
+          name: replyToUser.name,
+        },
+        edited: savedReply.edited,
+        content: savedReply.content,
+        upvotes: savedReply.upvotes,
+        upvote_time: savedReply.upvote_time,
+        likes: savedReply.likes,
+        dislikes: savedReply.dislikes,
+        tags: savedReply.tags,
+        time: savedReply.time,
+        cid: savedReply.cid,
+      }
+
+      return responseData
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  // 更新回复
+  async updateReply(
+    uid: number,
+    tid: number,
+    rid: number,
+    content: string,
+    tags: string[]
+  ) {
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      // 直接用 rid 也可以，这里是保险起见
+      await ReplyModel.updateOne(
+        { rid, r_uid: uid },
+        { $set: { content, edited: Date.now(), tags } },
+        { new: true }
+      )
+
+      // 保存 tags
+      await TagService.updateTagsByTidAndRid(tid, rid, tags, [])
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()
@@ -216,33 +283,6 @@ class ReplyService {
     }
   }
 
-  // 更新回复
-  async updateReply(tid: number, rid: number, content: string, tags: string[]) {
-    // 启动事务
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-      const updatedReply = await ReplyModel.findOneAndUpdate(
-        { rid },
-        { $set: { content, edited: Date.now(), tags } },
-        { new: true }
-      ).lean()
-
-      // 保存 tags
-      await TagService.updateTagsByTidAndRid(tid, rid, tags, [])
-
-      // 提交事务
-      await session.commitTransaction()
-      session.endSession()
-      return updatedReply
-    } catch (error) {
-      // 如果出现错误，回滚事务
-      await session.abortTransaction()
-      session.endSession()
-      throw error
-    }
-  }
-
   // 获取某个话题下回复的接口，分页获取，懒加载，每次 5 条
   /**
    * @param {number} tid - 话题的 id，在那个话题中获取回复
@@ -296,6 +336,7 @@ class ReplyService {
         edited: reply.edited,
         content: reply.content,
         upvotes: reply.upvotes,
+        upvote_time: reply.upvote_time,
         likes: reply.likes,
         dislikes: reply.dislikes,
         tags: reply.tags,

@@ -23,11 +23,28 @@ class ReplyController {
       content
     )
 
-    ctx.status = 201
+    ctx.status = 200
     ctx.body = ctx.body = {
       code: 200,
       message: 'OK',
       data: savedReply,
+    }
+  }
+
+  // 更新回复
+  async updateReply(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+    // 从路径获取 tid
+    const tid = parseInt(ctx.params.tid as string)
+
+    const { rid, content, tags } = ctx.request.body
+
+    await ReplyService.updateReply(uid, tid, rid, content, tags)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
     }
   }
 
@@ -81,30 +98,6 @@ class ReplyController {
       code: 200,
       message: 'OK',
       data: {},
-    }
-  }
-
-  // 更新回复
-  async updateReply(ctx: Context) {
-    try {
-      // 从路径获取 tid
-      const tid = parseInt(ctx.params.tid as string)
-
-      const { rid, content, tags } = ctx.request.body
-      const updatedReply = await ReplyService.updateReply(
-        tid,
-        rid,
-        content,
-        tags
-      )
-      ctx.body = {
-        code: 200,
-        message: 'OK',
-        data: updatedReply,
-      }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to update reply' }
     }
   }
 
