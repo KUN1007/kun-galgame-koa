@@ -64,6 +64,12 @@ router.put('/:tid/reply', ReplyController.updateReply)
 // 发布单个评论
 router.post('/:tid/comment', CommentController.createComment)
 
+// 点赞评论
+router.put('/:tid/comment/like', CommentController.updateCommentLike)
+
+// 点踩评论
+router.put('/:tid/comment/dislike', CommentController.updateCommentDislike)
+
 // 获取一个回复下面的所有评论
 router.get('/:tid/comment', CommentController.getCommentsByReplyRid)
 

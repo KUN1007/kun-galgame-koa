@@ -37,7 +37,7 @@ const ReplySchema = new mongoose.Schema<ReplyAttributes>(
     // 回复的分享数
     share: { type: [Number], default: [] },
     // 回复的评论 id
-    cid: { type: [String], default: [] },
+    comment: { type: [String], default: [] },
   },
   // 时间戳，自动创建
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

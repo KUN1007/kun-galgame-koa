@@ -3,14 +3,6 @@ import CommentService from '@/service/commentService'
 // 操作 cookie 的函数
 import { getCookieTokenInfo } from '@/utils/cookies'
 
-// interface TopicCreateCommentRequestData {
-//   tid: number
-//   rid: number
-//   c_uid: number
-//   to_uid: number
-//   content: string
-// }
-
 class CommentController {
   // 发布单条评论
   async createComment(ctx: Context) {
@@ -41,6 +33,36 @@ class CommentController {
     } catch (error) {
       ctx.status = 500
       ctx.body = { error: 'Failed to create comment' }
+    }
+  }
+
+  // 点赞评论
+  async updateCommentLike(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+
+    const cid = parseInt(ctx.query.cid as string)
+    const to_uid = parseInt(ctx.query.to_uid as string)
+    await CommentService.updateCommentLike(cid, uid, to_uid)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
+    }
+  }
+
+  // 点踩评论
+  async updateCommentDislike(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+
+    const cid = parseInt(ctx.query.cid as string)
+    const to_uid = parseInt(ctx.query.to_uid as string)
+    await CommentService.updateCommentDislike(cid, uid, to_uid)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
     }
   }
 

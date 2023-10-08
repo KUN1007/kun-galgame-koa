@@ -55,7 +55,7 @@ interface ReplyAttributes {
   likes: number[]
   dislikes: number[]
   share: number[]
-  cid: number[]
+  comment: number[]
   // 虚拟字段
   r_user: UserAttributes[]
   to_user: UserAttributes[]

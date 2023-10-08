@@ -3,15 +3,19 @@
  */
 
 import CommentModel from '@/models/commentModel'
+import UserModel from '@/models/userModel'
 import TopicService from './topicService'
 import ReplyService from './replyService'
-import UserService from './userService'
 import mongoose from '@/db/connection'
 
-// 回复可供更新的字段名
-type UpdateField = 'likes' | 'dislikes'
-
 class CommentService {
+  /**
+   * 1. 收到评论的 rid, 话题的 tid, 评论人 id，被评论人 id，评论内容保存至新的评论 model
+   * 2. 在评论者的 comment 数组中放入评论的 cid
+   * 3. 将被评论人的 moemoepoint + 1
+   * 4. 更新评论所在话题的热度 2 点
+   * 5. 在回复的 comment 字段放入评论的 cid
+   */
   // 创建一条评论
   async createComment(
     rid: number,
@@ -35,35 +39,27 @@ class CommentService {
       // 保存好的评论
       const savedComment = await newComment.save()
 
-      // 评论人
-      const c_user = await UserService.getUserInfoByUid(savedComment.c_uid, [
-        'uid',
-        'avatar',
-        'name',
-      ])
+      const commentUser = await UserModel.findOneAndUpdate(
+        {
+          uid: c_uid,
+        },
+        { $addToSet: { comment: savedComment.cid } }
+      )
 
-      // 被评论人
-      const to_user = await UserService.getUserInfoByUid(savedComment.to_uid, [
-        'uid',
-        'name',
-      ])
+      const toUser = await UserModel.findOneAndUpdate(
+        {
+          uid: to_uid,
+        },
+        { $inc: { moemoepoint: 1 } }
+      )
 
-      // 在用户的评论数组里保存回复，这里只是保存，没有撤销操作，所以是 true
-      await UserService.updateUserArray(
-        c_uid,
+      await TopicService.updateTopicPop(tid, 2)
+      await ReplyService.updateReplyArray(
+        rid,
         'comment',
         savedComment.cid,
         true
       )
-
-      // 被评论的用户萌萌点 + 1
-      await UserService.updateUserNumber(to_uid, 'moemoepoint', 1)
-
-      // 更新话题的热度 2 点
-      await TopicService.updateTopicPop(tid, 2)
-
-      // 更新回复的评论数组
-      await ReplyService.updateReplyArray(rid, 'cid', savedComment.cid, true)
 
       // 提交事务
       await session.commitTransaction()
@@ -72,12 +68,82 @@ class CommentService {
       return {
         rid: savedComment.rid,
         tid: savedComment.tid,
-        c_user: c_user,
-        to_user: to_user,
+        c_user: {
+          uid: commentUser.uid,
+          name: commentUser.name,
+          avatar: commentUser.avatar,
+        },
+        to_user: {
+          uid: toUser.uid,
+          name: toUser.name,
+        },
         content: savedComment.content,
         likes: savedComment.likes,
         dislikes: savedComment.dislikes,
       }
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  /**
+   * 1. 将点赞用户的 uid 放入 comment model 的 likes 数组中
+   * 2. 被点赞用户的 like 字段 + 1，moemoepoint + 1
+   */
+  // 点赞评论，点赞不可取消
+  async updateCommentLike(cid: number, uid: number, to_uid: number) {
+    // 用户不可以给自己点赞
+    if (uid === to_uid) {
+      return
+    }
+
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      await CommentModel.updateOne({ cid }, { $addToSet: { likes: uid } })
+      await UserModel.updateOne(
+        { uid: to_uid },
+        { $inc: { like: 1, moemoepoint: 1 } }
+      )
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+    } catch (error) {
+      // 如果出现错误，回滚事务
+      await session.abortTransaction()
+      session.endSession()
+      throw error
+    }
+  }
+
+  /**
+   * 1. 将点踩用户的 uid 放入 comment model 的 dislikes 数组中
+   * 2. 被点踩用户的 dislike 字段 + 1
+   */
+  // 点踩评论，点踩不可取消
+  async updateCommentDislike(cid: number, uid: number, to_uid: number) {
+    // 用户不可以给自己点踩
+    if (uid === to_uid) {
+      return
+    }
+
+    // 启动事务
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      await CommentModel.updateOne({ cid }, { $addToSet: { dislikes: uid } })
+      await UserModel.updateOne({ uid: to_uid }, { $inc: { dislike: 1 } })
+
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()
@@ -95,6 +161,7 @@ class CommentService {
 
     // 返回回复下评论的所有数据
     const replyComments = comment.map((comment) => ({
+      cid: comment.cid,
       rid: comment.rid,
       tid: comment.tid,
       c_user: {
@@ -112,32 +179,6 @@ class CommentService {
     }))
 
     return replyComments
-  }
-
-  // 更新回复数组，用于推，点赞，点踩，分享等
-  /**
-   * @param {number} cid - 回复 id
-   * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
-   * @param {number} uid - 要将哪个用户的 uid push 进回复对应的数组里
-   * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
-   */
-  async updateCommentArray(
-    cid: number,
-    updateField: UpdateField,
-    uid: number,
-    isPush: boolean
-  ) {
-    if (isPush) {
-      await CommentModel.updateOne(
-        { cid: cid },
-        { $addToSet: { [updateField]: uid } }
-      )
-    } else {
-      await CommentModel.updateOne(
-        { cid: cid },
-        { $pull: { [updateField]: uid } }
-      )
-    }
   }
 }
 

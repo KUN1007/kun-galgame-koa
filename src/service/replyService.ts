@@ -9,7 +9,7 @@ import UserService from './userService'
 import mongoose from '@/db/connection'
 
 // 回复可供更新的字段名
-type UpdateField = 'upvotes' | 'likes' | 'dislikes' | 'share' | 'cid'
+type UpdateField = 'upvotes' | 'likes' | 'dislikes' | 'share' | 'comment'
 
 class ReplyService {
   // 创建回复
@@ -98,7 +98,7 @@ class ReplyService {
         dislikes: savedReply.dislikes,
         tags: savedReply.tags,
         time: savedReply.time,
-        cid: savedReply.cid,
+        comment: savedReply.comment,
       }
 
       return responseData
@@ -344,7 +344,7 @@ class ReplyService {
         dislikes: reply.dislikes,
         tags: reply.tags,
         time: reply.time,
-        cid: reply.cid,
+        comment: reply.comment,
       }))
 
       // 提交事务
