@@ -3,6 +3,7 @@
  */
 
 import TopicModel from '@/models/topicModel'
+import UserModel from '@/models/userModel'
 import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'
@@ -268,13 +269,22 @@ class TopicService {
       )
 
       // 将话题的 tid 放进用户的 upvote_topic 数组中
-      await UserService.updateUserArray(uid, 'upvote_topic', tid, true)
-
       // 扣除推话题用户的萌萌点
-      await UserService.updateUserNumber(uid, 'moemoepoint', -17)
+      await UserModel.updateOne(
+        { uid },
+        {
+          $inc: { moemoepoint: -17 },
+          $addToSet: {
+            upvote_topic: tid,
+          },
+        }
+      )
 
-      // 更新被推用户的萌萌点
-      await UserService.updateUserNumber(to_uid, 'moemoepoint', 7)
+      // 更新被推用户的萌萌点和被推数
+      await UserModel.updateOne(
+        { to_uid },
+        { $inc: { moemoepoint: 7, upvote: 1 } }
+      )
 
       // 提交事务
       await session.commitTransaction()
