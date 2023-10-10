@@ -11,7 +11,7 @@ const ExpenditureSchema = new mongoose.Schema<ExpenditureAttributes>(
     // 支出的原因
     reason: { type: String, default: '' },
     // 支出的时间
-    time: { type: Number, default: Date.now },
+    time: { type: Number, default: Date.now() },
     // 支出的金额
     amount: { type: Number, default: 0 },
   },

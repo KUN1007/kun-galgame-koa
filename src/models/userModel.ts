@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     // 用户的状态
     status: { type: Number, default: 0 },
     // 用户的注册时间
-    time: { type: Number, default: Date.now },
+    time: { type: Number, default: Date.now() },
     // 用户的萌萌点
     moemoepoint: { type: Number, default: 1007 },
     // 用户的签名

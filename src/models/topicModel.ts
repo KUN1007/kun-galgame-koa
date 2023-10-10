@@ -21,13 +21,13 @@ const TopicSchema = new mongoose.Schema<TopicAttributes>(
     // 话题下方回复的 ID，标识了这个话题底下有多少回复
     rid: { type: [String], default: [] },
     // 话题发布的时间
-    time: { type: Number, default: Date.now },
+    time: { type: Number, default: Date.now() },
     // 话题的热度，有专门的热度计算公式
     popularity: { type: Number, default: 0 },
     // 话题的被推数量
     upvotes: { type: [Number], default: [] },
     // 话题被推的时间
-    upvote_time: {type: Number, default: 0},
+    upvote_time: { type: Number, default: 0 },
     // 话题被查看的次数
     views: { type: Number, default: 0 },
     // 话题的点赞数

@@ -12,16 +12,33 @@ import type {
   UpdateFieldNumber,
   LoginResponseData,
 } from './types/userService'
-import type { UserAttributes } from '@/models/model'
 
 // 用户可供更新的字符串型字段名
 type UpdateFieldString = 'avatar' | 'bio'
 
 class UserService {
   // 获取单个用户全部信息
-  async getUserByUid(uid: number): Promise<UserAttributes> {
+  async getUserByUid(uid: number) {
     const user = await UserModel.findOne({ uid })
-    return user
+    const responseData = {
+      uid: user.uid,
+      name: user.name,
+      avatar: user.avatar,
+      roles: user.roles,
+      status: user.status,
+      time: user.time,
+      moemoepoint: user.moemoepoint,
+      bio: user.bio,
+      upvote: user.upvote,
+      like: user.like,
+      dislike: user.dislike,
+      daily_topic_count: user.daily_topic_count,
+
+      topic: user.topic,
+      reply: user.reply,
+      comment: user.comment,
+    }
+    return responseData
   }
 
   // 获取用户的部分信息

@@ -271,7 +271,7 @@ class TopicService {
       // 将话题的 tid 放进用户的 upvote_topic 数组中
       // 扣除推话题用户的萌萌点
       await UserModel.updateOne(
-        { uid },
+        { uid: uid },
         {
           $inc: { moemoepoint: -17 },
           $addToSet: {
@@ -282,7 +282,7 @@ class TopicService {
 
       // 更新被推用户的萌萌点和被推数
       await UserModel.updateOne(
-        { to_uid },
+        { uid: to_uid },
         { $inc: { moemoepoint: 7, upvote: 1 } }
       )
 

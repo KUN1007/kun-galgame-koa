@@ -21,7 +21,7 @@ const ReplySchema = new mongoose.Schema<ReplyAttributes>(
     // 回复的 tag，可选，字符串数组
     tags: { type: [String], default: [] },
     // 回复发布的时间
-    time: { type: Number, default: Date.now },
+    time: { type: Number, default: Date.now() },
     // 回复被再次编辑的时间
     edited: { type: String, default: '' },
     // 回复的内容

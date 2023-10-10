@@ -11,7 +11,7 @@ const IncomeSchema = new mongoose.Schema<IncomeAttributes>(
     // 收入发生的原因
     reason: { type: String, default: '' },
     // 收入发生的时间
-    time: { type: Number, default: Date.now },
+    time: { type: Number, default: Date.now() },
     // 收入发生的金额
     amount: { type: Number, default: 0 },
   },

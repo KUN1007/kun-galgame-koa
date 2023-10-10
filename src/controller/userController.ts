@@ -51,6 +51,18 @@ class UserController {
       data: result.data,
     }
   }
+
+  // 获取单个用户信息
+  async getUserByUid(ctx: Context) {
+    const uid = parseInt(ctx.params.uid as string)
+    const user = await UserService.getUserByUid(uid)
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: user,
+    }
+  }
 }
 
 export default new UserController()

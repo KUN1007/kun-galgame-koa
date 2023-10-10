@@ -11,7 +11,7 @@ const UpdateLogSchema = new mongoose.Schema<UpdateLogAttributes>(
     // 更新日志的记录内容
     description: { type: String, required: true, default: '' },
     // 更新的时间
-    time: { type: Number, required: false, default: Date.now },
+    time: { type: Number, required: false, default: Date.now() },
     // 更新的版本
     version: { type: String, required: false, default: '' },
   },

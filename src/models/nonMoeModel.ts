@@ -13,7 +13,7 @@ const NonMoeSchema = new mongoose.Schema<NonMoeAttributes>(
     // 不萌记录的描述，发生了什么不萌行为
     description: { type: String, required: true },
     // 不萌记录发生的时间
-    time: { type: Number, default: Date.now },
+    time: { type: Number, default: Date.now() },
     // 发生不萌行为的后果
     result: { type: String, required: true },
   },
