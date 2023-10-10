@@ -66,6 +66,7 @@ class CommentService {
       session.endSession()
 
       return {
+        cid: savedComment.cid,
         rid: savedComment.rid,
         tid: savedComment.tid,
         c_user: {

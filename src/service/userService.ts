@@ -83,6 +83,8 @@ class UserService {
         uid: user.uid,
         name: user.name,
         avatar: user.avatar,
+        moemoepoint: user.moemoepoint,
+        roles: user.roles,
         token,
       }
 

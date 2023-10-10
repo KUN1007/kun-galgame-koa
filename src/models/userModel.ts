@@ -17,9 +17,9 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     ip: { type: String, default: '' },
     // 用户头像的图片地址
     avatar: { type: String, default: '' },
-    // 用户的角色，普通用户，管理员，超级管理员
+    // 用户的角色，游客：0，普通用户：1，管理员：2，超级管理员：3
     roles: { type: Number, default: 1 },
-    // 用户的状态
+    // 用户的状态，0：正常，1：封禁
     status: { type: Number, default: 0 },
     // 用户的注册时间
     time: { type: Number, default: Date.now() },
