@@ -1,6 +1,6 @@
 import { Context } from 'koa'
 import UserService from '@/service/userService'
-import { setCookieRefreshToken } from '@/utils/cookies'
+import { setCookieRefreshToken, getCookieTokenInfo } from '@/utils/cookies'
 
 class UserController {
   // 登录
@@ -61,6 +61,22 @@ class UserController {
       code: 200,
       message: 'OK',
       data: user,
+    }
+  }
+
+  // 更新用户签名
+  async updateUserBio(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+
+    const bio = ctx.request.body.bio as string
+
+    await UserService.updateUserBio(uid, bio)
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
     }
   }
 }

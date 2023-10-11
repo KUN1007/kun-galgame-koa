@@ -41,6 +41,11 @@ class UserService {
     return responseData
   }
 
+  // 更新用户的签名
+  async updateUserBio(uid: number, bio: string) {
+    await UserModel.updateOne({ uid }, { $set: { bio: bio } })
+  }
+
   // 获取用户的部分信息
   /**
    * @param {number} uid - 用户名
