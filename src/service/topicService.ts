@@ -56,7 +56,7 @@ class TopicService {
       await UserService.updateUserArray(uid, 'topic', savedTopic.tid, true)
 
       // 更新用户的今日发帖计数
-      await UserService.updateUserNumber(uid, 'daily_topic_count', 1)
+      await UserModel.updateOne({ uid }, { $inc: { daily_topic_count: 1 } })
 
       // 保存话题 tag
       await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
@@ -335,14 +335,11 @@ class TopicService {
       await UserService.updateUserArray(uid, 'like_topic', tid, isPush)
 
       // 更新被点赞用户的萌萌点
-      await UserService.updateUserNumber(
-        to_uid,
-        'moemoepoint',
-        moemoepointAmount
-      )
-
       // 更新被点赞用户的被点赞数
-      await UserService.updateUserNumber(to_uid, 'like', moemoepointAmount)
+      await UserModel.updateOne(
+        { uid: to_uid },
+        { $inc: { moemoepoint: moemoepointAmount, like: moemoepointAmount } }
+      )
 
       // 提交事务
       await session.commitTransaction()
@@ -393,7 +390,7 @@ class TopicService {
       await UserService.updateUserArray(uid, 'dislike_topic', tid, isPush)
 
       // 更新被点赞用户的被点踩数
-      await UserService.updateUserNumber(to_uid, 'dislike', amount)
+      await UserModel.updateOne({ uid: to_uid }, { $inc: { dislike: amount } })
 
       // 提交事务
       await session.commitTransaction()

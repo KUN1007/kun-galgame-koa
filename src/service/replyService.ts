@@ -181,7 +181,7 @@ class ReplyService {
       )
 
       // 扣除推回复用户的萌萌点
-      await UserService.updateUserNumber(uid, 'moemoepoint', -3)
+      await UserModel.updateOne({ uid }, { $inc: { moemoepoint: -3 } })
 
       // 更新被推用户的萌萌点和被推数
       await UserModel.updateOne(
@@ -226,14 +226,11 @@ class ReplyService {
       await this.updateReplyArray(rid, 'likes', uid, isPush)
 
       // 更新被点赞用户的萌萌点
-      await UserService.updateUserNumber(
-        to_uid,
-        'moemoepoint',
-        moemoepointAmount
-      )
-
       // 更新被点赞用户的被点赞数
-      await UserService.updateUserNumber(to_uid, 'like', moemoepointAmount)
+      await UserModel.updateOne(
+        { uid: to_uid },
+        { $inc: { moemoepoint: moemoepointAmount, like: moemoepointAmount } }
+      )
 
       // 提交事务
       await session.commitTransaction()
@@ -272,8 +269,8 @@ class ReplyService {
     try {
       await this.updateReplyArray(rid, 'dislikes', uid, isPush)
 
-      // 更新被点赞用户的被踩数
-      await UserService.updateUserNumber(to_uid, 'dislike', amount)
+      // 更新被点踩用户的被踩数
+      await UserModel.updateOne({ uid: to_uid }, { $inc: { dislike: amount } })
 
       // 提交事务
       await session.commitTransaction()

@@ -7,14 +7,7 @@ import UserModel from '@/models/userModel'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
 import mongoose from '@/db/connection'
-import type {
-  UpdateFieldArray,
-  UpdateFieldNumber,
-  LoginResponseData,
-} from './types/userService'
-
-// 用户可供更新的字符串型字段名
-type UpdateFieldString = 'avatar' | 'bio'
+import type { UpdateFieldArray, LoginResponseData } from './types/userService'
 
 class UserService {
   // 获取单个用户全部信息
@@ -241,18 +234,6 @@ class UserService {
     await UserModel.updateOne({ uid }, { $set: { password: hashedPassword } })
   }
 
-  // 更新用户的数值型字段，萌萌点，被推数，被赞数，被踩数，amount 可以是负数
-  async updateUserNumber(
-    uid: number,
-    updateFieldNumber: UpdateFieldNumber,
-    amount: number
-  ) {
-    await UserModel.updateOne(
-      { uid: uid },
-      { $inc: { [updateFieldNumber]: amount } }
-    )
-  }
-
   // 更新用户的发帖，回复，评论，点赞，不喜欢，推
   /**
    * @param {number} uid - 用户 uid
@@ -277,23 +258,6 @@ class UserService {
         { $pull: { [updateFieldArray]: itemId } }
       )
     }
-  }
-
-  // 更新用户的其它信息，头像，签名等，都为字符串
-  /**
-   * @param {number} uid - 用户 uid
-   * @param {UpdateFieldString} updateFieldString - 要更新用户 Model 的哪个字段
-   * @param {string} newValue - 新签名或头像的值
-   */
-  async updateUserInfo(
-    uid: number,
-    updateFieldString: UpdateFieldString,
-    newValue: string
-  ) {
-    await UserModel.updateOne(
-      { uid: uid },
-      { $set: { [updateFieldString]: newValue } }
-    )
   }
 }
 
