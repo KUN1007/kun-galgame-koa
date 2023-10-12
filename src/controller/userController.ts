@@ -149,7 +149,7 @@ class UserController {
   }
 
   // 获取用户话题，发布的，点赞的，推的
-  async getUserTopic(ctx: Context) {
+  async getUserTopics(ctx: Context) {
     const tidArray = ctx.query.tidArray as string
 
     // 数组为空返回空
@@ -163,7 +163,30 @@ class UserController {
     }
 
     const numberArray = tidArray.split(',').map((tid) => parseInt(tid))
-    const result = await UserService.getUserTopic(numberArray)
+    const result = await UserService.getUserTopics(numberArray)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: result,
+    }
+  }
+
+  // 获取用户回复
+  async getUserReplies(ctx: Context) {
+    const ridArray = ctx.query.ridArray as string
+
+    // 数组为空返回空
+    if (!ridArray) {
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: [],
+      }
+      return
+    }
+
+    const numberArray = ridArray.split(',').map((rid) => parseInt(rid))
+    const result = await UserService.getUserReplies(numberArray)
     ctx.body = {
       code: 200,
       message: 'OK',

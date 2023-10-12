@@ -242,8 +242,9 @@ class UserService {
   }
 
   // 获取用户话题，发布的，点赞的，推的
-  async getUserTopic(tidArray: number[]) {
-    const topics = await TopicModel.find({ tid: { $in: tidArray } })
+  async getUserTopics(tidArray: number[]) {
+    // 仅显示前 50 个
+    const topics = await TopicModel.find({ tid: { $in: tidArray } }).limit(50)
 
     const responseData = topics.map((topic) => ({
       tid: topic.tid,
@@ -255,12 +256,14 @@ class UserService {
 
   // 获取用户回复
   async getUserReplies(ridArray: number[]) {
-    const topics = await ReplyModel.find({ tid: { $in: ridArray } })
+    // 仅显示前 50 个
+    const replies = await ReplyModel.find({ tid: { $in: ridArray } }).limit(50)
 
-    const responseData = topics.map((reply) => ({
+    // 这里用了字符串切片，取前 100 个字符，因为是富文本
+    const responseData = replies.map((reply) => ({
       tid: reply.tid,
-      content: reply.content,
-      likes: reply.likes,
+      content: reply.content.substring(0, 100),
+      time: reply.time,
     }))
     return responseData
   }
