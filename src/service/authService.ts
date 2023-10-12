@@ -97,8 +97,6 @@ class AuthService {
     // 存储验证码并设置有效期为10分钟
     await setValue(email, code, 600)
 
-    console.log(code)
-
     const transporter = nodemailer.createTransport(
       SMPTransport({
         service: 'gmail',

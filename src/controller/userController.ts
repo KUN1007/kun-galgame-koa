@@ -121,6 +121,32 @@ class UserController {
       data: {},
     }
   }
+
+  // 更新用户密码
+  async updateUserPassword(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+
+    const { oldPassword, newPassword } = ctx.request.body
+
+    const result = await UserService.updateUserPassword(
+      uid,
+      oldPassword,
+      newPassword
+    )
+
+    // 返回错误码
+    if (typeof result === 'number') {
+      ctx.app.emit('kunError', result, ctx)
+      return
+    }
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
+    }
+  }
 }
 
 export default new UserController()

@@ -23,4 +23,7 @@ router.get('/:uid/email', UserController.getUserEmail)
 // 更新用户邮箱
 router.put('/:uid/email', UserController.updateUserEmail)
 
+// 更新用户密码
+router.put('/:uid/password', UserController.updateUserPassword)
+
 export default router

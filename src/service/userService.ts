@@ -218,6 +218,29 @@ class UserService {
     }
   }
 
+  /**
+   * 更改用户密码
+   */
+  async updateUserPassword(
+    uid: number,
+    oldPassword: string,
+    newPassWord: string
+  ) {
+    const user = await UserModel.findOne({ uid })
+
+    const isCorrectPassword = await bcrypt.compare(oldPassword, user.password)
+
+    if (!isCorrectPassword) {
+      // 密码错误
+      return 10102
+    }
+
+    // bcrypt.hash 的第二个参数为哈希函数的迭代次数，越大加密效果越好但运算越慢
+    const hashedPassword = await bcrypt.hash(newPassWord, 7)
+    // 存储加密后的密码
+    await UserModel.updateOne({ uid }, { $set: { password: hashedPassword } })
+  }
+
   // 更新用户的数值型字段，萌萌点，被推数，被赞数，被踩数，amount 可以是负数
   async updateUserNumber(
     uid: number,
