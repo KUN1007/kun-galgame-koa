@@ -10,6 +10,7 @@ import AuthService from './authService'
 import mongoose from '@/db/connection'
 import type { UpdateFieldArray, LoginResponseData } from './types/userService'
 import ReplyModel from '@/models/replyModel'
+import CommentModel from '@/models/commentModel'
 
 class UserService {
   // 获取单个用户全部信息
@@ -264,6 +265,21 @@ class UserService {
       tid: reply.tid,
       content: reply.content.substring(0, 100),
       time: reply.time,
+    }))
+    return responseData
+  }
+
+  // 获取用户评论
+  async getUserComments(cidArray: number[]) {
+    // 仅显示前 50 个
+    const comments = await CommentModel.find({ tid: { $in: cidArray } }).limit(
+      50
+    )
+
+    // 这里用了字符串切片，取前 100 个字符，因为是富文本
+    const responseData = comments.map((comment) => ({
+      tid: comment.tid,
+      content: comment.content.substring(0, 100),
     }))
     return responseData
   }

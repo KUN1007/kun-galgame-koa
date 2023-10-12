@@ -193,6 +193,29 @@ class UserController {
       data: result,
     }
   }
+
+  // 获取用户评论
+  async getUserComments(ctx: Context) {
+    const cidArray = ctx.query.cidArray as string
+
+    // 数组为空返回空
+    if (!cidArray) {
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: [],
+      }
+      return
+    }
+
+    const numberArray = cidArray.split(',').map((cid) => parseInt(cid))
+    const result = await UserService.getUserComments(numberArray)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: result,
+    }
+  }
 }
 
 export default new UserController()

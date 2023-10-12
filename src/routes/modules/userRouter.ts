@@ -32,4 +32,7 @@ router.get('/:uid/topics', UserController.getUserTopics)
 // 获取用户发布的回复
 router.get('/:uid/replies', UserController.getUserReplies)
 
+// 获取用户发布的评论
+router.get('/:uid/comments', UserController.getUserComments)
+
 export default router
