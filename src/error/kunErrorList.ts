@@ -26,6 +26,4 @@ export const errorMessages: Record<number, string> = {
   [ErrorCode.EmailVerificationCodeError]: 'Email verification code error',
   [ErrorCode.EmailAlreadyRegistered]: 'Email is already registered',
   [ErrorCode.UsernameAlreadyRegistered]: 'Username is already registered',
-  10106: '',
-  10107: '',
 }

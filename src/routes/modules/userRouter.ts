@@ -20,4 +20,7 @@ router.put('/:uid/bio', UserController.updateUserBio)
 // 获取用户邮箱
 router.get('/:uid/email', UserController.getUserEmail)
 
+// 更新用户邮箱
+router.put('/:uid/email', UserController.updateUserEmail)
+
 export default router

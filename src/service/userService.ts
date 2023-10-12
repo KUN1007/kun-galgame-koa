@@ -41,17 +41,6 @@ class UserService {
     return responseData
   }
 
-  // 更新用户的签名
-  async updateUserBio(uid: number, bio: string) {
-    await UserModel.updateOne({ uid }, { $set: { bio: bio } })
-  }
-
-  // 获取用户邮箱
-  async getUserEmail(uid: number) {
-    const user = await UserModel.findOne({ uid })
-    return user.email
-  }
-
   // 获取用户的部分信息
   /**
    * @param {number} uid - 用户名
@@ -181,6 +170,51 @@ class UserService {
       await session.abortTransaction()
       session.endSession()
       throw error
+    }
+  }
+
+  // 更新用户的签名
+  async updateUserBio(uid: number, bio: string) {
+    await UserModel.updateOne({ uid }, { $set: { bio: bio } })
+  }
+
+  // 获取用户邮箱
+  async getUserEmail(uid: number) {
+    const user = await UserModel.findOne({ uid })
+    const email = user.email
+    const atIndex = email.indexOf('@')
+    // 获取邮箱地址的局部部分和域部分
+    const localPart = email.slice(0, atIndex)
+    const domain = email.slice(atIndex)
+
+    // 保留局部部分的前三个字符，其他字符替换为 ~
+    const maskedLocalPart =
+      localPart.slice(0, 3) + '~'.repeat(localPart.length - 3)
+
+    // 拼接局部部分和域部分，并返回
+    return maskedLocalPart + domain
+  }
+
+  /**
+   * 更改用户邮箱
+   * @param {number} uid - 用户的 uid
+   * @param {string} email - 用户的新邮箱
+   * @param {string} code - 用户验证码
+   */
+  async updateUserEmail(uid: number, email: string, code: string) {
+    // 验证邮箱验证码是否正确且有效
+    const isCodeValid = await AuthService.verifyVerificationCode(email, code)
+    if (!isCodeValid) {
+      // 邮箱验证码错误
+      return 10103
+    }
+    const user = await UserModel.findOneAndUpdate(
+      { uid: uid },
+      { $set: { email: email } }
+    )
+    // 用户不存在
+    if (!user) {
+      return 10101
     }
   }
 

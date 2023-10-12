@@ -47,6 +47,19 @@ class AuthController {
       }
     }
   }
+
+  // 发送重置邮箱验证码
+  async sendResetEmailCode(ctx: Context) {
+    const email: string = ctx.request.body.email
+
+    await AuthService.sendResetEmailCode(email)
+
+    ctx.body = {
+      code: 200,
+      message: 'Verification code sent successfully',
+      data: {},
+    }
+  }
 }
 
 export default new AuthController()

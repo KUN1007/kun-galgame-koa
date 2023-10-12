@@ -99,6 +99,28 @@ class UserController {
       },
     }
   }
+
+  // 更新用户邮箱
+  async updateUserEmail(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+
+    const { email, code } = ctx.request.body
+
+    const result = await UserService.updateUserEmail(uid, email, code)
+
+    // 返回错误码
+    if (typeof result === 'number') {
+      ctx.app.emit('kunError', result, ctx)
+      return
+    }
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
+    }
+  }
 }
 
 export default new UserController()

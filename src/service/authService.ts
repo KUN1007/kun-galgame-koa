@@ -1,7 +1,6 @@
 /*
  * 鉴权服务，用户 jwt 路由接口鉴权
  */
-
 import { verifyJWTPayload, generateToken } from '@/utils/jwt'
 import { setValue, getValue } from '@/config/redisConfig'
 import nodemailer from 'nodemailer'
@@ -89,6 +88,35 @@ class AuthService {
 
     // 检查用户提供的验证码是否与存储的验证码匹配
     return userProvidedCode === storedCode
+  }
+
+  // 发送邮箱重置验证码
+  async sendResetEmailCode(email: string) {
+    // 生成 7 位随机验证码
+    const code = generateRandomCode(7)
+    // 存储验证码并设置有效期为10分钟
+    await setValue(email, code, 600)
+
+    console.log(code)
+
+    const transporter = nodemailer.createTransport(
+      SMPTransport({
+        service: 'gmail',
+        auth: {
+          user: env.GOOGLE_EMAIL,
+          pass: env.GOOGLE_PASSWORD,
+        },
+      })
+    )
+
+    const mailOptions = {
+      from: env.EMAIL,
+      to: email,
+      subject: '~~~ KUNGalgame ~~~',
+      text: `Your reset email code is: ${code}`,
+    }
+
+    return transporter.sendMail(mailOptions)
   }
 }
 
