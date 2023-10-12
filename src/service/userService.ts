@@ -4,10 +4,12 @@
 
 import bcrypt from 'bcrypt'
 import UserModel from '@/models/userModel'
+import TopicModel from '@/models/topicModel'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
 import mongoose from '@/db/connection'
 import type { UpdateFieldArray, LoginResponseData } from './types/userService'
+import ReplyModel from '@/models/replyModel'
 
 class UserService {
   // 获取单个用户全部信息
@@ -30,6 +32,8 @@ class UserService {
       topic: user.topic,
       reply: user.reply,
       comment: user.comment,
+      like_topic: user.like_topic,
+      upvote_topic: user.upvote_topic,
     }
     return responseData
   }
@@ -213,6 +217,9 @@ class UserService {
 
   /**
    * 更改用户密码
+   * @param {number} uid - 用户 uid
+   * @param {string} oldPassword - 用户的旧密码
+   * @param {string} newPassWord - 用户的新密码
    */
   async updateUserPassword(
     uid: number,
@@ -232,6 +239,30 @@ class UserService {
     const hashedPassword = await bcrypt.hash(newPassWord, 7)
     // 存储加密后的密码
     await UserModel.updateOne({ uid }, { $set: { password: hashedPassword } })
+  }
+
+  // 获取用户话题，发布的，点赞的，推的
+  async getUserTopic(tidArray: number[]) {
+    const topics = await TopicModel.find({ tid: { $in: tidArray } })
+
+    const responseData = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      time: topic.time,
+    }))
+    return responseData
+  }
+
+  // 获取用户回复
+  async getUserReplies(ridArray: number[]) {
+    const topics = await ReplyModel.find({ tid: { $in: ridArray } })
+
+    const responseData = topics.map((reply) => ({
+      tid: reply.tid,
+      content: reply.content,
+      likes: reply.likes,
+    }))
+    return responseData
   }
 
   // 更新用户的发帖，回复，评论，点赞，不喜欢，推

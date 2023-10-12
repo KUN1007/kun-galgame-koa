@@ -147,6 +147,29 @@ class UserController {
       data: {},
     }
   }
+
+  // 获取用户话题，发布的，点赞的，推的
+  async getUserTopic(ctx: Context) {
+    const tidArray = ctx.query.tidArray as string
+
+    // 数组为空返回空
+    if (!tidArray) {
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: [],
+      }
+      return
+    }
+
+    const numberArray = tidArray.split(',').map((tid) => parseInt(tid))
+    const result = await UserService.getUserTopic(numberArray)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: result,
+    }
+  }
 }
 
 export default new UserController()

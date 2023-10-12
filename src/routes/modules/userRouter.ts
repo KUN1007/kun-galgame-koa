@@ -26,4 +26,7 @@ router.put('/:uid/email', UserController.updateUserEmail)
 // 更新用户密码
 router.put('/:uid/password', UserController.updateUserPassword)
 
+// 获取用户发布的话题
+router.get('/:uid/published-topic', UserController.getUserTopic)
+
 export default router
