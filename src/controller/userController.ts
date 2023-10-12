@@ -71,12 +71,32 @@ class UserController {
 
     const bio = ctx.request.body.bio as string
 
+    // TODO: 后端再次校验，以防万一
+    if (bio.length > 107) {
+      return
+    }
+
     await UserService.updateUserBio(uid, bio)
 
     ctx.body = {
       code: 200,
       message: 'OK',
       data: {},
+    }
+  }
+
+  // 获取用户邮箱
+  async getUserEmail(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+    const email = await UserService.getUserEmail(uid)
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {
+        email: email,
+      },
     }
   }
 }

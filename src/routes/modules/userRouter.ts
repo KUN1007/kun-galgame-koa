@@ -17,4 +17,7 @@ router.get('/:uid', UserController.getUserByUid)
 // 更新用户签名
 router.put('/:uid/bio', UserController.updateUserBio)
 
+// 获取用户邮箱
+router.get('/:uid/email', UserController.getUserEmail)
+
 export default router

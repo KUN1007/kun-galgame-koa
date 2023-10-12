@@ -46,6 +46,12 @@ class UserService {
     await UserModel.updateOne({ uid }, { $set: { bio: bio } })
   }
 
+  // 获取用户邮箱
+  async getUserEmail(uid: number) {
+    const user = await UserModel.findOne({ uid })
+    return user.email
+  }
+
   // 获取用户的部分信息
   /**
    * @param {number} uid - 用户名
