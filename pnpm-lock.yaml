@@ -26,6 +26,9 @@ dependencies:
   koa-body:
     specifier: ^6.0.1
     version: 6.0.1
+  koa-combine-routers:
+    specifier: ^4.0.2
+    version: 4.0.2
   koa-router:
     specifier: ^12.0.0
     version: 12.0.0
@@ -1551,6 +1554,10 @@ packages:
   /@types/keygrip@1.0.2:
     resolution: {integrity: sha512-GJhpTepz2udxGexqos8wgaBx4I/zWIDPh/KOGEwAqtuGDkOUJu5eFvwmdBX4AmB8Odsr+9pHCQqiAqDL/yKMKw==}
 
+  /@types/koa-compose@3.2.2:
+    resolution: {integrity: sha512-l7cgROjz3k126UWAnijr3SmNUR5QVx2GHWyLTRBSIVgtEeOxVGDov8eSsyYszKXB0oBSXRYyRF3BDhtyGY5bPQ==}
+    dev: false
+
   /@types/koa-compose@3.2.5:
     resolution: {integrity: sha512-B8nG/OoE1ORZqCkBVsup/AKcvjdgoHnfi4pZMn5UwAPCbhk/96xyv284eBYW8JlQbQ7zDmnpFr68I/40mFoIBQ==}
     dependencies:
@@ -1560,7 +1567,6 @@ packages:
     resolution: {integrity: sha512-3dHlZ6CkhgcWeF6wafEUvyyqjWYfKmev3vy1PtOmr0mBc3wpXPU5E8fBBd4YQo5bRpHPfmwC5yDaX7s4jhIN6A==}
     dependencies:
       '@types/koa': 2.13.8
-    dev: true
 
   /@types/koa-session@6.4.2:
     resolution: {integrity: sha512-S43VAzl57kSp4KwGAO8QUxx36Apt27aXpllUr4Fv451CnCXV8NgCpBSaP5FViEXla2/5UVi9PUkarWfxnqCXOg==}
@@ -3237,6 +3243,14 @@ packages:
       co-body: 6.1.0
       formidable: 2.1.2
       zod: 3.21.4
+    dev: false
+
+  /koa-combine-routers@4.0.2:
+    resolution: {integrity: sha512-hUHIVWWefwkhOQaOdil1g0qMKsMF/7iBW81jGSxp8k1HfeAvpsABOqyhUYxaLT0Ux0HSi8ytwf2B8hkM0gD31Q==}
+    dependencies:
+      '@types/koa-compose': 3.2.2
+      '@types/koa-router': 7.4.4
+      koa-compose: 4.1.0
     dev: false
 
   /koa-compose@4.1.0:
