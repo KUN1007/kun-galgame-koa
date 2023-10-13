@@ -60,6 +60,29 @@ class AuthController {
       data: {},
     }
   }
+
+  // 重置密码,这里的重置密码需要验证邮箱
+  async resetPasswordByEmail(ctx: Context) {
+    const { email, code, newPassword } = ctx.request.body
+
+    const result = await AuthService.resetPasswordByEmail(
+      email,
+      code,
+      newPassword
+    )
+
+    // 返回错误码
+    if (typeof result === 'number') {
+      ctx.app.emit('kunError', result, ctx)
+      return
+    }
+
+    ctx.body = {
+      code: 200,
+      message: 'Reset password successfully!',
+      data: {},
+    }
+  }
 }
 
 export default new AuthController()

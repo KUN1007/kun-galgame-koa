@@ -217,7 +217,7 @@ class UserService {
   }
 
   /**
-   * 更改用户密码
+   * 更改用户密码,这里是根据用户密码更改的,不是根据邮箱
    * @param {number} uid - 用户 uid
    * @param {string} oldPassword - 用户的旧密码
    * @param {string} newPassWord - 用户的新密码
@@ -225,7 +225,7 @@ class UserService {
   async updateUserPassword(
     uid: number,
     oldPassword: string,
-    newPassWord: string
+    newPassword: string
   ) {
     const user = await UserModel.findOne({ uid })
 
@@ -237,7 +237,7 @@ class UserService {
     }
 
     // bcrypt.hash 的第二个参数为哈希函数的迭代次数，越大加密效果越好但运算越慢
-    const hashedPassword = await bcrypt.hash(newPassWord, 7)
+    const hashedPassword = await bcrypt.hash(newPassword, 7)
     // 存储加密后的密码
     await UserModel.updateOne({ uid }, { $set: { password: hashedPassword } })
   }

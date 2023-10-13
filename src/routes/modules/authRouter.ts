@@ -14,4 +14,7 @@ router.post('/token/refresh', AuthController.generateTokenByRefreshToken)
 // 重置邮箱验证码
 router.post('/email/reset', AuthController.sendResetEmailCode)
 
+// 重置密码
+router.post('/password/reset', AuthController.resetPasswordByEmail)
+
 export default router

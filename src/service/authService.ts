@@ -1,12 +1,14 @@
 /*
  * 鉴权服务，用户 jwt 路由接口鉴权
  */
+import bcrypt from 'bcrypt'
 import { verifyJWTPayload, generateToken } from '@/utils/jwt'
 import { setValue, getValue } from '@/config/redisConfig'
 import nodemailer from 'nodemailer'
 import SMPTransport from 'nodemailer-smtp-transport'
 import { generateRandomCode } from '@/utils/generateRandomCode'
 import env from '@/config/config.dev'
+import UserModel from '@/models/userModel'
 
 class AuthService {
   // 生成 token
@@ -115,6 +117,29 @@ class AuthService {
     }
 
     return transporter.sendMail(mailOptions)
+  }
+
+  // 重置密码
+  async resetPasswordByEmail(email: string, code: string, newPassword: string) {
+    const validEmail = this.verifyVerificationCode(email, code)
+
+    // 邮箱和验证码不匹配
+    if (!validEmail) {
+      return 10103
+    }
+
+    // 对新密码加密
+    const hashedPassword = await bcrypt.hash(newPassword, 7)
+
+    const user = await UserModel.findOneAndUpdate(
+      { email: email },
+      { $set: { password: hashedPassword } }
+    )
+
+    // 未找到用户
+    if (!user) {
+      return 10101
+    }
   }
 }
 
