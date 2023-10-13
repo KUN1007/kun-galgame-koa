@@ -64,9 +64,9 @@ class AuthService {
     )
 
     const mailOptions = {
-      from: env.EMAIL,
+      from: env.GOOGLE_EMAIL,
       to: email,
-      subject: 'KUNGalgame Verification Code',
+      subject: '~~~ KUNGalgame ~~~',
       text: `Your verification code is: ${code}`,
     }
 
