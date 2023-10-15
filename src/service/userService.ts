@@ -171,6 +171,11 @@ class UserService {
     }
   }
 
+  // 更新用户的头像
+  async updateUserAvatar(uid: number, image: string) {
+    await UserModel.updateOne({ uid }, { $set: { avatar: image } })
+  }
+
   // 更新用户的签名
   async updateUserBio(uid: number, bio: string) {
     await UserModel.updateOne({ uid }, { $set: { bio: bio } })

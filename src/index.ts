@@ -1,13 +1,10 @@
-// 使用 koa 框架
 import Koa from 'koa'
-// 使用环境变量
 import env from '@/config/config.dev'
-// 使用 koa-router
 import router from '@/routes/routes'
-// 解析请求体
 import koaBody from 'koa-body'
-// 允许跨域请求
 import cors from '@koa/cors'
+import serve from 'koa-static'
+import mount from 'koa-mount'
 // session
 // import session from 'koa-session'
 // 解决前端页面刷新 404
@@ -21,7 +18,6 @@ import { kungalgameErrorHandler } from '@/error/kunErrorHandler'
 
 useKUNGalgameTask()
 
-// 初始化 koa-app
 const app = new Koa()
 
 // 使用 koa 跨域请求中间件
@@ -38,11 +34,13 @@ app.use(
   koaBody({
     multipart: true,
     formidable: {
+      // 临时上传文件夹
+      uploadDir: env.TEMP_FILE_PATH,
       keepExtensions: true,
-      maxFieldsSize: 5 * 1024 * 1024,
+      maxFieldsSize: 1007 * 1024,
     },
     onError: (err) => {
-      console.log('koa-body TCL: err', err)
+      console.log('koa-body: err', err)
     },
   })
 )
@@ -54,8 +52,12 @@ app.use(
 // 鉴权
 app.use(kungalgameAuthMiddleware())
 // app.use(historyApiFallback({ index: '' }))
+
 // 使用 koa-router
 app.use(router())
+
+// 使用 koa-static
+app.use(mount('/uploads', serve('./uploads')))
 
 // 应用发生错误时处理错误
 app.on('kunError', kungalgameErrorHandler)

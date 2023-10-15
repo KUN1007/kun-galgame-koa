@@ -1,5 +1,7 @@
 import Router from 'koa-router'
 import UserController from '@/controller/userController'
+// 图片 controller，因为步骤较多所以分开了
+import ImageController from '@/controller/imageController'
 
 const router = new Router()
 
@@ -13,6 +15,9 @@ router.post('/login', UserController.login)
 
 // 获取单个用户信息
 router.get('/:uid', UserController.getUserByUid)
+
+// 更新用户头像
+router.post('/:uid/avatar', ImageController.updateUserAvatar)
 
 // 更新用户签名
 router.put('/:uid/bio', UserController.updateUserBio)

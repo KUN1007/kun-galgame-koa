@@ -31,7 +31,7 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "config/utils.ts"
-  ],
+, "src/index.ts"  ],
   "exclude": ["node_modules", "build", "**/*.test.ts", "test/**/*", "temp"],
   "compileOnSave": true,
   "buildOnSave": true
