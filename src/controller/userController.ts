@@ -1,6 +1,8 @@
 import { Context } from 'koa'
 import UserService from '@/service/userService'
 import { setCookieRefreshToken, getCookieTokenInfo } from '@/utils/cookies'
+// 操作图片的函数
+import { resizedUserAvatar } from '@/utils/image'
 
 class UserController {
   // 登录
@@ -61,6 +63,24 @@ class UserController {
       code: 200,
       message: 'OK',
       data: user,
+    }
+  }
+
+  // 更新用户头像
+  async updateUserAvatar(ctx: Context) {
+    // 从 cookie 获取用户信息
+    const uid = getCookieTokenInfo(ctx).uid
+
+    const avatarLink = await resizedUserAvatar(ctx, uid)
+
+    await UserService.updateUserAvatar(uid, avatarLink)
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {
+        avatar: avatarLink,
+      },
     }
   }
 
