@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import env from '@/config/config.dev'
 // 处理图片的库
-// import sharp from 'sharp'
+import sharp from 'sharp'
 
 import { Context } from 'koa'
 
@@ -12,7 +12,7 @@ const clearUserFolder = (userFolderPath: string) => {
     fs.readdirSync(userFolderPath).forEach((file) => {
       const filePath = path.join(userFolderPath, file)
       // 如果是文件，直接删除
-      fs.unlinkSync(filePath)
+      fs.unlink(filePath, () => {})
     })
   }
 }
@@ -48,19 +48,19 @@ export const resizedUserAvatar = async (ctx: Context, uid: number) => {
   }
 
   const originalFilePath = path.join(newPath, `${newFileName}.webp`)
-  // const resizedFilePath = path.join(newPath, `${newFileName}-100x100.webp`)
+  const resizedFilePath = path.join(newPath, `${newFileName}-77.webp`)
 
   // 移动文件并重命名
   fs.renameSync(avatarFile.filepath, originalFilePath)
 
   // 使用Sharp库调整图像大小为 77x77 像素并保存
-  // await sharp(originalFilePath)
-  //   // 背景透明
-  //   .resize(77, 77, {
-  //     fit: 'contain',
-  //     background: { r: 0, g: 0, b: 0, alpha: 0 },
-  //   })
-  //   .toFile(resizedFilePath)
+  await sharp(originalFilePath)
+    // 背景透明
+    .resize(77, 77, {
+      fit: 'contain',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .toFile(resizedFilePath)
 
   // example: http://127.0.0.1:10007/uploads/avatar/user_1/kun-1697384098167-kun-galgame-avatar.webp
   const imageLink = `http://${env.APP_HOST}:${env.APP_PORT}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
