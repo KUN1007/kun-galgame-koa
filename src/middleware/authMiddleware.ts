@@ -5,7 +5,7 @@ import { verifyJWTPayloadByHeader } from '@/utils/jwt'
 
 // 定义一个正则表达式，匹配白名单路由前缀
 const whitelistRegex =
-  /^\/(auth|public|user\/login|user\/register|uploads\/avatar)/
+  /^\/(auth|public|user\/login|user\/register|uploads\/avatar|balance)/
 
 // 鉴权中间件
 export function kungalgameAuthMiddleware(): Middleware {

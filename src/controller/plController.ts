@@ -9,6 +9,28 @@ type SortField = 'time' | 'amount'
 type SortOrder = 'asc' | 'desc'
 
 class TagController {
+  async createIncome(ctx: Context) {
+    const { reason, time, amount } = ctx.request.body
+
+    const timeStamp = parseInt(time)
+    await PLService.createIncome(reason, timeStamp, amount)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
+    }
+  }
+
+  async createExpenditure(ctx: Context) {
+    const { reason, time, amount } = ctx.request.body
+    await PLService.createExpenditure(reason, time, amount)
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: {},
+    }
+  }
+
   // 获取 income 数据
   async getIncomes(ctx: Context) {
     const page = parseInt(ctx.query.page as string)
@@ -46,6 +68,17 @@ class TagController {
       code: 200,
       message: 'OK',
       data: expenditures,
+    }
+  }
+
+  // 获取收支总数
+  async getPLStatement(ctx: Context) {
+    const responseData = await PLService.getPLStatement()
+
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data: responseData,
     }
   }
 }
