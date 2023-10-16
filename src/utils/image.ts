@@ -48,15 +48,15 @@ export const resizedUserAvatar = async (ctx: Context, uid: number) => {
   }
 
   const originalFilePath = path.join(newPath, `${newFileName}.webp`)
-  const resizedFilePath = path.join(newPath, `${newFileName}-77.webp`)
+  const resizedFilePath = path.join(newPath, `${newFileName}-100.webp`)
 
   // 移动文件并重命名
   fs.renameSync(avatarFile.filepath, originalFilePath)
 
-  // 使用Sharp库调整图像大小为 77x77 像素并保存
+  // 使用Sharp库调整图像大小为 100x100 像素并保存
   await sharp(originalFilePath)
     // 背景透明
-    .resize(77, 77, {
+    .resize(100, 100, {
       fit: 'contain',
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
