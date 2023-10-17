@@ -8,26 +8,24 @@ import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'
 
-// 话题可供更新的字段名
-type UpdateField = 'rid' | 'upvotes' | 'likes' | 'share' | 'dislikes'
-
 type SortField =
   | 'updated'
   | 'time'
   | 'popularity'
   | 'views'
-  | 'likes'
-  | 'replies'
+  | 'upvotes_count'
+  | 'likes_count'
+  | 'replies_count'
   | 'comments'
 
 type SortOrder = 'asc' | 'desc'
 
 type SortFieldRanking =
   | 'popularity'
-  | 'upvotes'
   | 'views'
-  | 'likes'
-  | 'replies'
+  | 'upvotes_count'
+  | 'likes_count'
+  | 'replies_count'
   | 'comments'
 
 class TopicService {
@@ -71,11 +69,12 @@ class TopicService {
       // 保存话题
       const savedTopic = await newTopic.save()
 
-      // 在用户的话题数组里保存话题，这里只是保存，没有撤销操作，所以是 true
-      await UserService.updateUserArray(uid, 'topic', savedTopic.tid, true)
-
+      // 在用户的话题数组里保存话题
       // 更新用户的今日发布话题计数
-      await UserModel.updateOne({ uid }, { $inc: { daily_topic_count: 1 } })
+      await UserModel.updateOne(
+        { uid },
+        { $addToSet: { topic: savedTopic.tid }, $inc: { daily_topic_count: 1 } }
+      )
 
       // 保存话题 tag
       await TagService.createTagsByTidAndRid(savedTopic.tid, 0, tags, category)
@@ -291,7 +290,7 @@ class TopicService {
       await UserModel.updateOne(
         { uid: uid },
         {
-          $inc: { moemoepoint: -17 },
+          $inc: { moemoepoint: -17, upvote_topic_count: 1 },
           $addToSet: {
             upvote_topic: tid,
           },
@@ -344,13 +343,22 @@ class TopicService {
 
     try {
       // 将用户的 uid 作用于话题的 likes 数组中
-      await this.updateTopicArray(tid, 'likes', uid, isPush)
-
-      // 更新话题的热度
-      await this.updateTopicPop(tid, popularity)
+      // 更新话题的热度和点赞计数
+      await TopicModel.updateOne(
+        { tid: tid },
+        { [isPush ? '$addToSet' : '$pull']: { likes: uid } },
+        {
+          $inc: { popularity: popularity, likes_count: moemoepointAmount },
+        }
+      )
 
       // 将话题的 tid 作用于用户的 like_topic 数组中
-      await UserService.updateUserArray(uid, 'like_topic', tid, isPush)
+      // 增加用户的点赞计数
+      await UserModel.updateOne(
+        { uid: uid },
+        { [isPush ? '$addToSet' : '$pull']: { like_topic: tid } },
+        { $inc: { like_topic_count: 1 } }
+      )
 
       // 更新被点赞用户的萌萌点
       // 更新被点赞用户的被点赞数
@@ -399,15 +407,24 @@ class TopicService {
 
     try {
       // 将用户的 uid 作用于话题的 likes 数组中
-      await this.updateTopicArray(tid, 'dislikes', uid, isPush)
-
       // 更新话题的热度
-      await this.updateTopicPop(tid, popularity)
+      // 更新话题的热度和点踩计数
+      await TopicModel.updateOne(
+        { tid: tid },
+        { [isPush ? '$addToSet' : '$pull']: { dislikes: uid } },
+        {
+          $inc: { popularity: popularity, dislikes_count: amount },
+        }
+      )
 
-      // 将话题的 tid 作用于用户的 like_topic 数组中
-      await UserService.updateUserArray(uid, 'dislike_topic', tid, isPush)
+      // 将话题的 tid 作用于用户的 dislike_topic 数组中
+      await UserModel.updateOne(
+        { uid: uid },
+        { [isPush ? '$addToSet' : '$pull']: { dislike_topic: tid } },
+        { $inc: { dislike_topic_count: 1 } }
+      )
 
-      // 更新被点赞用户的被点踩数
+      // 更新被点踩用户的被点踩数
       await UserModel.updateOne({ uid: to_uid }, { $inc: { dislike: amount } })
 
       // 提交事务
@@ -526,9 +543,8 @@ class TopicService {
       tid: topic.tid,
       title: topic.title,
       views: topic.views,
-      likes: topic.likes,
-      // 这里需要的仅仅是 reply 的数量而已
-      replies: topic.replies,
+      likesCount: topic.likes_count,
+      repliesCount: topic.replies_count,
       comments: topic.comments,
       time: topic.time,
       // 首页预览文本
@@ -537,9 +553,7 @@ class TopicService {
       tags: topic.tags,
       category: topic.category,
       popularity: topic.popularity,
-      // 这里 populate 后的结果是一个数组，取第一个用户数据
       user: {
-        // 这里去掉了 _id
         uid: topic.user[0].uid,
         avatar: topic.user[0].avatar,
         name: topic.user[0].name,
@@ -587,44 +601,6 @@ class TopicService {
     }))
 
     return responseData
-  }
-
-  // 更新话题数组，用于推，点赞，点踩，分享等
-  /**
-   * @param {number} tid - 话题 id
-   * @param {UpdateField} updateField - 要更新话题 Model 的哪个字段
-   * @param {number} uid - 用户 uid
-   * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
-   */
-  async updateTopicArray(
-    tid: number,
-    updateField: UpdateField,
-    uid: number,
-    isPush: boolean
-  ) {
-    if (isPush) {
-      await TopicModel.updateOne(
-        { tid: tid },
-        { $addToSet: { [updateField]: uid } }
-      )
-    } else {
-      await TopicModel.updateOne(
-        { tid: tid },
-        { $pull: { [updateField]: uid } }
-      )
-    }
-  }
-
-  // 更新话题的热度值，增加传入整数，减小传入负数
-  /**
-   * @param {number} tid - 要更新话题的 id
-   * @param {number} amount - 更新的数值，可以是负数
-   */
-  async updateTopicPop(tid: number, amount: number) {
-    await TopicModel.updateOne(
-      { tid: tid }, // 根据话题ID查找相应的话题
-      { $inc: { popularity: amount } }
-    ) // 使用$inc操作符增加或减少热度字段的值
   }
 }
 

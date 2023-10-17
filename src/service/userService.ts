@@ -296,24 +296,24 @@ class UserService {
    * @param {number} itemId - model 的 id 字段
    * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
    */
-  async updateUserArray(
-    uid: number,
-    updateFieldArray: UpdateFieldArray,
-    itemId: number,
-    isPush: boolean
-  ) {
-    if (isPush) {
-      await UserModel.updateOne(
-        { uid: uid },
-        { $addToSet: { [updateFieldArray]: itemId } }
-      )
-    } else {
-      await UserModel.updateOne(
-        { uid: uid },
-        { $pull: { [updateFieldArray]: itemId } }
-      )
-    }
-  }
+  // async updateUserArray(
+  //   uid: number,
+  //   updateFieldArray: UpdateFieldArray,
+  //   itemId: number,
+  //   isPush: boolean
+  // ) {
+  //   if (isPush) {
+  //     await UserModel.updateOne(
+  //       { uid: uid },
+  //       { [isPush ? '$addToSet' : '$pull']: { [updateFieldArray]: itemId } }
+  //     )
+  //   } else {
+  //     await UserModel.updateOne(
+  //       { uid: uid },
+  //       { $pull: { [updateFieldArray]: itemId } }
+  //     )
+  //   }
+  // }
 }
 
 export default new UserService()

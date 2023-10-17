@@ -8,8 +8,9 @@ type SortField =
   | 'time'
   | 'popularity'
   | 'views'
-  | 'likes'
-  | 'replies'
+  | 'upvotes_count'
+  | 'likes_count'
+  | 'replies_count'
   | 'comments'
 
 type SortOrder = 'asc' | 'desc'
