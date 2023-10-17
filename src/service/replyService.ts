@@ -302,7 +302,7 @@ class ReplyService {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const replyId = (await TopicModel.findOne({ tid }).lean()).rid
+      const replyId = (await TopicModel.findOne({ tid }).lean()).replies
 
       const skip = (page - 1) * limit
 

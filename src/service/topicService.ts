@@ -11,6 +11,25 @@ import mongoose from '@/db/connection'
 // 话题可供更新的字段名
 type UpdateField = 'rid' | 'upvotes' | 'likes' | 'share' | 'dislikes'
 
+type SortField =
+  | 'updated'
+  | 'time'
+  | 'popularity'
+  | 'views'
+  | 'likes'
+  | 'replies'
+  | 'comments'
+
+type SortOrder = 'asc' | 'desc'
+
+type SortFieldRanking =
+  | 'popularity'
+  | 'upvotes'
+  | 'views'
+  | 'likes'
+  | 'replies'
+  | 'comments'
+
 class TopicService {
   /*
    * 编辑页面
@@ -151,7 +170,7 @@ class TopicService {
           avatar: userInfo.avatar,
           moemoepoint: userInfo.moemoepoint,
         },
-        rid: topic.rid,
+        replies: topic.replies,
         status: topic.status,
         share: topic.share,
         category: topic.category,
@@ -445,8 +464,8 @@ class TopicService {
    * @param {Array} category - 话题的分类，目前有三种，Galgame, Technique, Others
    * @param {Number} page - 分页页数
    * @param {Number} limit - 每页的数据数
-   * @param {String} sortField - 按照哪个字段排序
-   * @param {String} sortOrder - 排序的顺序，有 `asc`, `desc`
+   * @param {SortField} sortField - 按照哪个字段排序
+   * @param {SortOrder} sortOrder - 排序的顺序，有 `asc`, `desc`
    * @returns {HomeTopicResponseData} topicData
    */
   async searchTopics(
@@ -454,8 +473,8 @@ class TopicService {
     category: string[],
     page: number,
     limit: number,
-    sortField: string,
-    sortOrder: string
+    sortField: SortField,
+    sortOrder: SortOrder
   ) {
     const skip = (page - 1) * limit
 
@@ -496,7 +515,6 @@ class TopicService {
     const sortOptions: Record<string, 'asc' | 'desc'> = {
       [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
     }
-    // const totalResults = await topicModel.countDocuments(query)
 
     const topics = await TopicModel.find(query)
       .sort(sortOptions)
@@ -511,7 +529,7 @@ class TopicService {
       views: topic.views,
       likes: topic.likes,
       // 这里需要的仅仅是 reply 的数量而已
-      replies: topic.rid,
+      replies: topic.replies,
       comments: topic.comments,
       time: topic.time,
       // 首页预览文本
@@ -531,12 +549,45 @@ class TopicService {
       upvote_time: topic.upvote_time,
     }))
 
-    return {
-      // totalResults,
-      // currentPage: parseInt(page),
-      // totalPages: Math.ceil(totalResults / parseInt(limit)),
-      data,
+    return data
+  }
+
+  /**
+   * 获取热门话题，用于 ranking
+   */
+
+  /**
+   * @param {Number} page - 分页页数
+   * @param {Number} limit - 每页的数据数
+   * @param {SortFieldRanking} sortField - 按照哪个字段排序
+   * @param {SortOrder} sortOrder - 排序的顺序，有 `asc`, `desc`
+   */
+  // 获取排行榜 50 条话题数据，根据 sortField, sortOrder
+  async getTopicRanking(
+    page: number,
+    limit: number,
+    sortField: SortFieldRanking,
+    sortOrder: SortOrder
+  ) {
+    const skip = (page - 1) * limit
+
+    const sortOptions: Record<string, 'asc' | 'desc'> = {
+      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
     }
+
+    const topics = await TopicModel.find()
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean()
+
+    const responseData = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      field: topic[sortField],
+    }))
+
+    return responseData
   }
 
   // 更新话题数组，用于推，点赞，点踩，分享等

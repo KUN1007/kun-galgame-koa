@@ -78,16 +78,25 @@ interface TopicAttributes {
   uid: number
   tags: string[]
   category: string[]
-  rid: number[]
   time: number
+
   popularity: number
-  upvotes: number[]
-  upvote_time: number
   views: number
+  upvote_time: number
+
+  upvotes_count: number
+  replies_count: number
+  likes_count: number
+  share_count: number
+  dislikes_count: number
+
+  upvotes: number[]
+  replies: number[]
   likes: number[]
   share: number[]
   comments: number
   dislikes: number[]
+
   status: number
   edited: number
   // 虚拟字段

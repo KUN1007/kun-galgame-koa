@@ -18,26 +18,40 @@ const TopicSchema = new mongoose.Schema<TopicAttributes>(
     tags: { type: [String], required: true },
     // 话题的分类，暂时有一个或两个
     category: { type: [String], required: true },
-    // 话题下方回复的 ID，标识了这个话题底下有多少回复
-    rid: { type: [String], default: [] },
     // 话题发布的时间
     time: { type: Number, default: Date.now() },
+
     // 话题的热度，有专门的热度计算公式
     popularity: { type: Number, default: 0 },
-    // 话题的被推数量
-    upvotes: { type: [Number], default: [] },
-    // 话题被推的时间
-    upvote_time: { type: Number, default: 0 },
     // 话题被查看的次数
     views: { type: Number, default: 0 },
-    // 话题的点赞数
-    likes: { type: [Number], default: [] },
-    // 话题的分享数
-    share: { type: [Number], default: [] },
     // 话题的评论数
     comments: { type: Number, default: 0 },
-    // 话题的点踩数
+    // 话题被推的时间
+    upvote_time: { type: Number, default: 0 },
+
+    // 话题的被推计数
+    upvotes_count: { type: Number, default: 0 },
+    // 话题的回复计数
+    replies_count: { type: Number, default: 0 },
+    // 话题的点赞计数
+    likes_count: { type: Number, default: 0 },
+    // 话题的分享计数
+    share_count: { type: Number, default: 0 },
+    // 话题的被踩计数
+    dislikes_count: { type: Number, default: 0 },
+
+    // 话题的被推数组，存放了用户的 uid
+    upvotes: { type: [Number], default: [] },
+    // 话题下方回复的 ID，存放了回复的 rid
+    replies: { type: [String], default: [] },
+    // 话题的点赞数，存放了点赞用户的 uid
+    likes: { type: [Number], default: [] },
+    // 话题的分享数，存放了分享用户的 uid
+    share: { type: [Number], default: [] },
+    // 话题的点踩数，存放了点踩用户的 uid
     dislikes: { type: [Number], default: [] },
+
     // 话题的状态，0 正常，1 封禁, 2 被删除
     status: { type: Number, default: 0 },
     // 话题被再次编辑的时间

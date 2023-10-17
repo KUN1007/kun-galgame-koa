@@ -3,6 +3,25 @@ import TopicService from '@/service/topicService'
 // 操作 cookie 的函数
 import { getCookieTokenInfo } from '@/utils/cookies'
 
+type SortField =
+  | 'updated'
+  | 'time'
+  | 'popularity'
+  | 'views'
+  | 'likes'
+  | 'replies'
+  | 'comments'
+
+type SortOrder = 'asc' | 'desc'
+
+type SortFieldRanking =
+  | 'popularity'
+  | 'upvotes'
+  | 'views'
+  | 'likes'
+  | 'replies'
+  | 'comments'
+
 class TopicController {
   /*
    * 话题页面
@@ -240,22 +259,29 @@ class TopicController {
 
   // 按关键词搜索话题
   async searchTopics(ctx: Context) {
-    try {
-      const { keywords, category, page, limit, sortField, sortOrder } =
-        ctx.query
-      const data = await TopicService.searchTopics(
-        keywords as string,
-        category as string[],
-        parseInt(page as string),
-        parseInt(limit as string),
-        sortField as string,
-        <'asc' | 'desc'>sortOrder
-      )
-      ctx.body = { code: 200, message: 'OK', data: data.data }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to fetch search results' }
-    }
+    const { keywords, category, page, limit, sortField, sortOrder } = ctx.query
+    const data = await TopicService.searchTopics(
+      keywords as string,
+      category as string[],
+      parseInt(page as string),
+      parseInt(limit as string),
+      sortField as SortField,
+      sortOrder as SortOrder
+    )
+    ctx.body = { code: 200, message: 'OK', data: data }
+  }
+
+  // 获取热门话题，用于 ranking
+  async getTopicRanking(ctx: Context) {
+    const { page, limit, sortField, sortOrder } = ctx.query
+
+    const topics = await TopicService.getTopicRanking(
+      parseInt(page as string),
+      parseInt(limit as string),
+      sortField as SortFieldRanking,
+      sortOrder as SortOrder
+    )
+    ctx.body = { code: 200, message: 'OK', data: topics }
   }
 }
 
