@@ -26,17 +26,29 @@ const ReplySchema = new mongoose.Schema<ReplyAttributes>(
     edited: { type: String, default: '' },
     // 回复的内容
     content: { type: String, default: '' },
-    // 回复是否被推
-    upvotes: { type: [Number], default: [] },
     // 回复被推的时间
     upvote_time: { type: Number, default: 0 },
-    // 回复的点赞数
+
+    // 回复的被推计数
+    upvotes_count: { type: Number, default: 0 },
+    // 回复的点赞计数
+    likes_count: { type: Number, default: 0 },
+    // 回复的点踩计数
+    dislikes_count: { type: Number, default: 0 },
+    // 回复的分享计数
+    share_count: { type: Number, default: 0 },
+    // 回复的评论计数
+    comment_count: { type: Number, default: 0 },
+
+    // 回复被推数组，存放了推回复用户的 uid
+    upvotes: { type: [Number], default: [] },
+    // 回复的点赞数组，存放了点赞用户的 uid
     likes: { type: [Number], default: [] },
-    // 回复的点踩数
+    // 回复的点踩数组，存放了点踩用户的 uid
     dislikes: { type: [Number], default: [] },
-    // 回复的分享数
+    // 回复的分享数组，存放了分享用户的 uid
     share: { type: [Number], default: [] },
-    // 回复的评论 id
+    // 回复的评论数组，存放了回复底下评论的 uid
     comment: { type: [String], default: [] },
   },
   // 时间戳，自动创建

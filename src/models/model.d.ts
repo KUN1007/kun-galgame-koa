@@ -6,6 +6,10 @@ export interface CommentAttributes {
   c_uid: number
   to_uid: number
   content: string
+
+  likes_count: number
+  dislikes_count: number
+
   likes: number[]
   dislikes: number[]
   // 虚拟字段
@@ -50,8 +54,15 @@ interface ReplyAttributes {
   time: number
   edited: string
   content: string
-  upvotes: number[]
   upvote_time: number
+
+  upvotes_count: number
+  likes_count: number
+  dislikes_count: number
+  share_count: number
+  comment_count: number
+
+  upvotes: number[]
   likes: number[]
   dislikes: number[]
   share: number[]
@@ -128,6 +139,17 @@ interface UserAttributes {
   like: number
   dislike: number
   daily_topic_count: number
+
+  friend_count: number
+  followed_count: number
+  follower_count: number
+  topic_count: number
+  reply_count: number
+  comment_count: number
+  like_topic_count: number
+  dislike_topic_count: number
+  upvote_topic_count: number
+  reply_topic_count: number
 
   friend: number[]
   followed: number[]

@@ -34,29 +34,49 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     // 用户的被踩数
     dislike: { type: Number, default: 0 },
     // 用户今日发表的话题，每日发布上限 萌萌点 / 10 个，12 点重置
-    // 由于是重置属性，使用三个单词命名
     daily_topic_count: { type: Number, default: 0 },
 
-    // 用户的好友
+    // 用户的好友计数
+    friend_count: { type: Number, default: 0 },
+    // 用户关注的用户计数
+    followed_count: { type: Number, default: 0 },
+    // 用户的关注者计数
+    follower_count: { type: Number, default: 0 },
+    // 用户发表的话题计数
+    topic_count: { type: Number, default: 0 },
+    // 用户发表的回复计数
+    reply_count: { type: Number, default: 0 },
+    // 用户发表的评论计数
+    comment_count: { type: Number, default: 0 },
+    // 用户点赞的话题计数
+    like_topic_count: { type: Number, default: 0 },
+    // 用户点踩的话题计数
+    dislike_topic_count: { type: Number, default: 0 },
+    // 用户推的话题计数
+    upvote_topic_count: { type: Number, default: 0 },
+    // 用户回复的话题计数
+    reply_topic_count: { type: Number, default: 0 },
+
+    // 用户的好友数组，存放了用户好友的 uid
     friend: { type: [Number], default: [] },
     // 用户关注的用户
     followed: { type: [Number], default: [] },
-    // 关注用户的用户
+    // 用户的关注者
     follower: { type: [Number], default: [] },
-    // 用户发表的话题 ID
-    topic: { type: [String], default: [] },
+    // 用户发表的话题 ID，存放了用户发布话题的 tid
+    topic: { type: [Number], default: [] },
     // 用户发表的回复 ID
-    reply: { type: [String], default: [] },
+    reply: { type: [Number], default: [] },
     // 用户发表的评论 ID
-    comment: { type: [String], default: [] },
+    comment: { type: [Number], default: [] },
     // 用户点赞的话题 ID
-    like_topic: { type: [String], default: [] },
+    like_topic: { type: [Number], default: [] },
     // 用户点踩的话题 ID
-    dislike_topic: { type: [String], default: [] },
+    dislike_topic: { type: [Number], default: [] },
     // 用户推的话题 ID
-    upvote_topic: { type: [String], default: [] },
+    upvote_topic: { type: [Number], default: [] },
     // 用户回复的话题 ID
-    reply_topic: { type: [String], default: [] },
+    reply_topic: { type: [Number], default: [] },
   },
   // 时间戳，自动生成
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }

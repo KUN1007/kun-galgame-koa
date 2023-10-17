@@ -71,10 +71,10 @@ class TopicService {
       // 保存话题
       const savedTopic = await newTopic.save()
 
-      // 在用户的发帖数组里保存话题，这里只是保存，没有撤销操作，所以是 true
+      // 在用户的话题数组里保存话题，这里只是保存，没有撤销操作，所以是 true
       await UserService.updateUserArray(uid, 'topic', savedTopic.tid, true)
 
-      // 更新用户的今日发帖计数
+      // 更新用户的今日发布话题计数
       await UserModel.updateOne({ uid }, { $inc: { daily_topic_count: 1 } })
 
       // 保存话题 tag
@@ -140,7 +140,6 @@ class TopicService {
       const topic = await TopicModel.findOne({ tid }).lean()
 
       // 用户每次访问话题，增加 views 字段值
-      // $inc 操作符通常用于在不锁定文档的情况下对字段进行增量更新，这对于并发操作非常有用，因为它确保了原子性
       await TopicModel.updateOne(
         { tid },
         { $inc: { views: 1, popularity: 0.1 } }
@@ -277,13 +276,13 @@ class TopicService {
     try {
       // 更新话题被推的时间
       // 将用户的 uid 放进话题的 upvotes 数组中
-      // 更新话题的热度
+      // 更新话题的热度，更新话题的被推数
       await TopicModel.updateOne(
         { tid },
         {
           $set: { upvote_time: Date.now() },
           $push: { upvotes: uid },
-          $inc: { popularity: 50 },
+          $inc: { popularity: 50, upvotes_count: 1 },
         }
       )
 

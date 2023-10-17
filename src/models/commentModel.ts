@@ -18,9 +18,15 @@ const CommentSchema = new mongoose.Schema<CommentAttributes>(
     to_uid: { type: Number, required: true, ref: 'user' },
     // 评论的内容，纯文字，无富文本
     content: { type: String, default: '' },
-    // 评论的点赞数
+
+    // 评论点赞计数
+    likes_count: { type: Number, default: 0 },
+    // 评论点踩计数
+    dislikes_count: { type: Number, default: 0 },
+
+    // 评论的点赞数组，存放了点赞用户的 uid
     likes: { type: [Number], default: [] },
-    // 评论的点踩数
+    // 评论的点踩数，存放了点踩用户的 uid
     dislikes: { type: [Number], default: [] },
   },
   // 时间戳，自动生成
