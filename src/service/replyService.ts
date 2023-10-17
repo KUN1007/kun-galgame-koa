@@ -59,7 +59,7 @@ class ReplyService {
       await TopicModel.updateOne(
         { tid },
         {
-          $addToSet: { rid: savedReply.rid },
+          $addToSet: { replies: savedReply.rid },
           $inc: { popularity: 5, replies_count: 1 },
         }
       )

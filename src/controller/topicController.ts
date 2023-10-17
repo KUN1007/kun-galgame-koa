@@ -17,10 +17,10 @@ type SortOrder = 'asc' | 'desc'
 
 type SortFieldRanking =
   | 'popularity'
-  | 'upvotes'
   | 'views'
-  | 'likes'
-  | 'replies'
+  | 'upvotes_count'
+  | 'likes_count'
+  | 'replies_count'
   | 'comments'
 
 class TopicController {

@@ -2,10 +2,10 @@
  * 评论的 CRUD，定义了一些对评论数据的数据库交互操作
  */
 
+import TopicModel from '@/models/topicModel'
+import ReplyModel from '@/models/replyModel'
 import CommentModel from '@/models/commentModel'
 import UserModel from '@/models/userModel'
-import TopicService from './topicService'
-import ReplyService from './replyService'
 import mongoose from '@/db/connection'
 
 class CommentService {
@@ -53,12 +53,11 @@ class CommentService {
         { $inc: { moemoepoint: 1 } }
       )
 
-      await TopicService.updateTopicPop(tid, 2)
-      await ReplyService.updateReplyArray(
-        rid,
-        'comment',
-        savedComment.cid,
-        true
+      await TopicModel.updateOne({ tid }, { $inc: { popularity: 2 } })
+
+      await ReplyModel.updateOne(
+        { rid },
+        { $addToSet: { comment: savedComment.cid } }
       )
 
       // 提交事务

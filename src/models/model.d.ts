@@ -140,10 +140,6 @@ interface UserAttributes {
   topic_count: number
   reply_count: number
   comment_count: number
-  like_topic_count: number
-  dislike_topic_count: number
-  upvote_topic_count: number
-  reply_topic_count: number
 
   friend: number[]
   followed: number[]

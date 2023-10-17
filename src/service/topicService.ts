@@ -349,9 +349,9 @@ class TopicService {
       // 更新话题的热度和点赞计数
       await TopicModel.updateOne(
         { tid: tid },
-        { [isPush ? '$addToSet' : '$pull']: { likes: uid } },
         {
           $inc: { popularity: popularity, likes_count: moemoepointAmount },
+          [isPush ? '$addToSet' : '$pull']: { likes: uid },
         }
       )
 
@@ -359,8 +359,7 @@ class TopicService {
       // 增加用户的点赞计数
       await UserModel.updateOne(
         { uid: uid },
-        { [isPush ? '$addToSet' : '$pull']: { like_topic: tid } },
-        { $inc: { like_topic_count: 1 } }
+        { [isPush ? '$addToSet' : '$pull']: { like_topic: tid } }
       )
 
       // 更新被点赞用户的萌萌点
@@ -414,17 +413,16 @@ class TopicService {
       // 更新话题的热度和点踩计数
       await TopicModel.updateOne(
         { tid: tid },
-        { [isPush ? '$addToSet' : '$pull']: { dislikes: uid } },
         {
           $inc: { popularity: popularity, dislikes_count: amount },
+          [isPush ? '$addToSet' : '$pull']: { dislikes: uid },
         }
       )
 
       // 将话题的 tid 作用于用户的 dislike_topic 数组中
       await UserModel.updateOne(
         { uid: uid },
-        { [isPush ? '$addToSet' : '$pull']: { dislike_topic: tid } },
-        { $inc: { dislike_topic_count: 1 } }
+        { [isPush ? '$addToSet' : '$pull']: { dislike_topic: tid } }
       )
 
       // 更新被点踩用户的被点踩数

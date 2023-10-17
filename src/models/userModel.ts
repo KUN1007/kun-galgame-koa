@@ -48,14 +48,6 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     reply_count: { type: Number, default: 0 },
     // 用户发表的评论计数
     comment_count: { type: Number, default: 0 },
-    // 用户点赞的话题计数
-    like_topic_count: { type: Number, default: 0 },
-    // 用户点踩的话题计数
-    dislike_topic_count: { type: Number, default: 0 },
-    // 用户推的话题计数
-    upvote_topic_count: { type: Number, default: 0 },
-    // 用户回复的话题计数
-    reply_topic_count: { type: Number, default: 0 },
 
     // 用户的好友数组，存放了用户好友的 uid
     friend: { type: [Number], default: [] },
