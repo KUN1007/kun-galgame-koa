@@ -70,10 +70,13 @@ class TopicService {
       const savedTopic = await newTopic.save()
 
       // 在用户的话题数组里保存话题
-      // 更新用户的今日发布话题计数
+      // 更新用户的今日发布话题计数，更新用户发表话题计数
       await UserModel.updateOne(
         { uid },
-        { $addToSet: { topic: savedTopic.tid }, $inc: { daily_topic_count: 1 } }
+        {
+          $addToSet: { topic: savedTopic.tid },
+          $inc: { daily_topic_count: 1, topic_count: 1 },
+        }
       )
 
       // 保存话题 tag
@@ -543,13 +546,13 @@ class TopicService {
       tid: topic.tid,
       title: topic.title,
       views: topic.views,
+      upvotesCount: topic.upvotes_count,
       likesCount: topic.likes_count,
       repliesCount: topic.replies_count,
       comments: topic.comments,
       time: topic.time,
       // 首页预览文本
       content: topic.content.slice(0, 1777),
-      upvotes: topic.upvotes,
       tags: topic.tags,
       category: topic.category,
       popularity: topic.popularity,

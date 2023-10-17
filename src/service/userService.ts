@@ -8,7 +8,7 @@ import TopicModel from '@/models/topicModel'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
 import mongoose from '@/db/connection'
-import type { UpdateFieldArray, LoginResponseData } from './types/userService'
+import type { LoginResponseData } from './types/userService'
 import ReplyModel from '@/models/replyModel'
 import CommentModel from '@/models/commentModel'
 
@@ -33,8 +33,8 @@ class UserService {
       topic: user.topic,
       reply: user.reply,
       comment: user.comment,
-      like_topic: user.like_topic,
-      upvote_topic: user.upvote_topic,
+      likeTopic: user.like_topic,
+      upvoteTopic: user.upvote_topic,
     }
     return responseData
   }
@@ -288,32 +288,6 @@ class UserService {
     }))
     return responseData
   }
-
-  // 更新用户的发帖，回复，评论，点赞，不喜欢，推
-  /**
-   * @param {number} uid - 用户 uid
-   * @param {UpdateField} updateFieldArray - 要更新用户 Model 的哪个字段
-   * @param {number} itemId - model 的 id 字段
-   * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
-   */
-  // async updateUserArray(
-  //   uid: number,
-  //   updateFieldArray: UpdateFieldArray,
-  //   itemId: number,
-  //   isPush: boolean
-  // ) {
-  //   if (isPush) {
-  //     await UserModel.updateOne(
-  //       { uid: uid },
-  //       { [isPush ? '$addToSet' : '$pull']: { [updateFieldArray]: itemId } }
-  //     )
-  //   } else {
-  //     await UserModel.updateOne(
-  //       { uid: uid },
-  //       { $pull: { [updateFieldArray]: itemId } }
-  //     )
-  //   }
-  // }
 }
 
 export default new UserService()

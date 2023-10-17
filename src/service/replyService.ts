@@ -8,9 +8,6 @@ import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'
 
-// 回复可供更新的字段名
-type UpdateField = 'upvotes' | 'likes' | 'dislikes' | 'share' | 'comment'
-
 class ReplyService {
   // 创建回复
   async createReply(
@@ -58,12 +55,12 @@ class ReplyService {
 
       // 更新话题的 rid 数组
       // 话题的热度增加 5 点
-      // 使用管道操作更新话题的 rid 数组和增加话题的热度
+      // 更新话题的 rid 数组，更新话题的回复计数
       await TopicModel.updateOne(
         { tid },
         {
           $addToSet: { rid: savedReply.rid },
-          $inc: { popularity: 5 },
+          $inc: { popularity: 5, replies_count: 1 },
         }
       )
 
@@ -223,7 +220,10 @@ class ReplyService {
     session.startTransaction()
 
     try {
-      await this.updateReplyArray(rid, 'likes', uid, isPush)
+      await ReplyModel.updateOne(
+        { rid: rid },
+        { [isPush ? '$addToSet' : '$pull']: { likes: uid } }
+      )
 
       // 更新被点赞用户的萌萌点
       // 更新被点赞用户的被点赞数
@@ -267,7 +267,10 @@ class ReplyService {
     session.startTransaction()
 
     try {
-      await this.updateReplyArray(rid, 'dislikes', uid, isPush)
+      await ReplyModel.updateOne(
+        { rid: rid },
+        { [isPush ? '$addToSet' : '$pull']: { dislikes: uid } }
+      )
 
       // 更新被点踩用户的被踩数
       await UserModel.updateOne({ uid: to_uid }, { $inc: { dislike: amount } })
@@ -354,32 +357,6 @@ class ReplyService {
       await session.abortTransaction()
       session.endSession()
       throw error
-    }
-  }
-
-  // 更新回复数组，用于推，点赞，点踩，分享等
-  /**
-   * @param {number} rid - 回复 id
-   * @param {UpdateField} updateField - 要更新回复 Model 的哪个字段
-   * @param {number} uid - uid
-   * @param {boolean} isPush - 移除还是 push，用于撤销点赞等操作
-   */
-  async updateReplyArray(
-    rid: number,
-    updateField: UpdateField,
-    uid: number,
-    isPush: boolean
-  ) {
-    if (isPush) {
-      await ReplyModel.updateOne(
-        { rid: rid },
-        { $addToSet: { [updateField]: uid } }
-      )
-    } else {
-      await ReplyModel.updateOne(
-        { rid: rid },
-        { $pull: { [updateField]: uid } }
-      )
     }
   }
 }
