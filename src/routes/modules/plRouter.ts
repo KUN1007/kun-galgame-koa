@@ -17,7 +17,7 @@ router.get('/income', PLController.getIncomes)
 // 获取 expenditure
 router.get('/expenditure', PLController.getExpenditures)
 
-// 获取手收支总数
+// 获取收支总数
 router.get('/statement', PLController.getPLStatement)
 
 export default router

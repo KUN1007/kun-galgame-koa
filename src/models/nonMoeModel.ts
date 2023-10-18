@@ -10,6 +10,8 @@ const NonMoeSchema = new mongoose.Schema<NonMoeAttributes>(
     nid: { type: Number, unique: true },
     // 用户 ID，这条记录是对谁的记录
     uid: { type: Number, required: true },
+    // 用户名
+    name: { type: String, require: true },
     // 不萌记录的描述，发生了什么不萌行为
     description: { type: String, required: true },
     // 不萌记录发生的时间
