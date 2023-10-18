@@ -12,6 +12,16 @@ import type { LoginResponseData } from './types/userService'
 import ReplyModel from '@/models/replyModel'
 import CommentModel from '@/models/commentModel'
 
+type SortOrder = 'asc' | 'desc'
+
+type SortFieldRanking =
+  | 'moemoepoint'
+  | 'upvote'
+  | 'like'
+  | 'topic_count'
+  | 'reply_count'
+  | 'comment_count'
+
 class UserService {
   // 获取单个用户全部信息
   async getUserByUid(uid: number) {
@@ -286,6 +296,44 @@ class UserService {
       tid: comment.tid,
       content: comment.content.substring(0, 100),
     }))
+    return responseData
+  }
+
+  /**
+   * 排行榜页获取用户排行
+   */
+  /**
+   * @param {Number} page - 分页页数
+   * @param {Number} limit - 每页的数据数
+   * @param {SortFieldRanking} sortField - 按照哪个字段排序
+   * @param {SortOrder} sortOrder - 排序的顺序，有 `asc`, `desc`
+   */
+  // 获取排行榜 30 条用户数据，根据 sortField, sortOrder
+  async getUserRanking(
+    page: number,
+    limit: number,
+    sortField: SortFieldRanking,
+    sortOrder: SortOrder
+  ) {
+    const skip = (page - 1) * limit
+
+    const sortOptions: Record<string, 'asc' | 'desc'> = {
+      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+    }
+
+    const users = await UserModel.find()
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean()
+
+    const responseData = users.map((user) => ({
+      uid: user.uid,
+      name: user.name,
+      avatar: user.avatar,
+      field: user[sortField],
+    }))
+
     return responseData
   }
 }

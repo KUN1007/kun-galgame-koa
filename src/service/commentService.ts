@@ -53,7 +53,10 @@ class CommentService {
         { $inc: { moemoepoint: 1 } }
       )
 
-      await TopicModel.updateOne({ tid }, { $inc: { popularity: 2 } })
+      await TopicModel.updateOne(
+        { tid },
+        { $inc: { popularity: 2, comments: 1 } }
+      )
 
       await ReplyModel.updateOne(
         { rid },

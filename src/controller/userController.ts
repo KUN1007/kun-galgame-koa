@@ -4,6 +4,16 @@ import { setCookieRefreshToken, getCookieTokenInfo } from '@/utils/cookies'
 // 操作图片的函数
 import { resizedUserAvatar } from '@/utils/image'
 
+type SortOrder = 'asc' | 'desc'
+
+type SortFieldRanking =
+  | 'moemoepoint'
+  | 'upvote'
+  | 'like'
+  | 'topic_count'
+  | 'reply_count'
+  | 'comment_count'
+
 class UserController {
   // 登录
   async login(ctx: Context) {
@@ -235,6 +245,19 @@ class UserController {
       message: 'OK',
       data: result,
     }
+  }
+
+  // 获取用户排行榜
+  async getUserRanking(ctx: Context) {
+    const { page, limit, sortField, sortOrder } = ctx.query
+
+    const topics = await UserService.getUserRanking(
+      parseInt(page as string),
+      parseInt(limit as string),
+      sortField as SortFieldRanking,
+      sortOrder as SortOrder
+    )
+    ctx.body = { code: 200, message: 'OK', data: topics }
   }
 }
 
