@@ -48,9 +48,9 @@ class TopicService {
       'moemoepoint',
     ])
 
-    // 这里是用户每日最多发布的话题数量，为萌萌点 / 10，需要错误处理 TODO:
+    // 这里是用户每日最多发布的话题数量，为萌萌点 / 10
     if (user.moemoepoint / 10 < user.daily_topic_count) {
-      return
+      return '10201'
     }
 
     // 启动事务
@@ -258,7 +258,7 @@ class TopicService {
     uid: number,
     to_uid: number,
     tid: number
-  ): Promise<void> {
+  ): Promise<10202 | void> {
     // 用户无法推自己的话题
     if (uid === to_uid) {
       return
@@ -266,9 +266,10 @@ class TopicService {
 
     // 查找推话题用户的萌萌点
     const moemoepoint = await UserService.getUserInfoByUid(uid, ['moemoepoint'])
+
     // 用户的萌萌点 < 1100 无法使用推话题功能
     if (moemoepoint.moemoepoint < 1100) {
-      return
+      return 10202
     }
 
     // 启动事务

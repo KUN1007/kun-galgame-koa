@@ -41,24 +41,24 @@ export const getLoli = () => {
   }
 
   // 身体定位
-  const loliBodyLeft = loli.lass.left + 'px'
-  const loliBodyTop = loli.lass.top + 'px'
+  const loliBodyLeft = `${loli.lass.left}px`
+  const loliBodyTop = `${loli.lass.top}px`
 
   // 眼睛定位
-  const loliEyeLeft = loli.eye.left + 'px'
-  const loliEyeTop = loli.eye.top + 'px'
+  const loliEyeLeft = `${loli.eye.left}px`
+  const loliEyeTop = `${loli.eye.top}px`
 
   // 眉毛定位
-  const loliBrowLeft = loli.brow.left + 'px'
-  const loliBrowTop = loli.brow.top + 'px'
+  const loliBrowLeft = `${loli.brow.left}px`
+  const loliBrowTop = `${loli.brow.top}px`
 
   // 嘴巴定位
-  const loliMouthLeft = loli.mouth.left + 'px'
-  const loliMouthTop = loli.mouth.top + 'px'
+  const loliMouthLeft = `${loli.mouth.left}px`
+  const loliMouthTop = `${loli.mouth.top}px`
 
   // 腮红定位
-  const loliFaceLeft = loli.face.left + 'px'
-  const loliFaceTop = loli.face.top + 'px'
+  const loliFaceLeft = `${loli.face.left}px`
+  const loliFaceTop = `${loli.face.top}px`
 
   // 身体的图片资源链接
   const body = fs.readFileSync(getAssetsFile(loli.lass.layer_id))
