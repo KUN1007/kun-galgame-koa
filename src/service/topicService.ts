@@ -497,7 +497,7 @@ class TopicService {
     const skip = (page - 1) * limit
 
     // 将传过来的搜索内容按照空格分开搜索
-    const keywordsArray = keywords
+    const keywordsArray: string[] = keywords
       .split(' ')
       .filter((keyword) => keyword.trim() !== '')
 

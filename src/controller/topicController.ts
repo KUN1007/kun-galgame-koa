@@ -164,7 +164,7 @@ class TopicController {
       return
     }
 
-    ctx.body = { code: 200, message: 'OK', data: { result } }
+    ctx.body = { code: 200, message: 'OK', data: { tid: result } }
   }
 
   // 更新话题（标题，内容，标签，分类）
