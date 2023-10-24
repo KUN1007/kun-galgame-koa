@@ -14,7 +14,7 @@ const webPackConfig = {
     ...utils.getWebpackResolveConfig(),
   },
   output: {
-    filename: '[name].bundle.js',
+    filename: 'kun.js',
     path: utils.DIST_PATH,
   },
   module: {

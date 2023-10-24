@@ -12,7 +12,11 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --watch --config ./config/webpack.config.dev.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "cross-env NODE_ENV=production webpack --config ./config/webpack.config.prod.js",
+    "build:dev": "cross-env NODE_ENV=development webpack --config ./config/webpack.config.prod.js",
+    "start": "cross-env NODE_ENV=production pm2 start ecosystem.config.js",
+    "kill": "pm2 delete kun-galgame-koa",
+    "deploy": "pnpm build && pnpm start"
   },
   "license": "ISC",
   "dependencies": {
