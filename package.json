@@ -8,15 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/KUN1007/KUNGalGame-vue.git"
+    "url": "https://github.com/KUN1007/kun-galgame-koa.git"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --watch --config ./config/webpack.config.dev.js",
     "build": "cross-env NODE_ENV=production webpack --config ./config/webpack.config.prod.js",
     "build:dev": "cross-env NODE_ENV=development webpack --config ./config/webpack.config.prod.js",
     "start": "cross-env NODE_ENV=production pm2 start ecosystem.config.js",
-    "kill": "pm2 delete kun-galgame-koa",
-    "deploy": "pnpm build && pnpm start"
+    "kill": "pm2 delete kun-galgame-koa"
   },
   "license": "ISC",
   "dependencies": {

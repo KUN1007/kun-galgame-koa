@@ -23,7 +23,7 @@ const app = new Koa()
 // 使用 koa 跨域请求中间件
 app.use(
   cors({
-    origin: env.APP_DOMAIN, // 允许的域名
+    origin: env.FRONT_APP_DOMAIN, // 允许的域名
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // 允许携带凭据
   })
@@ -56,7 +56,7 @@ app.use(kungalgameAuthMiddleware())
 // 使用 koa-router
 app.use(router())
 
-// 使用 koa-static
+// 后端静态图片目录
 app.use(mount('/uploads', serve('./uploads')))
 
 // 应用发生错误时处理错误
