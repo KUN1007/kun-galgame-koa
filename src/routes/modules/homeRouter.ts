@@ -3,7 +3,7 @@ import TopicController from '@/controller/topicController'
 
 const router = new Router()
 
-router.prefix('/home')
+router.prefix('/api/home')
 
 // 首页搜索话题
 router.get('/topic', TopicController.searchTopics)

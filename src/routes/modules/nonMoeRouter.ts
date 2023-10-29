@@ -3,7 +3,7 @@ import NonMoeController from '@/controller/nonMoeController'
 
 const router = new Router()
 
-router.prefix('/non-moe')
+router.prefix('/api/non-moe')
 
 // 创建不萌记录
 router.post('/logs', NonMoeController.createNonMoeLog)

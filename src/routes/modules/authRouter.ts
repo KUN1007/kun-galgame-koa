@@ -3,7 +3,7 @@ import AuthController from '@/controller/authController'
 
 const router = new Router()
 
-router.prefix('/auth')
+router.prefix('/api/auth')
 
 // 发送验证码
 router.post('/email/code', AuthController.sendVerificationCodeEmail)

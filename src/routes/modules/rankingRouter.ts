@@ -4,7 +4,7 @@ import UserController from '@/controller/userController'
 
 const router = new Router()
 
-router.prefix('/ranking')
+router.prefix('/api/ranking')
 
 // 获取热门话题，用于 ranking
 router.get('/topics', TopicController.getTopicRanking)

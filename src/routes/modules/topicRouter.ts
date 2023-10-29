@@ -5,7 +5,7 @@ import CommentController from '@/controller/commentController'
 
 const router = new Router()
 
-router.prefix('/topics')
+router.prefix('/api/topics')
 
 /*
  * 话题相关

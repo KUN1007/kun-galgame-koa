@@ -3,7 +3,7 @@ import PLController from '@/controller/plController'
 
 const router = new Router()
 
-router.prefix('/balance')
+router.prefix('/api/balance')
 
 // 创建 income
 router.post('/income', PLController.createIncome)

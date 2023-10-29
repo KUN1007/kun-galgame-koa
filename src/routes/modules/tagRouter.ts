@@ -3,7 +3,7 @@ import TagController from '@/controller/tagController'
 
 const router = new Router()
 
-router.prefix('/tag')
+router.prefix('/api/tag')
 
 // 获取热门的 10 个 tag
 router.get('/popular', TagController.getTopTags)

@@ -3,7 +3,7 @@ import UserController from '@/controller/userController'
 
 const router = new Router()
 
-router.prefix('/user')
+router.prefix('/api/user')
 
 // 注册
 router.post('/register', UserController.register)

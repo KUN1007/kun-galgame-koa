@@ -3,7 +3,7 @@ import UpdateLogController from '@/controller/updateLogController'
 
 const router = new Router()
 
-router.prefix('/update')
+router.prefix('/api/update')
 
 router.post('/history', UpdateLogController.createUpdateLog)
 

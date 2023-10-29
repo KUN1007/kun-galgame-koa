@@ -3,7 +3,7 @@ import LoliController from '@/controller/loliController'
 
 const router = new Router()
 
-router.prefix('/loli')
+router.prefix('/api/loli')
 
 router.get('/image', LoliController.getLoli)
 
