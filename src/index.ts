@@ -8,7 +8,7 @@ import mount from 'koa-mount'
 // session
 // import session from 'koa-session'
 // 解决前端页面刷新 404
-// import historyApiFallback from 'koa2-connect-history-api-fallback'
+import historyApiFallback from 'koa2-connect-history-api-fallback'
 // 鉴权中间件
 import { kungalgameAuthMiddleware } from '@/middleware/authMiddleware'
 // 导入每天的定时任务，重置用户发表话题数量等
@@ -51,7 +51,7 @@ app.use(
 
 // 鉴权
 app.use(kungalgameAuthMiddleware())
-// app.use(historyApiFallback({ index: '' }))
+app.use(historyApiFallback({ whiteList: ['/'] }))
 
 // 使用 koa-router
 app.use(router())
