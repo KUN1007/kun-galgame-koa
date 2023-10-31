@@ -78,19 +78,27 @@ class UserController {
 
   // 更新用户头像
   async updateUserAvatar(ctx: Context) {
-    // 从 cookie 获取用户信息
-    const uid = getCookieTokenInfo(ctx).uid
+    try {
+      // 从 cookie 获取用户信息
+      const uid = getCookieTokenInfo(ctx).uid
 
-    const avatarLink = await resizedUserAvatar(ctx, uid)
+      const avatarLink = await resizedUserAvatar(ctx, uid)
 
-    await UserService.updateUserAvatar(uid, avatarLink)
+      await UserService.updateUserAvatar(uid, avatarLink)
 
-    ctx.body = {
-      code: 200,
-      message: 'OK',
-      data: {
-        avatar: avatarLink,
-      },
+      ctx.body = {
+        code: 200,
+        message: 'OK',
+        data: {
+          avatar: avatarLink,
+        },
+      }
+    } catch (error) {
+      ctx.body = {
+        code: 500,
+        message: 'ERROR',
+        data: error,
+      }
     }
   }
 
@@ -101,8 +109,9 @@ class UserController {
 
     const bio = ctx.request.body.bio as string
 
-    // TODO: 后端再次校验，以防万一
     if (bio.length > 107) {
+      // 返回错误码
+      ctx.app.emit('kunError', 10106, ctx)
       return
     }
 
