@@ -62,10 +62,12 @@ export const resizedUserAvatar = async (ctx: Context, uid: number) => {
     })
     .toFile(resizedFilePath)
 
-  // example: http://127.0.0.1:10007/uploads/avatar/user_1/kun-1697384098167-kun-galgame-avatar.webp
-  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  // example: http://127.0.0.1:10007/uploads/avatar/user_1/kun-1697384098167-kun-galgame-avatar.web
+  const imageLinkDev = `http://${env.APP_HOST}:${env.APP_PORT}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
+  const imageLinkProd = `${env.FRONT_APP_DOMAIN}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
 
-  const imageLink = `${protocol}://${env.APP_HOST}:${env.APP_PORT}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
+  const imageLink =
+    process.env.NODE_ENV === 'development' ? imageLinkDev : imageLinkProd
 
   return imageLink
 }
