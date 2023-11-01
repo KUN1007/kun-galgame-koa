@@ -23,9 +23,16 @@ const app = new Koa()
 // 使用 koa 跨域请求中间件
 app.use(
   cors({
-    origin: env.FRONT_APP_DOMAIN, // 允许的域名
+    // example: www.moe.com, moe.com
+    origin: (ctx: Koa.Context) => {
+      const origin = ctx.get('Origin')
+      if (env.ALLOW_DOMAIN.includes(origin)) {
+        return origin
+      }
+      return ''
+    },
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true, // 允许携带凭据
+    credentials: true,
   })
 )
 

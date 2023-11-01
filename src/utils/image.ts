@@ -64,7 +64,7 @@ export const resizedUserAvatar = async (ctx: Context, uid: number) => {
 
   // example: http://127.0.0.1:10007/uploads/avatar/user_1/kun-1697384098167-kun-galgame-avatar.web
   const imageLinkDev = `http://${env.APP_HOST}:${env.APP_PORT}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
-  const imageLinkProd = `${env.FRONT_APP_DOMAIN}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
+  const imageLinkProd = `${env.ALLOW_DOMAIN[0]}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
 
   const imageLink =
     process.env.NODE_ENV === 'development' ? imageLinkDev : imageLinkProd
