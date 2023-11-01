@@ -67,7 +67,8 @@ export const resizedUserAvatar = async (ctx: Context, uid: number) => {
   // development link
   const imageLinkDev = `http://${env.APP_HOST}:${env.APP_PORT}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
   // production link
-  const urlArray = env.ALLOW_DOMAIN.split(', ').map((url) => url.trim())
+  const urlArray = env.ALLOW_DOMAIN.match(/\[(.*?)\]/)[1].split(', ')
+
   const imageLinkProd = `${urlArray[0]}/${env.AVATAR_PATH}/user_${uid}/${newFileName}.webp`
 
   const imageLink =
