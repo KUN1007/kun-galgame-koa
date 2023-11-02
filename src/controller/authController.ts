@@ -52,7 +52,13 @@ class AuthController {
   async sendResetEmailCode(ctx: Context) {
     const email: string = ctx.request.body.email
 
-    await AuthService.sendResetEmailCode(email)
+    const result = await AuthService.sendResetEmailCode(email)
+
+    // 返回错误码
+    if (typeof result === 'number') {
+      ctx.app.emit('kunError', result, ctx)
+      return
+    }
 
     ctx.body = {
       code: 200,

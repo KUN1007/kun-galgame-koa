@@ -94,6 +94,12 @@ class AuthService {
 
   // 发送邮箱重置验证码
   async sendResetEmailCode(email: string) {
+    // 该邮箱已经被绑定
+    const user = await UserModel.findOne({ email: email })
+    if (user) {
+      return 10104
+    }
+
     // 生成 7 位随机验证码
     const code = generateRandomCode(7)
     // 存储验证码并设置有效期为10分钟
