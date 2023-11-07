@@ -2041,8 +2041,8 @@ packages:
       '@types/node': 20.8.6
     dev: true
 
-  /@types/nodemon@1.19.4:
-    resolution: {integrity: sha512-xWfDFY0hH9TRprHD1N0/Lp0dkze/vahRxLMN3cgW+PGnmtSzMXaNlTeWmSmlvefXFv5L0spheNZ0XEFB/O9ttQ==}
+  /@types/nodemon@1.19.5:
+    resolution: {integrity: sha512-jUKYdrnwLp4jMztMdQEJnF4lBhthCfqE7P6cYCIy0txMJrSFtKqs2HjmyEsyQueLjZjve0IjJ1S+20DtgJpUjA==}
     dependencies:
       '@types/node': 20.8.6
     dev: true
@@ -4320,7 +4320,7 @@ packages:
     peerDependencies:
       webpack: 4 || 5
     dependencies:
-      '@types/nodemon': 1.19.4
+      '@types/nodemon': 1.19.5
       nodemon: 3.0.1
       webpack: 5.89.0(webpack-cli@5.1.4)
     dev: true
