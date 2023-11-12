@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-import { TagAttributes } from './model'
+import { TagAttributes } from './types/tagModel'
 
 // 标签 schema 结构
 const TagSchema = new mongoose.Schema<TagAttributes>(

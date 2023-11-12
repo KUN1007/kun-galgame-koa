@@ -3,7 +3,7 @@
  */
 
 import UpdateLogModel from '@/models/updateLogModel'
-import { UpdateLogAttributes } from '@/models/model'
+import { UpdateLogAttributes } from '@/models/types/updateLogModel'
 
 class UpdateLogService {
   // 创建单条更新数据

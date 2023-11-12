@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-import { TopicAttributes } from './model'
+import { TopicAttributes } from './types/topicModel'
 
 // 话题 schema 结构
 const TopicSchema = new mongoose.Schema<TopicAttributes>(

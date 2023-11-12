@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-import { CommentAttributes } from './model'
+import { CommentAttributes } from './types/commentModel'
 
 // 评论 schema 结构
 const CommentSchema = new mongoose.Schema<CommentAttributes>(

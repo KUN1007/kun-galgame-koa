@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-import { UserAttributes } from './model'
+import { UserAttributes } from './types/userModel'
 
 const UserSchema = new mongoose.Schema<UserAttributes>(
   {

@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-import { UpdateLogAttributes } from './model'
+import { UpdateLogAttributes } from './types/updateLogModel'
 
 // 更新日志 schema 结构
 const UpdateLogSchema = new mongoose.Schema<UpdateLogAttributes>(

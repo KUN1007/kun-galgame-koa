@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-import { ReplyAttributes } from './model'
+import { ReplyAttributes } from './types/replyModel'
 
 // 回复 schema 结构
 const ReplySchema = new mongoose.Schema<ReplyAttributes>(

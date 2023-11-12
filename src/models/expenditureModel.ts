@@ -1,7 +1,7 @@
 import mongoose from '@/db/connection'
 import increasingSequence from '@/middleware/increasingSequenceMiddleware'
 
-import { ExpenditureAttributes } from './model'
+import { ExpenditureAttributes } from './types/expenditureModel'
 
 // 支出 schema 结构
 const ExpenditureSchema = new mongoose.Schema<ExpenditureAttributes>(
