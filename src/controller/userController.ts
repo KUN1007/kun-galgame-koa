@@ -1,23 +1,27 @@
 import { Context } from 'koa'
 import UserService from '@/service/userService'
 import { setCookieRefreshToken, getCookieTokenInfo } from '@/utils/cookies'
-// 操作图片的函数
 import { resizedUserAvatar } from '@/utils/image'
 
-type SortOrder = 'asc' | 'desc'
+import {
+  isValidEmail,
+  isValidName,
+  isValidPassword,
+  isValidMailConfirmCode,
+} from '@/utils/validate'
 
-type SortFieldRanking =
-  | 'moemoepoint'
-  | 'upvote'
-  | 'like'
-  | 'topic_count'
-  | 'reply_count'
-  | 'comment_count'
+import type { SortOrder, SortFieldRanking } from './types/userController'
 
 class UserController {
   // 登录
   async login(ctx: Context) {
     const { name, password } = ctx.request.body
+
+    // 再次检测用户名和密码的合法性
+    if (!isValidName(name) || !isValidPassword(password)) {
+      ctx.app.emit('kunError', 10107, ctx)
+      return
+    }
 
     const result = await UserService.loginUser(name, password)
 
@@ -41,6 +45,20 @@ class UserController {
   async register(ctx: Context) {
     const { name, email, password, code } = ctx.request.body
     const ip = ctx.request.ip
+
+    // 再次检测邮箱，用户名，密码，验证码的合法性
+    if (
+      !isValidEmail(email) ||
+      !isValidName(name) ||
+      !isValidPassword(password) ||
+      !isValidMailConfirmCode(code)
+    ) {
+      console.log(isValidEmail(email))
+
+      ctx.app.emit('kunError', 10107, ctx)
+      return
+    }
+
     const result = await UserService.registerUser(
       name,
       email,

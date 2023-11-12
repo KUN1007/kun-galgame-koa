@@ -12,15 +12,7 @@ import type { LoginResponseData } from './types/userService'
 import ReplyModel from '@/models/replyModel'
 import CommentModel from '@/models/commentModel'
 
-type SortOrder = 'asc' | 'desc'
-
-type SortFieldRanking =
-  | 'moemoepoint'
-  | 'upvote'
-  | 'like'
-  | 'topic_count'
-  | 'reply_count'
-  | 'comment_count'
+import type { SortOrder, SortFieldRanking } from './types/userService'
 
 class UserService {
   // 获取单个用户全部信息
