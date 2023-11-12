@@ -18,7 +18,9 @@ export const errorMessages: Record<number, string> = {
   10104: `Email is already registered`,
   10105: `Username is already registered`,
   10106: `User bio is too long`,
-  10107: `Invalid Email, Name, Password, or Verification code`,
+  10107: `Invalid Email, Name, Password, or Verification Code Format`,
+  10108: `Invalid password format`,
+  10109: `Invalid Email or Verification Code Format`,
 
   10201: `Your daily topic limit has been reached for today.`,
   10202: `Your moemoepoints are less than 1100, so you can't use the topic suggestion feature`,

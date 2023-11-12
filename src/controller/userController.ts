@@ -53,8 +53,6 @@ class UserController {
       !isValidPassword(password) ||
       !isValidMailConfirmCode(code)
     ) {
-      console.log(isValidEmail(email))
-
       ctx.app.emit('kunError', 10107, ctx)
       return
     }
@@ -164,6 +162,12 @@ class UserController {
 
     const { email, code } = ctx.request.body
 
+    // 再次校验邮箱和验证码格式
+    if (!isValidEmail(email) || !isValidMailConfirmCode(code)) {
+      ctx.app.emit('kunError', 10109, ctx)
+      return
+    }
+
     const result = await UserService.updateUserEmail(uid, email, code)
 
     // 返回错误码
@@ -185,6 +189,12 @@ class UserController {
     const uid = getCookieTokenInfo(ctx).uid
 
     const { oldPassword, newPassword } = ctx.request.body
+
+    // 再次校验密码格式
+    if (!isValidPassword(oldPassword) || !isValidPassword(newPassword)) {
+      ctx.app.emit('kunError', 10108, ctx)
+      return
+    }
 
     const result = await UserService.updateUserPassword(
       uid,

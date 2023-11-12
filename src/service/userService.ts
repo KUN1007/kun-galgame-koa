@@ -227,7 +227,7 @@ class UserService {
    * 更改用户密码,这里是根据用户密码更改的,不是根据邮箱
    * @param {number} uid - 用户 uid
    * @param {string} oldPassword - 用户的旧密码
-   * @param {string} newPassWord - 用户的新密码
+   * @param {string} newPassword - 用户的新密码
    */
   async updateUserPassword(
     uid: number,

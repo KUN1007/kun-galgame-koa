@@ -15,6 +15,7 @@
     "Uid",
     "upid",
     "upvotes",
-    "utid"
+    "utid",
+    "abcdefghjkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"
   ]
 }
