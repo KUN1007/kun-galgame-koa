@@ -12,6 +12,7 @@
     "moemoepoints",
     "setex",
     "touid",
+    "Uid",
     "upid",
     "upvotes",
     "utid"

@@ -7,17 +7,21 @@ class AuthController {
     const email: string = ctx.request.body.email
 
     if (!email) {
-      ctx.status = 400
       ctx.body = { code: 400, message: 'Email is required' }
       return
     }
 
     try {
-      await AuthService.sendVerificationCodeEmail(email)
-      ctx.status = 200
+      const result = await AuthService.sendVerificationCodeEmail(email)
+
+      // 返回错误码
+      if (typeof result === 'number') {
+        ctx.app.emit('kunError', result, ctx)
+        return
+      }
+
       ctx.body = { code: 200, message: 'Verification code sent successfully' }
     } catch (error) {
-      ctx.status = 500
       ctx.body = { code: 500, message: 'Failed to send verification code' }
     }
   }

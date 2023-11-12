@@ -8,25 +8,11 @@ import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'
 
-type SortField =
-  | 'updated'
-  | 'time'
-  | 'popularity'
-  | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
-  | 'comments'
-
-type SortOrder = 'asc' | 'desc'
-
-type SortFieldRanking =
-  | 'popularity'
-  | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
-  | 'comments'
+import type {
+  SortField,
+  SortOrder,
+  SortFieldRanking,
+} from './types/topicService'
 
 class TopicService {
   /*
