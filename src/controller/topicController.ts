@@ -106,9 +106,7 @@ class TopicController {
 
   // 楼主的其它话题，按热度
   async getPopularTopicsByUserUid(ctx: Context) {
-    // 从 cookie 获取用户信息
-    const uid = getCookieTokenInfo(ctx).uid
-
+    const uid = parseInt(ctx.query.uid as string)
     const tid = parseInt(ctx.params.tid as string)
 
     const popularTopics = await TopicService.getPopularTopicsByUserUid(uid, tid)
