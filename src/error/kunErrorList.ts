@@ -28,16 +28,15 @@ export const errorMessages: Record<number, string> = {
   // Topic Part
   10201: `Your daily topic limit has been reached for today.`,
   10202: `Your moemoepoints are less than 1100, so you can't use the topic suggestion feature`,
+  10204: `Topic title length exceed 40 characters. Or empty.`,
+  10205: `Topic content length exceed 100007 characters. Or empty.`,
+  10206: `Topic with a maximum of 7 tags. Minimum one tag.`,
+  10207: `Topic with a maximum of 2 categories. Minimum one category.`,
 
   // Auth Part
   10301: `Sending emails too frequently`,
   10302: `Invalid Email Format`,
   10303: `Invalid Email, Password, or Verification Code Format`,
-  10304: `Topic title length exceed 40 characters. Or empty.`,
-  10305: `Topic content length exceed 100007 characters. Or empty.`,
-  10306: `Topic with a maximum of 7 tags. Minimum one tag.`,
-  10307: `Topic with a maximum of 2 categories. Minimum one category.`,
-
   // Comment Part
   10401: `Comment length exceed 1007 characters. Or empty.`,
 
