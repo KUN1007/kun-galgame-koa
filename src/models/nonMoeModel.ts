@@ -26,6 +26,6 @@ const NonMoeSchema = new mongoose.Schema<NonMoeAttributes>(
 // pre-save 钩子，在保存文档之前自动递增 nid 字段
 NonMoeSchema.pre('save', increasingSequence('nid'))
 
-const NonMoeModel = mongoose.model<NonMoeAttributes>('NonMoe', NonMoeSchema)
+const NonMoeModel = mongoose.model<NonMoeAttributes>('nonmoe', NonMoeSchema)
 
 export default NonMoeModel

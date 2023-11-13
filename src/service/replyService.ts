@@ -121,9 +121,8 @@ class ReplyService {
     try {
       // 直接用 rid 也可以，这里是保险起见
       await ReplyModel.updateOne(
-        { rid, r_uid: uid },
-        { $set: { content, edited: Date.now(), tags } },
-        { new: true }
+        { rid: rid, r_uid: uid },
+        { tags, edited: Date.now(), content }
       )
 
       // 保存 tags

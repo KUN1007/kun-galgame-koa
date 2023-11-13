@@ -23,7 +23,7 @@ const ReplySchema = new mongoose.Schema<ReplyAttributes>(
     // 回复发布的时间
     time: { type: Number, default: Date.now() },
     // 回复被再次编辑的时间
-    edited: { type: String, default: '' },
+    edited: { type: Number, default: 0 },
     // 回复的内容
     content: { type: String, default: '' },
     // 回复被推的时间

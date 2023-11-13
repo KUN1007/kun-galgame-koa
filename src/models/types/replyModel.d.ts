@@ -10,7 +10,7 @@ export interface ReplyAttributes {
   to_floor: number
   tags: string[]
   time: number
-  edited: string
+  edited: number
   content: string
   upvote_time: number
 

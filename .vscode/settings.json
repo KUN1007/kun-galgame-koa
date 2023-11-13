@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "abcdefghjkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ",
     "autorestart",
     "bodyparser",
     "galgame",
@@ -10,12 +11,13 @@
     "moemoe",
     "moemoepoint",
     "moemoepoints",
+    "monmoes",
+    "nonmoe",
     "setex",
     "touid",
     "Uid",
     "upid",
     "upvotes",
-    "utid",
-    "abcdefghjkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"
+    "utid"
   ]
 }
