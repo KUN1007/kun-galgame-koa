@@ -31,6 +31,10 @@ export const errorMessages: Record<number, string> = {
   10301: `Sending emails too frequently`,
   10302: `Invalid Email Format`,
   10303: `Invalid Email, Password, or Verification Code Format`,
+  10304: `Topic title length exceed 40 characters. Or empty.`,
+  10305: `Topic content length exceed 100007 characters. Or empty.`,
+  10306: `Topic with a maximum of 7 tags. Minimum one tag.`,
+  10307: `Topic with a maximum of 2 categories. Minimum one category.`,
 
   // Comment Part
   10401: `Comment length exceed 1007 characters. Or empty.`,

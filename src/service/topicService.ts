@@ -36,7 +36,7 @@ class TopicService {
 
     // 这里是用户每日最多发布的话题数量，为萌萌点 / 10
     if (user.moemoepoint / 10 < user.daily_topic_count) {
-      return '10201'
+      return 10201
     }
 
     // 启动事务

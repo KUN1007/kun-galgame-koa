@@ -3,25 +3,13 @@ import TopicService from '@/service/topicService'
 // 操作 cookie 的函数
 import { getCookieTokenInfo } from '@/utils/cookies'
 
-type SortField =
-  | 'updated'
-  | 'time'
-  | 'popularity'
-  | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
-  | 'comments'
+import { checkTopicPublish } from './utils/checkTopicPublish'
 
-type SortOrder = 'asc' | 'desc'
-
-type SortFieldRanking =
-  | 'popularity'
-  | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
-  | 'comments'
+import type {
+  SortField,
+  SortFieldRanking,
+  SortOrder,
+} from './types/topicController'
 
 class TopicController {
   /*
@@ -147,6 +135,13 @@ class TopicController {
     const uid = getCookieTokenInfo(ctx).uid
     const { title, content, time, tags, category } = ctx.request.body
 
+    const res = checkTopicPublish(title, content, tags, category)
+
+    if (res) {
+      ctx.app.emit('kunError', res, ctx)
+      return
+    }
+
     const result = await TopicService.createTopic(
       title,
       content,
@@ -157,8 +152,8 @@ class TopicController {
     )
 
     // 返回错误码，您今日发布的话题数已达上限
-    if (result === '10201') {
-      ctx.app.emit('kunError', parseInt(result), ctx)
+    if (result === 10201) {
+      ctx.app.emit('kunError', result, ctx)
       return
     }
 
@@ -173,6 +168,13 @@ class TopicController {
     const tid = parseInt(ctx.params.tid as string)
 
     const { title, content, tags, category } = ctx.request.body
+
+    const res = checkTopicPublish(title, content, tags, category)
+
+    if (res) {
+      ctx.app.emit('kunError', res, ctx)
+      return
+    }
 
     await TopicService.updateTopic(uid, tid, title, content, tags, category)
 
