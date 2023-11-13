@@ -12,6 +12,11 @@ class CommentController {
 
       const { rid, to_uid, content } = ctx.request.body
 
+      if (!content.trim() || content.trim().length > 1007) {
+        ctx.app.emit('kunError', 10401, ctx)
+        return
+      }
+
       // 从 cookie 获取当前用户的 uid
       const c_uid = getCookieTokenInfo(ctx).uid
 

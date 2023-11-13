@@ -31,4 +31,7 @@ export const errorMessages: Record<number, string> = {
   10301: `Sending emails too frequently`,
   10302: `Invalid Email Format`,
   10303: `Invalid Email, Password, or Verification Code Format`,
+
+  // Comment Part
+  10401: `Comment length exceed 1007 characters. Or empty.`,
 }
