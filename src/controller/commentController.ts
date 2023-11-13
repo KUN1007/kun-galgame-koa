@@ -3,6 +3,8 @@ import CommentService from '@/service/commentService'
 // 操作 cookie 的函数
 import { getCookieTokenInfo } from '@/utils/cookies'
 
+import { checkCommentPublish } from './utils/checkCommentPublish'
+
 class CommentController {
   // 发布单条评论
   async createComment(ctx: Context) {
@@ -12,8 +14,10 @@ class CommentController {
 
       const { rid, to_uid, content } = ctx.request.body
 
-      if (!content.trim() || content.trim().length > 1007) {
-        ctx.app.emit('kunError', 10401, ctx)
+      // 再次检测评论发布
+      const result = checkCommentPublish(content)
+      if (result) {
+        ctx.app.emit('kunError', result, ctx)
         return
       }
 

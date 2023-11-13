@@ -23,7 +23,11 @@ export const resizedUserAvatar = async (ctx: Context, uid: number) => {
   const avatarFile = ctx.request.files.avatar
 
   if (Array.isArray(avatarFile)) {
-    return
+    return 10110
+  }
+
+  if (avatarFile.size > 50 * 1024) {
+    return 10111
   }
 
   // 为文件生成新的唯一文件名，例如使用时间戳

@@ -22,6 +22,8 @@ export const errorMessages: Record<number, string> = {
   10107: `Invalid Email, Name, Password, or Verification Code Format`,
   10108: `Invalid password format`,
   10109: `Invalid Email or Verification Code Format`,
+  10110: `Avatar image upload error. The image is an array.`,
+  10111: `Avatar image upload error. The final compressed size of the image exceeds 50KB.`,
 
   // Topic Part
   10201: `Your daily topic limit has been reached for today.`,

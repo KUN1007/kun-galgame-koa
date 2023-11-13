@@ -1,6 +1,7 @@
 import { Context } from 'koa'
 import UpdateLogService from '@/service/updateLogService'
 
+// 这里设定只能由管理员创建，前端数据受信任，无需重新检测
 class UpdateLogController {
   async createUpdateLog(ctx: Context) {
     try {

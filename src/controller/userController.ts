@@ -98,15 +98,21 @@ class UserController {
       // 从 cookie 获取用户信息
       const uid = getCookieTokenInfo(ctx).uid
 
-      const avatarLink = await resizedUserAvatar(ctx, uid)
+      // 获取用户头像链接
+      const result = await resizedUserAvatar(ctx, uid)
 
-      await UserService.updateUserAvatar(uid, avatarLink)
+      if (typeof result === 'number') {
+        ctx.app.emit('kunError', result, ctx)
+        return
+      }
+
+      await UserService.updateUserAvatar(uid, result)
 
       ctx.body = {
         code: 200,
         message: 'OK',
         data: {
-          avatar: avatarLink,
+          avatar: result,
         },
       }
     } catch (error) {
