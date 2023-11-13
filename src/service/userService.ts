@@ -265,7 +265,7 @@ class UserService {
   // 获取用户回复
   async getUserReplies(ridArray: number[]) {
     // 仅显示前 50 个
-    const replies = await ReplyModel.find({ tid: { $in: ridArray } }).limit(50)
+    const replies = await ReplyModel.find({ rid: { $in: ridArray } }).limit(50)
 
     // 这里用了字符串切片，取前 100 个字符
     const responseData = replies.map((reply) => ({
