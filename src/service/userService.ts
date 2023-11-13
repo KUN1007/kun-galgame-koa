@@ -267,7 +267,7 @@ class UserService {
     // 仅显示前 50 个
     const replies = await ReplyModel.find({ tid: { $in: ridArray } }).limit(50)
 
-    // 这里用了字符串切片，取前 100 个字符，因为是富文本
+    // 这里用了字符串切片，取前 100 个字符
     const responseData = replies.map((reply) => ({
       tid: reply.tid,
       content: reply.content.substring(0, 100),
@@ -283,7 +283,7 @@ class UserService {
       50
     )
 
-    // 这里用了字符串切片，取前 100 个字符，因为是富文本
+    // 这里用了字符串切片，取前 100 个字符
     const responseData = comments.map((comment) => ({
       tid: comment.tid,
       content: comment.content.substring(0, 100),

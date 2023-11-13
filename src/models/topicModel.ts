@@ -44,7 +44,7 @@ const TopicSchema = new mongoose.Schema<TopicAttributes>(
     // 话题的被推数组，存放了用户的 uid
     upvotes: { type: [Number], default: [] },
     // 话题下方回复的 ID，存放了回复的 rid
-    replies: { type: [String], default: [] },
+    replies: { type: [Number], default: [] },
     // 话题的点赞数，存放了点赞用户的 uid
     likes: { type: [Number], default: [] },
     // 话题的分享数，存放了分享用户的 uid
