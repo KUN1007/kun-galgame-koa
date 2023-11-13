@@ -1,6 +1,12 @@
 import { Context } from 'koa'
 import AuthService from '@/service/authService'
 
+import {
+  isValidEmail,
+  isValidPassword,
+  isValidMailConfirmCode,
+} from '@/utils/validate'
+
 class AuthController {
   // 发送验证码
   async sendVerificationCodeEmail(ctx: Context) {
@@ -8,6 +14,11 @@ class AuthController {
 
     if (!email) {
       ctx.body = { code: 400, message: 'Email is required' }
+      return
+    }
+
+    if (!isValidEmail(email)) {
+      ctx.app.emit('kunError', 10302, ctx)
       return
     }
 
@@ -56,6 +67,11 @@ class AuthController {
   async sendResetEmailCode(ctx: Context) {
     const email: string = ctx.request.body.email
 
+    if (!isValidEmail(email)) {
+      ctx.app.emit('kunError', 10302, ctx)
+      return
+    }
+
     const result = await AuthService.sendResetEmailCode(email)
 
     // 返回错误码
@@ -74,6 +90,15 @@ class AuthController {
   // 重置密码,这里的重置密码需要验证邮箱
   async resetPasswordByEmail(ctx: Context) {
     const { email, code, newPassword } = ctx.request.body
+
+    if (
+      !isValidEmail(email) ||
+      !isValidMailConfirmCode(code) ||
+      !isValidPassword(newPassword)
+    ) {
+      ctx.app.emit('kunError', 10303, ctx)
+      return
+    }
 
     const result = await AuthService.resetPasswordByEmail(
       email,

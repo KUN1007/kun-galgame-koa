@@ -12,6 +12,7 @@
 
 // 定义错误码和错误消息的映射
 export const errorMessages: Record<number, string> = {
+  // User Part
   10101: `User not found`,
   10102: `User password error`,
   10103: `Email verification code error`,
@@ -22,8 +23,12 @@ export const errorMessages: Record<number, string> = {
   10108: `Invalid password format`,
   10109: `Invalid Email or Verification Code Format`,
 
+  // Topic Part
   10201: `Your daily topic limit has been reached for today.`,
   10202: `Your moemoepoints are less than 1100, so you can't use the topic suggestion feature`,
 
+  // Auth Part
   10301: `Sending emails too frequently`,
+  10302: `Invalid Email Format`,
+  10303: `Invalid Email, Password, or Verification Code Format`,
 }
