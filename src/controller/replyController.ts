@@ -3,6 +3,8 @@ import ReplyService from '@/service/replyService'
 // 操作 cookie 的函数
 import { getCookieTokenInfo } from '@/utils/cookies'
 
+import { checkReplyPublish } from './utils/checkReplyPublish'
+
 class ReplyController {
   // 创建回复
   async createReply(ctx: Context) {
@@ -13,6 +15,14 @@ class ReplyController {
     const tid = parseInt(ctx.params.tid as string)
 
     const { to_uid, to_floor, tags, content } = ctx.request.body
+
+    // 再次检查评论发布
+    const result = checkReplyPublish(tags, content)
+
+    if (result) {
+      ctx.app.emit('kunError', result, ctx)
+      return
+    }
 
     const savedReply = await ReplyService.createReply(
       tid,
@@ -39,6 +49,14 @@ class ReplyController {
     const tid = parseInt(ctx.params.tid as string)
 
     const { rid, content, tags } = ctx.request.body
+
+    // 再次检查评论发布
+    const result = checkReplyPublish(tags, content)
+
+    if (result) {
+      ctx.app.emit('kunError', result, ctx)
+      return
+    }
 
     await ReplyService.updateReply(uid, tid, rid, content, tags)
     ctx.body = {

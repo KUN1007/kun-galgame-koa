@@ -34,4 +34,10 @@ export const errorMessages: Record<number, string> = {
 
   // Comment Part
   10401: `Comment length exceed 1007 characters. Or empty.`,
+
+  // Reply Part
+  10501: `Reply with a maximum of 7 tags.`,
+  10502: `Single tag maximum length is 17 characters`,
+  10503: `Reply content is empty`,
+  10504: `Reply maximum length is 10007 characters`,
 }

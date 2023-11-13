@@ -8,7 +8,8 @@ import PLService from '@/service/plService'
 type SortField = 'time' | 'amount'
 type SortOrder = 'asc' | 'desc'
 
-class TagController {
+// 这里设定只能由管理员创建，前端数据受信任，无需重新检测
+class PLController {
   async createIncome(ctx: Context) {
     const { reason, time, amount } = ctx.request.body
 
@@ -83,4 +84,4 @@ class TagController {
   }
 }
 
-export default new TagController()
+export default new PLController()

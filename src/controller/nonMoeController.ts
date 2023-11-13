@@ -3,6 +3,7 @@ import NonMoeService from '@/service/nonMoeService'
 
 type SortOrder = 'asc' | 'desc'
 
+// 这里设定只能由管理员创建，前端数据受信任，无需重新检测
 class NonMoeController {
   // 创建不萌记录
   async createNonMoeLog(ctx: Context) {
