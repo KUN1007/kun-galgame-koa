@@ -13,19 +13,19 @@ import {
 import type { SortOrder, SortFieldRanking } from './types/userController'
 
 class UserController {
-  // 登录
   async login(ctx: Context) {
     const { name, password } = ctx.request.body
 
-    // 再次检测用户名和密码的合法性
-    if (!isValidName(name) || !isValidPassword(password)) {
+    if (
+      !(isValidName(name) || isValidEmail(name)) ||
+      !isValidPassword(password)
+    ) {
       ctx.app.emit('kunError', 10107, ctx)
       return
     }
 
     const result = await UserService.loginUser(name, password)
 
-    // 返回错误码
     if (typeof result === 'number') {
       ctx.app.emit('kunError', result, ctx)
       return
