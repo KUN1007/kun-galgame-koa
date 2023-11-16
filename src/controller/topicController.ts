@@ -218,7 +218,7 @@ class TopicController {
     const { keywords, category, page, limit, sortField, sortOrder } = ctx.query
     const data = await TopicService.searchTopics(
       keywords as string,
-      category as string[],
+      JSON.parse(category as string),
       parseInt(page as string),
       parseInt(limit as string),
       sortField as SortField,
