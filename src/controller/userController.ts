@@ -2,6 +2,7 @@ import { Context } from 'koa'
 import UserService from '@/service/userService'
 import { setCookieRefreshToken, getCookieTokenInfo } from '@/utils/cookies'
 import { resizedUserAvatar } from '@/utils/image'
+import { setValue, getValue } from '@/config/redisConfig'
 
 import {
   isValidEmail,
@@ -13,6 +14,9 @@ import {
 import type { SortOrder, SortFieldRanking } from './types/userController'
 
 class UserController {
+  // 登陆冷却时间, 60s
+  private LOGIN_CD = 60
+
   async login(ctx: Context) {
     const { name, password } = ctx.request.body
 
@@ -22,6 +26,13 @@ class UserController {
     ) {
       ctx.app.emit('kunError', 10107, ctx)
       return
+    }
+
+    if (getValue(`loginCD:${name}`)) {
+      ctx.app.emit('kunError', 10112, ctx)
+      return
+    } else {
+      setValue(`loginCD:${name}`, name, this.LOGIN_CD)
     }
 
     const result = await UserService.loginUser(name, password)
