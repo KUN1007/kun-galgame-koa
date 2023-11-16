@@ -14,9 +14,6 @@ import {
 import type { SortOrder, SortFieldRanking } from './types/userController'
 
 class UserController {
-  // 登陆冷却时间, 60s
-  private LOGIN_CD = 60
-
   async login(ctx: Context) {
     const { name, password } = ctx.request.body
 
@@ -28,11 +25,14 @@ class UserController {
       return
     }
 
-    if (getValue(`loginCD:${name}`)) {
+    // 登陆冷却时间, 60s
+    const loginCD = await getValue(`loginCD:${name}`)
+
+    if (loginCD) {
       ctx.app.emit('kunError', 10112, ctx)
       return
     } else {
-      setValue(`loginCD:${name}`, name, this.LOGIN_CD)
+      setValue(`loginCD:${name}`, name, 60)
     }
 
     const result = await UserService.loginUser(name, password)
