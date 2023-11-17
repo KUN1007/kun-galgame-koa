@@ -5,8 +5,11 @@ const router = new Router()
 
 router.prefix('/api/home')
 
-// 首页搜索话题
-router.get('/topic', TopicController.searchTopics)
+// 搜索话题
+router.get('/search', TopicController.searchTopics)
+
+// 获取首页话题
+router.get('/topic', TopicController.getHomeTopics)
 
 // 获取首页左侧热门话题
 router.get('/nav/hot', TopicController.getNavTopTopics)

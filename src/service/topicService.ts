@@ -462,6 +462,64 @@ class TopicService {
     return data
   }
 
+  // 获取首页话题
+  /**
+   * @param {Array} category - 话题的分类，目前有三种，Galgame, Technique, Others
+   * @param {Number} page - 分页页数
+   * @param {Number} limit - 每页的数据数
+   * @param {SortField} sortField - 按照哪个字段排序
+   * @param {SortOrder} sortOrder - 排序的顺序，有 `asc`, `desc`
+   */
+  async getHomeTopics(
+    category: string[],
+    page: number,
+    limit: number,
+    sortField: SortField,
+    sortOrder: SortOrder
+  ) {
+    const skip = (page - 1) * limit
+
+    const searchQuery = {
+      category: { $in: category },
+    }
+
+    const sortOptions: Record<string, 'asc' | 'desc'> = {
+      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+    }
+
+    const topics = await TopicModel.find(searchQuery)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .populate('user', 'uid avatar name')
+      .lean()
+
+    const data = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      views: topic.views,
+      upvotesCount: topic.upvotes_count,
+      likesCount: topic.likes_count,
+      repliesCount: topic.replies_count,
+      comments: topic.comments,
+      time: topic.time,
+      // Preview length
+      content: topic.content.slice(0, 233),
+      tags: topic.tags,
+      category: topic.category,
+      popularity: topic.popularity,
+      user: {
+        uid: topic.user[0].uid,
+        avatar: topic.user[0].avatar,
+        name: topic.user[0].name,
+      },
+      status: topic.status,
+      upvote_time: topic.upvote_time,
+    }))
+
+    return data
+  }
+
   // 检索话题，用于搜索框
   /**
    * @param {String} keywords - 搜索关键词，不填默认全部
@@ -470,7 +528,6 @@ class TopicService {
    * @param {Number} limit - 每页的数据数
    * @param {SortField} sortField - 按照哪个字段排序
    * @param {SortOrder} sortOrder - 排序的顺序，有 `asc`, `desc`
-   * @returns {HomeTopicResponseData} topicData
    */
   async searchTopics(
     keywords: string,
@@ -509,45 +566,22 @@ class TopicService {
       ],
     }
 
-    // 不提供 keyword 时的查询
-    const getQuery = {
-      category: { $in: category },
-    }
-
-    const query = keywords ? searchQuery : getQuery
-
     const sortOptions: Record<string, 'asc' | 'desc'> = {
       [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
     }
 
-    const topics = await TopicModel.find(query)
+    const topics = await TopicModel.find(searchQuery)
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
-      .populate('user', 'uid avatar name')
       .lean()
 
     const data = topics.map((topic) => ({
       tid: topic.tid,
       title: topic.title,
-      views: topic.views,
-      upvotesCount: topic.upvotes_count,
-      likesCount: topic.likes_count,
-      repliesCount: topic.replies_count,
-      comments: topic.comments,
-      time: topic.time,
-      // Preview length
-      content: topic.content.slice(0, 233),
-      tags: topic.tags,
       category: topic.category,
-      popularity: topic.popularity,
-      user: {
-        uid: topic.user[0].uid,
-        avatar: topic.user[0].avatar,
-        name: topic.user[0].name,
-      },
-      status: topic.status,
-      upvote_time: topic.upvote_time,
+      // Preview length
+      content: topic.content.slice(0, 107),
     }))
 
     return data

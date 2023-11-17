@@ -213,6 +213,19 @@ class TopicController {
     }
   }
 
+  // 获取首页话题
+  async getHomeTopics(ctx: Context) {
+    const { category, page, limit, sortField, sortOrder } = ctx.query
+    const data = await TopicService.getHomeTopics(
+      JSON.parse(category as string),
+      parseInt(page as string),
+      parseInt(limit as string),
+      sortField as SortField,
+      sortOrder as SortOrder
+    )
+    ctx.body = { code: 200, message: 'OK', data: data }
+  }
+
   // 按关键词搜索话题
   async searchTopics(ctx: Context) {
     const { keywords, category, page, limit, sortField, sortOrder } = ctx.query
