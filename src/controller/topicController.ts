@@ -230,7 +230,7 @@ class TopicController {
   async searchTopics(ctx: Context) {
     const { keywords, category, page, limit, sortField, sortOrder } = ctx.query
     const data = await TopicService.searchTopics(
-      keywords as string,
+      (keywords as string).trim().slice(0, 40),
       JSON.parse(category as string),
       parseInt(page as string),
       parseInt(limit as string),
