@@ -521,7 +521,7 @@ class TopicService {
     return data
   }
 
-  // 获取首页话题
+  // 获取话题池话题
   /**
    * @param {Number} page - 分页页数
    * @param {Number} limit - 每页的数据数
@@ -554,6 +554,45 @@ class TopicService {
       time: topic.time,
       // Preview length
       content: topic.content.slice(0, 233),
+    }))
+
+    return data
+  }
+
+  // 获取技术交流话题
+  /**
+   * @param {Number} page - 分页页数
+   * @param {Number} limit - 每页的数据数
+   * @param {SortField} sortField - 按照哪个字段排序
+   * @param {SortOrder} sortOrder - 排序的顺序，有 `asc`, `desc`
+   */
+  async getTechniqueTopics(
+    page: number,
+    limit: number,
+    sortField: SortField,
+    sortOrder: SortOrder
+  ) {
+    const skip = (page - 1) * limit
+
+    const sortOptions: Record<string, 'asc' | 'desc'> = {
+      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+    }
+
+    const topics = await TopicModel.find({ category: 'Technique' })
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean()
+
+    const data = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      views: topic.views,
+      likesCount: topic.likes_count,
+      replyCount: topic.replies_count,
+      // Preview length
+      content: topic.content.slice(0, 233),
+      tags: topic.tags,
     }))
 
     return data
