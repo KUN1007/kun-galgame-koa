@@ -8,6 +8,7 @@ import { checkTopicPublish } from './utils/checkTopicPublish'
 import type {
   SortField,
   SortFieldRanking,
+  SortFieldPool,
   SortOrder,
 } from './types/topicController'
 
@@ -221,6 +222,18 @@ class TopicController {
       parseInt(page as string),
       parseInt(limit as string),
       sortField as SortField,
+      sortOrder as SortOrder
+    )
+    ctx.body = { code: 200, message: 'OK', data: data }
+  }
+
+  // 获取话题池
+  async getPoolTopics(ctx: Context) {
+    const { page, limit, sortField, sortOrder } = ctx.query
+    const data = await TopicService.getPoolTopics(
+      parseInt(page as string),
+      parseInt(limit as string),
+      sortField as SortFieldPool,
       sortOrder as SortOrder
     )
     ctx.body = { code: 200, message: 'OK', data: data }

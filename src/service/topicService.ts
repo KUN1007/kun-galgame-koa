@@ -12,6 +12,7 @@ import type {
   SortField,
   SortOrder,
   SortFieldRanking,
+  SortFieldPool,
 } from './types/topicService'
 
 class TopicService {
@@ -515,6 +516,44 @@ class TopicService {
       },
       status: topic.status,
       upvote_time: topic.upvote_time,
+    }))
+
+    return data
+  }
+
+  // 获取首页话题
+  /**
+   * @param {Number} page - 分页页数
+   * @param {Number} limit - 每页的数据数
+   * @param {SortFieldPool} sortField - 按照哪个字段排序
+   * @param {SortOrder} sortOrder - 排序的顺序，有 `asc`, `desc`
+   */
+  async getPoolTopics(
+    page: number,
+    limit: number,
+    sortField: SortFieldPool,
+    sortOrder: SortOrder
+  ) {
+    const skip = (page - 1) * limit
+
+    const sortOptions: Record<string, 'asc' | 'desc'> = {
+      [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
+    }
+
+    const topics = await TopicModel.find()
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean()
+
+    const data = topics.map((topic) => ({
+      tid: topic.tid,
+      title: topic.title,
+      views: topic.views,
+      likesCount: topic.likes_count,
+      time: topic.time,
+      // Preview length
+      content: topic.content.slice(0, 233),
     }))
 
     return data

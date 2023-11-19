@@ -17,3 +17,5 @@ export type SortFieldRanking =
   | 'likes_count'
   | 'replies_count'
   | 'comments'
+
+export type SortFieldPool = 'views' | 'likes_count' | 'time'
