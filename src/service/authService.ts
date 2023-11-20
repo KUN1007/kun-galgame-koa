@@ -80,10 +80,10 @@ class AuthService {
       )
 
       const mailOptions = {
-        from: env.GOOGLE_EMAIL,
+        from: env.EMAIL_FROM,
         to: email,
-        subject: '~~~ KUNGalgame ~~~',
-        text: `Your verification code is: ${code}`,
+        subject: 'KUN Visual Novel Verification Code',
+        text: `Thanks for your register KUN Visual Novel.\nWe are verifying your email. Your verification code is: ${code}`,
       }
 
       // 发送邮件
@@ -143,10 +143,10 @@ class AuthService {
       )
 
       const mailOptions = {
-        from: env.EMAIL,
+        from: env.EMAIL_FROM,
         to: email,
-        subject: '~~~ KUNGalgame ~~~',
-        text: `Your reset email code is: ${code}`,
+        subject: 'KUN Visual Novel Verification Code',
+        text: `You are resetting your email.\n Your verification code is: ${code}\n`,
       }
 
       // 发送邮件
