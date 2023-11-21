@@ -279,7 +279,7 @@ class UserService {
   // 获取用户评论
   async getUserComments(cidArray: number[]) {
     // 仅显示前 50 个
-    const comments = await CommentModel.find({ tid: { $in: cidArray } }).limit(
+    const comments = await CommentModel.find({ cid: { $in: cidArray } }).limit(
       50
     )
 
