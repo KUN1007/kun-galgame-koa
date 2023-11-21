@@ -16,7 +16,8 @@ class ReplyService {
     to_uid: number,
     to_floor: number,
     tags: string[],
-    content: string
+    content: string,
+    time: number
   ) {
     // 启动事务
     const session = await mongoose.startSession()
@@ -37,6 +38,7 @@ class ReplyService {
         floor,
         tags: tags,
         content,
+        time,
       })
 
       const savedReply = await newReply.save()
@@ -113,7 +115,8 @@ class ReplyService {
     tid: number,
     rid: number,
     content: string,
-    tags: string[]
+    tags: string[],
+    edited: number
   ) {
     // 启动事务
     const session = await mongoose.startSession()
@@ -122,7 +125,7 @@ class ReplyService {
       // 直接用 rid 也可以，这里是保险起见
       await ReplyModel.updateOne(
         { rid: rid, r_uid: uid },
-        { tags, edited: Date.now(), content }
+        { tags, edited, content }
       )
 
       // 保存 tags
@@ -148,7 +151,8 @@ class ReplyService {
   async updateReplyUpvote(
     uid: number,
     to_uid: number,
-    rid: number
+    rid: number,
+    time: number
   ): Promise<void> {
     // 用户无法推自己的回复
     if (uid === to_uid) {
@@ -171,7 +175,7 @@ class ReplyService {
       await ReplyModel.updateOne(
         { rid },
         {
-          $set: { upvote_time: Date.now() },
+          $set: { upvote_time: time },
           $push: { upvotes: uid },
         }
       )

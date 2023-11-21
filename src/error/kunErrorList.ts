@@ -33,11 +33,13 @@ export const errorMessages: Record<number, string> = {
   10205: `Topic content length exceed 100007 characters. Or empty.`,
   10206: `Topic with a maximum of 7 tags. Minimum one tag.`,
   10207: `Topic with a maximum of 2 categories. Minimum one category.`,
+  10208: `Invalid topics timestamp.`,
 
   // Auth Part
   10301: `Sending emails too frequently`,
   10302: `Invalid Email Format`,
   10303: `Invalid Email, Password, or Verification Code Format`,
+
   // Comment Part
   10401: `Comment length exceed 1007 characters. Or empty.`,
 
@@ -46,4 +48,5 @@ export const errorMessages: Record<number, string> = {
   10502: `Single tag maximum length is 17 characters`,
   10503: `Reply content is empty`,
   10504: `Reply maximum length is 10007 characters`,
+  10505: `Invalid reply timestamp.`,
 }

@@ -90,7 +90,8 @@ class TopicService {
     title: string,
     content: string,
     tags: string[],
-    category: string[]
+    category: string[],
+    edited: number
   ) {
     // 启动事务
     const session = await mongoose.startSession()
@@ -99,7 +100,7 @@ class TopicService {
       // 直接根据 tid 更新也可以，这里是保险起见
       await TopicModel.updateOne(
         { tid, uid },
-        { title, content, tags, category, edited: Date.now() }
+        { title, content, tags, category, edited }
       )
 
       // 使用 TagService 更新标签的使用次数
@@ -244,7 +245,8 @@ class TopicService {
   async updateTopicUpvote(
     uid: number,
     to_uid: number,
-    tid: number
+    tid: number,
+    time: number
   ): Promise<10202 | void> {
     // 用户无法推自己的话题
     if (uid === to_uid) {
@@ -270,7 +272,7 @@ class TopicService {
       await TopicModel.updateOne(
         { tid },
         {
-          $set: { upvote_time: Date.now() },
+          $set: { upvote_time: time },
           $push: { upvotes: uid },
           $inc: { popularity: 50, upvotes_count: 1 },
         }

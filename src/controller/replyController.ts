@@ -4,6 +4,7 @@ import ReplyService from '@/service/replyService'
 import { getCookieTokenInfo } from '@/utils/cookies'
 
 import { checkReplyPublish } from './utils/checkReplyPublish'
+import { isValidTimestamp } from '@/utils/validate'
 
 class ReplyController {
   // 创建回复
@@ -14,10 +15,10 @@ class ReplyController {
     // 从路径获取 tid
     const tid = parseInt(ctx.params.tid as string)
 
-    const { to_uid, to_floor, tags, content } = ctx.request.body
+    const { to_uid, to_floor, tags, content, time } = ctx.request.body
 
     // 再次检查评论发布
-    const result = checkReplyPublish(tags, content)
+    const result = checkReplyPublish(tags, content, time)
 
     if (result) {
       ctx.app.emit('kunError', result, ctx)
@@ -30,7 +31,8 @@ class ReplyController {
       to_uid,
       to_floor,
       tags,
-      content
+      content,
+      time
     )
 
     ctx.status = 200
@@ -48,17 +50,17 @@ class ReplyController {
     // 从路径获取 tid
     const tid = parseInt(ctx.params.tid as string)
 
-    const { rid, content, tags } = ctx.request.body
+    const { rid, content, tags, edited } = ctx.request.body
 
     // 再次检查评论发布
-    const result = checkReplyPublish(tags, content)
+    const result = checkReplyPublish(tags, content, edited)
 
     if (result) {
       ctx.app.emit('kunError', result, ctx)
       return
     }
 
-    await ReplyService.updateReply(uid, tid, rid, content, tags)
+    await ReplyService.updateReply(uid, tid, rid, content, tags, edited)
     ctx.body = {
       code: 200,
       message: 'OK',
@@ -73,8 +75,14 @@ class ReplyController {
 
     const to_uid = parseInt(ctx.query.to_uid as string)
     const rid = parseInt(ctx.query.rid as string)
+    const time = parseInt(ctx.query.time as string)
 
-    await ReplyService.updateReplyUpvote(uid, to_uid, rid)
+    if (!isValidTimestamp(time)) {
+      ctx.app.emit('kunError', 10505, ctx)
+      return
+    }
+
+    await ReplyService.updateReplyUpvote(uid, to_uid, rid, time)
 
     ctx.body = {
       code: 200,

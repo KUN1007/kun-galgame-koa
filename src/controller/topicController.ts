@@ -4,6 +4,7 @@ import TopicService from '@/service/topicService'
 import { getCookieTokenInfo } from '@/utils/cookies'
 
 import { checkTopicPublish } from './utils/checkTopicPublish'
+import { isValidTimestamp } from '@/utils/validate'
 
 import type {
   SortField,
@@ -40,9 +41,15 @@ class TopicController {
     const uid = getCookieTokenInfo(ctx).uid
 
     const tid = parseInt(ctx.params.tid as string)
-
     const to_uid = parseInt(ctx.query.to_uid as string)
-    const result = await TopicService.updateTopicUpvote(uid, to_uid, tid)
+    const time = parseInt(ctx.query.time as string)
+
+    if (!isValidTimestamp(time)) {
+      ctx.app.emit('kunError', 10208, ctx)
+      return
+    }
+
+    const result = await TopicService.updateTopicUpvote(uid, to_uid, tid, time)
 
     // 返回错误码，您的萌萌点不足 1100，无法使用推话题功能
     if (result === 10202) {
@@ -136,7 +143,7 @@ class TopicController {
     const uid = getCookieTokenInfo(ctx).uid
     const { title, content, time, tags, category } = ctx.request.body
 
-    const res = checkTopicPublish(title, content, tags, category)
+    const res = checkTopicPublish(title, content, tags, category, time)
 
     if (res) {
       ctx.app.emit('kunError', res, ctx)
@@ -168,16 +175,24 @@ class TopicController {
 
     const tid = parseInt(ctx.params.tid as string)
 
-    const { title, content, tags, category } = ctx.request.body
+    const { title, content, tags, category, edited } = ctx.request.body
 
-    const res = checkTopicPublish(title, content, tags, category)
+    const res = checkTopicPublish(title, content, tags, category, edited)
 
     if (res) {
       ctx.app.emit('kunError', res, ctx)
       return
     }
 
-    await TopicService.updateTopic(uid, tid, title, content, tags, category)
+    await TopicService.updateTopic(
+      uid,
+      tid,
+      title,
+      content,
+      tags,
+      category,
+      edited
+    )
 
     ctx.body = {
       code: 200,
