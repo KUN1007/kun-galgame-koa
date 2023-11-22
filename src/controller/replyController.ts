@@ -6,6 +6,8 @@ import { getCookieTokenInfo } from '@/utils/cookies'
 import { checkReplyPublish } from './utils/checkReplyPublish'
 import { isValidTimestamp } from '@/utils/validate'
 
+import type { sortField, sortOrder } from './types/replyController'
+
 class ReplyController {
   // 创建回复
   async createReply(ctx: Context) {
@@ -141,8 +143,8 @@ class ReplyController {
         tid,
         pageNumber,
         limitNumber,
-        sortField as string,
-        <'asc' | 'desc'>sortOrder
+        sortField as sortField,
+        sortOrder as sortOrder
       )
 
       ctx.body = {

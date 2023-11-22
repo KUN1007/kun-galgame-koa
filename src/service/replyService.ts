@@ -8,6 +8,8 @@ import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'
 
+import type { sortField, sortOrder } from './types/replyService'
+
 class ReplyService {
   // 创建回复
   async createReply(
@@ -295,15 +297,15 @@ class ReplyService {
    * @param {number} tid - 话题的 id，在那个话题中获取回复
    * @param {number} page - 分页的页数，第几页
    * @param {number} limit - 分页中每页有多少条信息
-   * @param {string} sortField - 根据哪个字段进行排序
-   * @param {string} sortOrder - 升序还是降序，`asc`, `desc`
+   * @param {sortField} sortField - 根据哪个字段进行排序
+   * @param {sortOrder} sortOrder - 升序还是降序，`asc`, `desc`
    */
   async getReplies(
     tid: number,
     page: number,
     limit: number,
-    sortField: string,
-    sortOrder: 'asc' | 'desc'
+    sortField: sortField,
+    sortOrder: sortOrder
   ) {
     // 启动事务
     const session = await mongoose.startSession()
