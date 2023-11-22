@@ -225,7 +225,8 @@ class ReplyService {
     try {
       await ReplyModel.updateOne(
         { rid: rid },
-        { [isPush ? '$addToSet' : '$pull']: { likes: uid } }
+        { [isPush ? '$addToSet' : '$pull']: { likes: uid } },
+        { $inc: { likes_count: moemoepointAmount } }
       )
 
       // 更新被点赞用户的萌萌点

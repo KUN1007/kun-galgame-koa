@@ -29,6 +29,11 @@ const ReplySchema = new mongoose.Schema<ReplyAttributes>(
     // 回复被推的时间
     upvote_time: { type: Number, default: 0 },
 
+    // 话题的点赞计数
+    likes_count: { type: Number, default: 0 },
+    // 话题的回复计数
+    comments_count: { type: Number, default: 0 },
+
     // 回复被推数组，存放了推回复用户的 uid
     upvotes: { type: [Number], default: [] },
     // 回复的点赞数组，存放了点赞用户的 uid

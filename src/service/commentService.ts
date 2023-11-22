@@ -60,7 +60,8 @@ class CommentService {
 
       await ReplyModel.updateOne(
         { rid },
-        { $addToSet: { comment: savedComment.cid } }
+        { $addToSet: { comment: savedComment.cid } },
+        { $inc: { comment_count: 1 } }
       )
 
       // 提交事务

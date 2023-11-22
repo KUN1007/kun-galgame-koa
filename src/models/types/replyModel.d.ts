@@ -14,6 +14,9 @@ export interface ReplyAttributes {
   content: string
   upvote_time: number
 
+  likes_count: number
+  comments_count: number
+
   upvotes: number[]
   likes: number[]
   dislikes: number[]
