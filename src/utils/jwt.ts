@@ -27,7 +27,7 @@ export function verifyJWTPayloadByHeader(authHeader: string) {
     const payload = jwt.verify(token, env.JWT_SECRET) as Payload
     return payload
   } catch (error) {
-    console.error('JWT Verification Error:', error)
+    return null
   }
 }
 
@@ -37,7 +37,7 @@ export function verifyJWTPayload(token: string) {
     const payload = jwt.verify(token, env.JWT_SECRET) as Payload
     return payload
   } catch (error) {
-    console.error('JWT Verification Error:', error)
+    return null
   }
 }
 

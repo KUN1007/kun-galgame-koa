@@ -29,28 +29,23 @@ class AuthService {
 
   // 根据 refresh token 生成 token
   async generateTokenByRefreshToken(refreshToken: string) {
-    try {
-      // 将 refreshToken 解码获取用户的 uid
-      const decoded = verifyJWTPayload(refreshToken)
+    // 将 refreshToken 解码获取用户的 uid
+    const decoded = verifyJWTPayload(refreshToken)
 
-      // 没有获取到直接返回
-      if (!decoded || !decoded.uid) {
-        return null
-      }
-
-      // 不是由 kungalgame 签发的萌萌 token
-      if (decoded.iss !== 'kungalgame' || decoded.aud !== 'kungalgamer') {
-        return null
-      }
-
-      // 新生成的 token
-      const accessToken = generateToken(decoded.uid, decoded.name, '60m')
-
-      return accessToken
-    } catch (error) {
-      console.error('Get New Access Token Error:', error)
+    // 没有获取到直接返回
+    if (!decoded || !decoded.uid) {
       return null
     }
+
+    // 不是由 kungalgame 签发的萌萌 token
+    if (decoded.iss !== 'kungalgame' || decoded.aud !== 'kungalgamer') {
+      return null
+    }
+
+    // 新生成的 token
+    const accessToken = generateToken(decoded.uid, decoded.name, '60m')
+
+    return accessToken
   }
 
   // 发送验证码邮件

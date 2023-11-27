@@ -39,27 +39,17 @@ class AuthController {
 
   // 根据 refresh token 获取 access token
   async generateTokenByRefreshToken(ctx: Context) {
-    // refreshToken 就存在 ctx.cookies 中，每次请求都会发送
     const refreshToken = ctx.cookies.get('kungalgame-moemoe-refresh-token')
 
-    try {
-      const newToken = await AuthService.generateTokenByRefreshToken(
-        refreshToken
-      )
-      ctx.status = 200
-      ctx.body = {
-        code: 200,
-        message: 'Token refresh successfully',
-        data: {
-          token: newToken,
-        },
-      }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = {
-        code: 500,
-        message: 'Failed to generate refresh token',
-      }
+    const newToken = await AuthService.generateTokenByRefreshToken(refreshToken)
+
+    ctx.status = 200
+    ctx.body = {
+      code: 200,
+      message: 'Token refresh successfully',
+      data: {
+        token: newToken,
+      },
     }
   }
 

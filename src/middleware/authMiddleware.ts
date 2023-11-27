@@ -29,15 +29,18 @@ export function kungalgameAuthMiddleware(): Middleware {
     const decoded = verifyJWTPayloadByHeader(authorizationHeader)
 
     // 解码失败
-    if (!decoded || !decoded.uid) {
-      // 如果解码失败或没有 UID，返回未授权
-      ctx.status = 401
-      ctx.body = 'Unauthorized'
+    if (!decoded) {
+      // 这里直接返回 205，配合前端可以实现无感刷新 token
+      ctx.status = 205
       return
     }
 
-    // 不是由 kungalgame 签发的萌萌 token
-    if (decoded.iss !== 'kungalgame' || decoded.aud !== 'kungalgamer') {
+    // 没有 UID，不是由 kungalgame 签发的萌萌 token
+    if (
+      !decoded.uid ||
+      decoded.iss !== 'kungalgame' ||
+      decoded.aud !== 'kungalgamer'
+    ) {
       ctx.status = 401
       ctx.body = 'Non moemoe!'
       return
