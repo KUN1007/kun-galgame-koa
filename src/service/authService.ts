@@ -79,7 +79,8 @@ class AuthService {
       )
 
       const mailOptions = {
-        from: env.KUN_VISUAL_NOVEL_EMAIL_FROM,
+        from: `${env.KUN_VISUAL_NOVEL_EMAIL_FROM}<${env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT}>`,
+        sender: env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT,
         to: email,
         subject: 'KUN Visual Novel Verification Code',
         text: `Your verification code is\n${code}\nYou are registering KUN Visual Novel. Please do not disclose this verification code.`,
@@ -142,7 +143,8 @@ class AuthService {
       )
 
       const mailOptions = {
-        from: env.KUN_VISUAL_NOVEL_EMAIL_FROM,
+        from: `${env.KUN_VISUAL_NOVEL_EMAIL_FROM}<${env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT}>`,
+        sender: env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT,
         to: email,
         subject: 'KUN Visual Novel Verification Code',
         text: `Your verification code is\n${code}\nYou are resetting your email. Please do not disclose this verification code.`,
