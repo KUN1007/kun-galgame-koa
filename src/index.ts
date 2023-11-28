@@ -20,6 +20,9 @@ useKUNGalgameTask()
 
 const app = new Koa()
 
+// 开启 koa 代理
+app.proxy = true
+
 // 使用 koa 跨域请求中间件
 app.use(
   cors({
