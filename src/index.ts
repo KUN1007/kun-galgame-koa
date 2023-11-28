@@ -69,6 +69,6 @@ app.use(mount('/uploads', serve('./uploads')))
 // 应用发生错误时处理错误
 app.on('kunError', kungalgameErrorHandler)
 
-app.listen(env.APP_PORT, () => {
+app.listen(parseInt(env.APP_PORT), '0.0.0.0', () => {
   console.log(`server is running on http://${env.APP_HOST}:${env.APP_PORT}`)
 })
