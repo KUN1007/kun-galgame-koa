@@ -33,12 +33,16 @@ class AuthService {
     const decoded = verifyJWTPayload(refreshToken)
 
     // 没有获取到直接返回
-    if (!decoded || !decoded.uid) {
+    if (!decoded) {
       return null
     }
 
     // 不是由 kungalgame 签发的萌萌 token
-    if (decoded.iss !== 'kungalgame' || decoded.aud !== 'kungalgamer') {
+    if (
+      !decoded.uid ||
+      decoded.iss !== 'kungalgame' ||
+      decoded.aud !== 'kungalgamer'
+    ) {
       return null
     }
 
@@ -66,19 +70,19 @@ class AuthService {
 
       const transporter = nodemailer.createTransport(
         SMPTransport({
-          service: 'gmail',
+          host: env.KUN_VISUAL_NOVEL_EMAIL_HOST,
           auth: {
-            user: env.GOOGLE_EMAIL,
-            pass: env.GOOGLE_PASSWORD,
+            user: env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT,
+            pass: env.KUN_VISUAL_NOVEL_EMAIL_PASSWORD,
           },
         })
       )
 
       const mailOptions = {
-        from: env.EMAIL_FROM,
+        from: env.KUN_VISUAL_NOVEL_EMAIL_FROM,
         to: email,
         subject: 'KUN Visual Novel Verification Code',
-        text: `Thanks for your register KUN Visual Novel.\nWe are verifying your email. Your verification code is: ${code}`,
+        text: `Your verification code is\n${code}\nYou are registering KUN Visual Novel. Please do not disclose this verification code.`,
       }
 
       // 发送邮件
@@ -129,19 +133,19 @@ class AuthService {
 
       const transporter = nodemailer.createTransport(
         SMPTransport({
-          service: 'gmail',
+          host: env.KUN_VISUAL_NOVEL_EMAIL_HOST,
           auth: {
-            user: env.GOOGLE_EMAIL,
-            pass: env.GOOGLE_PASSWORD,
+            user: env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT,
+            pass: env.KUN_VISUAL_NOVEL_EMAIL_PASSWORD,
           },
         })
       )
 
       const mailOptions = {
-        from: env.EMAIL_FROM,
+        from: env.KUN_VISUAL_NOVEL_EMAIL_FROM,
         to: email,
         subject: 'KUN Visual Novel Verification Code',
-        text: `You are resetting your email.\n Your verification code is: ${code}\n`,
+        text: `Your verification code is\n${code}\nYou are resetting your email. Please do not disclose this verification code.`,
       }
 
       // 发送邮件

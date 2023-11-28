@@ -43,13 +43,18 @@ class AuthController {
 
     const newToken = await AuthService.generateTokenByRefreshToken(refreshToken)
 
-    ctx.status = 200
-    ctx.body = {
-      code: 200,
-      message: 'Token refresh successfully',
-      data: {
-        token: newToken,
-      },
+    if (newToken) {
+      ctx.status = 200
+      ctx.body = {
+        code: 200,
+        message: 'Token refresh successfully',
+        data: {
+          token: newToken,
+        },
+      }
+    } else {
+      ctx.status = 401
+      ctx.body = 'Unauthorized'
     }
   }
 
