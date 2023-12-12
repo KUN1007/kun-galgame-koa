@@ -12,11 +12,6 @@ class AuthController {
   async sendVerificationCodeEmail(ctx: Context) {
     const email: string = ctx.request.body.email
 
-    if (!email) {
-      ctx.body = { code: 400, message: 'Email is required' }
-      return
-    }
-
     if (!isValidEmail(email)) {
       ctx.app.emit('kunError', 10302, ctx)
       return
