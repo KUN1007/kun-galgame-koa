@@ -325,6 +325,17 @@ class TopicService {
       return
     }
 
+    // 已经点赞过了
+    const topic = await TopicModel.findOne({ tid })
+    if (!topic) {
+      return
+    }
+
+    const isLikedTopic = topic.likes.includes(uid)
+    if (isLikedTopic && isPush) {
+      return
+    }
+
     // 萌萌点，取消则 -1， 否则为 1
     const moemoepointAmount = isPush ? 1 : -1
     // 热度
@@ -341,7 +352,7 @@ class TopicService {
         { tid: tid },
         {
           $inc: { popularity: popularity, likes_count: moemoepointAmount },
-          [isPush ? '$addToSet' : '$pull']: { likes: uid },
+          [isPush ? '$push' : '$pull']: { likes: uid },
         }
       )
 
@@ -349,7 +360,7 @@ class TopicService {
       // 增加用户的点赞计数
       await UserModel.updateOne(
         { uid: uid },
-        { [isPush ? '$addToSet' : '$pull']: { like_topic: tid } }
+        { [isPush ? '$push' : '$pull']: { like_topic: tid } }
       )
 
       // 更新被点赞用户的萌萌点
@@ -388,6 +399,16 @@ class TopicService {
       return
     }
 
+    const topic = await TopicModel.findOne({ tid })
+    if (!topic) {
+      return
+    }
+
+    const isDislikedTopic = topic.dislikes.includes(uid)
+    if (isDislikedTopic && isPush) {
+      return
+    }
+
     // 点踩数，取消则 -1， 否则为 1
     const amount = isPush ? 1 : -1
     // 热度
@@ -405,14 +426,14 @@ class TopicService {
         { tid: tid },
         {
           $inc: { popularity: popularity, dislikes_count: amount },
-          [isPush ? '$addToSet' : '$pull']: { dislikes: uid },
+          [isPush ? '$push' : '$pull']: { dislikes: uid },
         }
       )
 
       // 将话题的 tid 作用于用户的 dislike_topic 数组中
       await UserModel.updateOne(
         { uid: uid },
-        { [isPush ? '$addToSet' : '$pull']: { dislike_topic: tid } }
+        { [isPush ? '$push' : '$pull']: { dislike_topic: tid } }
       )
 
       // 更新被点踩用户的被点踩数

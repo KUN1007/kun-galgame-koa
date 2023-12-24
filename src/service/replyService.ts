@@ -219,6 +219,17 @@ class ReplyService {
       return
     }
 
+    // 已经点赞过了
+    const reply = await ReplyModel.findOne({ rid })
+    if (!reply) {
+      return
+    }
+
+    const isLikedReply = reply.likes.includes(uid)
+    if (isLikedReply && isPush) {
+      return
+    }
+
     const moemoepointAmount = isPush ? 1 : -1
 
     const session = await mongoose.startSession()
@@ -227,7 +238,7 @@ class ReplyService {
     try {
       await ReplyModel.updateOne(
         { rid: rid },
-        { [isPush ? '$addToSet' : '$pull']: { likes: uid } },
+        { [isPush ? '$push' : '$pull']: { likes: uid } },
         { $inc: { likes_count: moemoepointAmount } }
       )
 
@@ -266,6 +277,16 @@ class ReplyService {
       return
     }
 
+    const reply = await ReplyModel.findOne({ rid })
+    if (!reply) {
+      return
+    }
+
+    const isDislikedReply = reply.dislikes.includes(uid)
+    if (isDislikedReply && isPush) {
+      return
+    }
+
     const amount = isPush ? 1 : -1
 
     // 启动事务
@@ -275,7 +296,7 @@ class ReplyService {
     try {
       await ReplyModel.updateOne(
         { rid: rid },
-        { [isPush ? '$addToSet' : '$pull']: { dislikes: uid } }
+        { [isPush ? '$push' : '$pull']: { dislikes: uid } }
       )
 
       // 更新被点踩用户的被踩数
