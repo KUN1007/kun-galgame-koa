@@ -187,7 +187,7 @@ class ReplyService {
 
       // 更新被推用户的萌萌点和被推数
       await UserModel.updateOne(
-        { to_uid },
+        { uid: to_uid },
         { $inc: { moemoepoint: 1, upvote: 1 } }
       )
 

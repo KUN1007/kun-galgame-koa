@@ -213,14 +213,10 @@ class UserService {
       // 邮箱验证码错误
       return 10103
     }
-    const user = await UserModel.findOneAndUpdate(
+    await UserModel.findOneAndUpdate(
       { uid: uid },
       { $set: { email: email } }
     )
-    // 用户不存在
-    if (!user) {
-      return 10101
-    }
   }
 
   /**
