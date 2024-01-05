@@ -25,6 +25,7 @@ export const errorMessages: Record<number, string> = {
   10110: `Avatar image upload error. The image is an array.`,
   10111: `Avatar image upload error. The final compressed size of the image exceeds 50KB.`,
   10112: `In cooldown for login, two identical login attempts should have a one-minute interval.`,
+  10113: `In cooldown for register, two identical register attempts should have a one-minute interval. (-B)`,
 
   // Topic Part
   10201: `Your daily topic limit has been reached for today.`,

@@ -68,6 +68,17 @@ class UserController {
       return
     }
 
+    const registerCDEmail = await getValue(`registerCD:${name}`)
+    const registerCDIp = await getValue(`registerCD:${name}`)
+
+    if (registerCDEmail || registerCDIp) {
+      ctx.app.emit('kunError', 10113, ctx)
+      return
+    } else {
+      setValue(`registerCD:${email}`, email, 60)
+      setValue(`registerCD:${ip}`, ip ? ip : '', 60)
+    }
+
     const result = await UserService.registerUser(
       name,
       email,
