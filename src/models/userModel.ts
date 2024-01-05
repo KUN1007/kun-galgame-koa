@@ -8,9 +8,9 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     // 用户 ID，从 1 开始递增且唯一
     uid: { type: Number, unique: true },
     // 用户名，唯一，允许数字字母汉字和 _ ~
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     // 用户邮箱
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     // 用户密码，已加密
     password: { type: String, required: true },
     // 用户的注册 ip，可选
