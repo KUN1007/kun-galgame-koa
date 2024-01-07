@@ -138,15 +138,15 @@ class PLService {
       // 计算利润与损失
       const profitLoss = totalIncome - totalExpenditure
 
+      // 提交事务
+      await session.commitTransaction()
+      session.endSession()
+
       return {
         totalIncome,
         totalExpenditure,
         profitLoss,
       }
-
-      // 提交事务
-      await session.commitTransaction()
-      session.endSession()
     } catch (error) {
       // 如果出现错误，回滚事务
       await session.abortTransaction()
