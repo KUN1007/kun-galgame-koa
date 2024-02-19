@@ -37,6 +37,8 @@ const UserSchema = new mongoose.Schema<UserAttributes>(
     daily_topic_count: { type: Number, default: 0 },
     // 用户今日上传的图片，每日上传上限 50 张，12 点重置
     daily_image_count: { type: Number, default: 0 },
+    // 用户今日是否签到
+    daily_check_in: { type: Number, default: 0 },
 
     // 用户的好友计数
     friend_count: { type: Number, default: 0 },
