@@ -1,9 +1,9 @@
 /*
  * 回复的 CRUD，定义了一些对回复数据的数据库交互操作
  */
-import ReplyModel from '@/models/replyModel'
-import UserModel from '@/models/userModel'
-import TopicModel from '@/models/topicModel'
+import ReplyModel from '@/models/reply'
+import UserModel from '@/models/user'
+import TopicModel from '@/models/topic'
 import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'

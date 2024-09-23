@@ -131,30 +131,25 @@ class ReplyController {
 
   // 获取回复列表
   async getReplies(ctx: Context) {
-    try {
-      // 从路径获取 tid
-      const tid = parseInt(ctx.params.tid as string)
+    // 从路径获取 tid
+    const tid = parseInt(ctx.params.tid as string)
 
-      const pageNumber = parseInt(ctx.query.page as string)
-      const limitNumber = parseInt(ctx.query.limit as string)
-      const { sortField, sortOrder } = ctx.query
+    const pageNumber = parseInt(ctx.query.page as string)
+    const limitNumber = parseInt(ctx.query.limit as string)
+    const { sortField, sortOrder } = ctx.query
 
-      const data = await ReplyService.getReplies(
-        tid,
-        pageNumber,
-        limitNumber,
-        sortField as sortField,
-        sortOrder as sortOrder
-      )
+    const data = await ReplyService.getReplies(
+      tid,
+      pageNumber,
+      limitNumber,
+      sortField as sortField,
+      sortOrder as sortOrder
+    )
 
-      ctx.body = {
-        code: 200,
-        message: 'OK',
-        data,
-      }
-    } catch (error) {
-      ctx.status = 500
-      ctx.body = { error: 'Failed to fetch replies' }
+    ctx.body = {
+      code: 200,
+      message: 'OK',
+      data,
     }
   }
 }

@@ -2,7 +2,7 @@
  * 标签的 CRUD，定义了一些对标签数据的数据库交互操作
  */
 
-import TagModel from '@/models/tagModel'
+import TagModel from '@/models/tag'
 import mongoose from '@/db/connection'
 
 class TagService {

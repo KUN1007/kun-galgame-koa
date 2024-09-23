@@ -2,10 +2,10 @@
  * 评论的 CRUD，定义了一些对评论数据的数据库交互操作
  */
 
-import TopicModel from '@/models/topicModel'
-import ReplyModel from '@/models/replyModel'
-import CommentModel from '@/models/commentModel'
-import UserModel from '@/models/userModel'
+import TopicModel from '@/models/topic'
+import ReplyModel from '@/models/reply'
+import CommentModel from '@/models/comment'
+import UserModel from '@/models/user'
 import mongoose from '@/db/connection'
 
 class CommentService {
@@ -83,7 +83,6 @@ class CommentService {
         },
         content: savedComment.content,
         likes: savedComment.likes,
-        dislikes: savedComment.dislikes,
       }
     } catch (error) {
       // 如果出现错误，回滚事务
@@ -179,7 +178,6 @@ class CommentService {
       },
       content: comment.content,
       likes: comment.likes,
-      dislikes: comment.dislikes,
     }))
 
     return replyComments

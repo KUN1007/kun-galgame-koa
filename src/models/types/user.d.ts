@@ -1,4 +1,3 @@
-// 用户
 export interface UserAttributes {
   uid: number
   name: string
@@ -16,24 +15,30 @@ export interface UserAttributes {
   dislike: number
 
   daily_topic_count: number
+  daily_galgame_count: number
   daily_image_count: number
   daily_check_in: number
-
-  friend_count: number
-  followed_count: number
-  follower_count: number
-  topic_count: number
-  reply_count: number
-  comment_count: number
 
   friend: number[]
   followed: number[]
   follower: number[]
-  topic: number[]
   reply: number[]
   comment: number[]
+
+  topic: number[]
   like_topic: number[]
   dislike_topic: number[]
   upvote_topic: number[]
-  reply_topic: number[]
+  favorite_topic: number[]
+
+  galgame: number[]
+  like_galgame: number[]
+  favorite_galgame: number[]
+  contribute_galgame: number[]
+
+  galgame_resource: number[]
+  like_galgame_resource: number[]
+
+  created: Date
+  updated: Date
 }

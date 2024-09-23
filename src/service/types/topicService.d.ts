@@ -1,21 +1,19 @@
-export type SortField =
-  | 'updated'
-  | 'time'
-  | 'popularity'
-  | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
-  | 'comments'
+export type UserSortFieldRanking =
+  | 'moemoepoint'
+  | 'upvote'
+  | 'like'
+  | 'topic'
+  | 'reply'
+  | 'comment'
 
 export type SortOrder = 'asc' | 'desc'
 
-export type SortFieldRanking =
+export type TopicSortFieldRanking =
   | 'popularity'
   | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
+  | 'upvotes'
+  | 'likes'
+  | 'replies'
   | 'comments'
 
 export type SortFieldPool = 'views' | 'likes_count' | 'time'

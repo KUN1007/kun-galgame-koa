@@ -3,16 +3,16 @@
  */
 
 import bcrypt from 'bcrypt'
-import UserModel from '@/models/userModel'
-import TopicModel from '@/models/topicModel'
+import UserModel from '@/models/user'
+import TopicModel from '@/models/topic'
 // 导入发送验证码和验证的 Service
 import AuthService from './authService'
 import mongoose from '@/db/connection'
 import type { LoginResponseData } from './types/userService'
-import ReplyModel from '@/models/replyModel'
-import CommentModel from '@/models/commentModel'
+import ReplyModel from '@/models/reply'
+import CommentModel from '@/models/comment'
 
-import type { SortOrder, SortFieldRanking } from './types/userService'
+import type { SortOrder, UserSortFieldRanking } from './types/userService'
 
 class UserService {
   // 获取单个用户全部信息
@@ -213,10 +213,7 @@ class UserService {
       // 邮箱验证码错误
       return 10103
     }
-    await UserModel.findOneAndUpdate(
-      { uid: uid },
-      { $set: { email: email } }
-    )
+    await UserModel.findOneAndUpdate({ uid: uid }, { $set: { email: email } })
   }
 
   /**
@@ -300,7 +297,7 @@ class UserService {
   async getUserRanking(
     page: number,
     limit: number,
-    sortField: SortFieldRanking,
+    sortField: UserSortFieldRanking,
     sortOrder: SortOrder
   ) {
     const skip = (page - 1) * limit

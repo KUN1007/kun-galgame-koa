@@ -1,9 +1,11 @@
-// 不萌记录
 export interface NonMoeAttributes {
   nid: number
   uid: number
   name: string
-  description: string
+  description: KunLanguage
   time: number
-  result: string
+  result: string | number
+
+  created: Date
+  updated: Date
 }

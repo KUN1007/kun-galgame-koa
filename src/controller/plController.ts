@@ -8,30 +8,7 @@ import PLService from '@/service/plService'
 type SortField = 'time' | 'amount'
 type SortOrder = 'asc' | 'desc'
 
-// 这里设定只能由管理员创建，前端数据受信任，无需重新检测
 class PLController {
-  async createIncome(ctx: Context) {
-    const { reason, time, amount } = ctx.request.body
-
-    const timeStamp = parseInt(time)
-    await PLService.createIncome(reason, timeStamp, amount)
-    ctx.body = {
-      code: 200,
-      message: 'OK',
-      data: {},
-    }
-  }
-
-  async createExpenditure(ctx: Context) {
-    const { reason, time, amount } = ctx.request.body
-    await PLService.createExpenditure(reason, time, amount)
-    ctx.body = {
-      code: 200,
-      message: 'OK',
-      data: {},
-    }
-  }
-
   // 获取 income 数据
   async getIncomes(ctx: Context) {
     const page = parseInt(ctx.query.page as string)

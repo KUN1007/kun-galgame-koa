@@ -1,4 +1,4 @@
-import NonMoeModel from '@/models/nonMoeModel'
+import NonMoeModel from '@/models/non-moe'
 
 type SortOrder = 'asc' | 'desc'
 

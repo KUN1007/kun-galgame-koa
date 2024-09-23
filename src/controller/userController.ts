@@ -11,7 +11,7 @@ import {
   isValidMailConfirmCode,
 } from '@/utils/validate'
 
-import type { SortOrder, SortFieldRanking } from './types/userController'
+import type { SortOrder, UserSortFieldRanking } from './types/userController'
 
 class UserController {
   async login(ctx: Context) {
@@ -319,7 +319,7 @@ class UserController {
     const topics = await UserService.getUserRanking(
       parseInt(page as string),
       parseInt(limit as string),
-      sortField as SortFieldRanking,
+      sortField as UserSortFieldRanking,
       sortOrder as SortOrder
     )
     ctx.body = { code: 200, message: 'OK', data: topics }

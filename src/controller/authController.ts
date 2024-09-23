@@ -17,19 +17,15 @@ class AuthController {
       return
     }
 
-    try {
-      const result = await AuthService.sendVerificationCodeEmail(email)
+    const result = await AuthService.sendVerificationCodeEmail(email)
 
-      // 返回错误码
-      if (typeof result === 'number') {
-        ctx.app.emit('kunError', result, ctx)
-        return
-      }
-
-      ctx.body = { code: 200, message: 'Verification code sent successfully' }
-    } catch (error) {
-      ctx.body = { code: 500, message: 'Failed to send verification code' }
+    // 返回错误码
+    if (typeof result === 'number') {
+      ctx.app.emit('kunError', result, ctx)
+      return
     }
+
+    ctx.body = { code: 200, message: 'Verification code sent successfully' }
   }
 
   // 根据 refresh token 获取 access token
@@ -47,9 +43,6 @@ class AuthController {
           token: newToken,
         },
       }
-    } else {
-      ctx.status = 401
-      ctx.body = 'Unauthorized'
     }
   }
 

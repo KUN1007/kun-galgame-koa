@@ -7,8 +7,7 @@ import { checkTopicPublish } from './utils/checkTopicPublish'
 import { isValidTimestamp } from '@/utils/validate'
 
 import type {
-  SortField,
-  SortFieldRanking,
+  TopicSortFieldRanking,
   SortFieldPool,
   SortOrder,
 } from './types/topicController'
@@ -236,7 +235,7 @@ class TopicController {
       JSON.parse(category as string),
       parseInt(page as string),
       parseInt(limit as string),
-      sortField as SortField,
+      sortField as TopicSortFieldRanking,
       sortOrder as SortOrder
     )
     ctx.body = { code: 200, message: 'OK', data: data }
@@ -260,7 +259,7 @@ class TopicController {
     const data = await TopicService.getTechniqueTopics(
       parseInt(page as string),
       parseInt(limit as string),
-      sortField as SortField,
+      sortField as TopicSortFieldRanking,
       sortOrder as SortOrder
     )
     ctx.body = { code: 200, message: 'OK', data: data }
@@ -274,7 +273,7 @@ class TopicController {
       JSON.parse(category as string),
       parseInt(page as string),
       parseInt(limit as string),
-      sortField as SortField,
+      sortField as TopicSortFieldRanking,
       sortOrder as SortOrder
     )
     ctx.body = { code: 200, message: 'OK', data: data }
@@ -287,7 +286,7 @@ class TopicController {
     const topics = await TopicService.getTopicRanking(
       parseInt(page as string),
       parseInt(limit as string),
-      sortField as SortFieldRanking,
+      sortField as TopicSortFieldRanking,
       sortOrder as SortOrder
     )
     ctx.body = { code: 200, message: 'OK', data: topics }

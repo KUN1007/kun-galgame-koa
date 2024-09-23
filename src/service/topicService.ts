@@ -2,16 +2,15 @@
  * 话题的 CRUD，定义了一些对话题数据的数据库交互操作
  */
 
-import TopicModel from '@/models/topicModel'
-import UserModel from '@/models/userModel'
+import TopicModel from '@/models/topic'
+import UserModel from '@/models/user'
 import TagService from './tagService'
 import UserService from './userService'
 import mongoose from '@/db/connection'
 
 import type {
-  SortField,
   SortOrder,
-  SortFieldRanking,
+  TopicSortFieldRanking,
   SortFieldPool,
 } from './types/topicService'
 
@@ -498,7 +497,7 @@ class TopicService {
     category: string[],
     page: number,
     limit: number,
-    sortField: SortField,
+    sortField: TopicSortFieldRanking,
     sortOrder: SortOrder
   ) {
     const skip = (page - 1) * limit
@@ -522,9 +521,9 @@ class TopicService {
       tid: topic.tid,
       title: topic.title,
       views: topic.views,
-      upvotesCount: topic.upvotes_count,
-      likesCount: topic.likes_count,
-      repliesCount: topic.replies_count,
+      upvotesCount: topic.upvotes.length,
+      likesCount: topic.likes.length,
+      repliesCount: topic.replies.length,
       comments: topic.comments,
       time: topic.time,
       // Preview length
@@ -573,7 +572,7 @@ class TopicService {
       tid: topic.tid,
       title: topic.title,
       views: topic.views,
-      likesCount: topic.likes_count,
+      likesCount: topic.likes.length,
       time: topic.time,
       // Preview length
       content: topic.content.slice(0, 233),
@@ -592,7 +591,7 @@ class TopicService {
   async getTechniqueTopics(
     page: number,
     limit: number,
-    sortField: SortField,
+    sortField: TopicSortFieldRanking,
     sortOrder: SortOrder
   ) {
     const skip = (page - 1) * limit
@@ -611,8 +610,8 @@ class TopicService {
       tid: topic.tid,
       title: topic.title,
       views: topic.views,
-      likesCount: topic.likes_count,
-      replyCount: topic.replies_count,
+      likesCount: topic.likes.length,
+      replyCount: topic.replies.length,
       // Preview length
       content: topic.content.slice(0, 233),
       tags: topic.tags,
@@ -635,7 +634,7 @@ class TopicService {
     category: string[],
     page: number,
     limit: number,
-    sortField: SortField,
+    sortField: TopicSortFieldRanking,
     sortOrder: SortOrder
   ) {
     const skip = (page - 1) * limit
@@ -702,7 +701,7 @@ class TopicService {
   async getTopicRanking(
     page: number,
     limit: number,
-    sortField: SortFieldRanking,
+    sortField: TopicSortFieldRanking,
     sortOrder: SortOrder
   ) {
     const skip = (page - 1) * limit

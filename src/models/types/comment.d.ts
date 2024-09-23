@@ -1,6 +1,6 @@
-import type { UserAttributes } from './userModel'
+import type { UserAttributes } from './user'
+import type { TopicAttributes } from './topic'
 
-// 定义 Comment 文档的接口类型
 export interface CommentAttributes {
   cid: number
   rid: number
@@ -9,12 +9,12 @@ export interface CommentAttributes {
   to_uid: number
   content: string
 
-  likes_count: number
-  dislikes_count: number
-
   likes: number[]
-  dislikes: number[]
-  // 虚拟字段
+
+  topic: TopicAttributes[]
   cuid: UserAttributes[]
   touid: UserAttributes[]
+
+  created: Date
+  updated: Date
 }

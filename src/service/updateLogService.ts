@@ -2,8 +2,8 @@
  * 更新日志的 CRUD，定义了一些对更新日志数据的数据库交互操作
  */
 
-import UpdateLogModel from '@/models/updateLogModel'
-import { UpdateLogAttributes } from '@/models/types/updateLogModel'
+import UpdateLogModel from '@/models/update-log'
+import { UpdateLogAttributes } from '@/models/types/update-log'
 
 class UpdateLogService {
   // 创建单条更新数据
@@ -27,7 +27,7 @@ class UpdateLogService {
     // 将数据结构适配为接口定义好的数据结构
     const data = updateLogs.map((log) => ({
       upid: log.upid,
-      description: log.description,
+      content: log.content,
       time: log.time,
       version: log.version,
     }))

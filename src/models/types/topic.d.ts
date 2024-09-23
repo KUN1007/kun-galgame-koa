@@ -1,24 +1,20 @@
-import type { UserAttributes } from './userModel'
+import type { UserAttributes } from './user'
 
-// 话题
-interface TopicAttributes {
+export interface TopicAttributes {
   tid: number
   title: string
   content: string
   uid: number
+  avatar: string
+  name: string
   tags: string[]
   category: string[]
+  section: string[]
   time: number
 
   popularity: number
   views: number
   upvote_time: number
-
-  upvotes_count: number
-  replies_count: number
-  likes_count: number
-  share_count: number
-  dislikes_count: number
 
   upvotes: number[]
   replies: number[]
@@ -26,9 +22,13 @@ interface TopicAttributes {
   share: number[]
   comments: number
   dislikes: number[]
+  favorites: number[]
 
   status: number
   edited: number
-  // 虚拟字段
+
   user: UserAttributes[]
+
+  created: Date
+  updated: Date
 }

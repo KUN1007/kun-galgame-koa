@@ -1,36 +1,13 @@
 /**
  * P & L: Profit and Loss Statement
  */
-import IncomeModel from '@/models/incomeModel'
-import ExpenditureModel from '@/models/expenditureModel'
+import BalanceModel from '@/models/balance'
 import mongoose from '@/db/connection'
 
 type SortField = 'time' | 'amount'
 type SortOrder = 'asc' | 'desc'
 
 class PLService {
-  // 添加一条收入数据
-  async createIncome(reason: string, time: number, amount: number) {
-    const newIncome = new IncomeModel({
-      reason,
-      time,
-      amount,
-    })
-
-    await newIncome.save()
-  }
-
-  // 添加一条支出数据
-  async createExpenditure(reason: string, time: number, amount: number) {
-    const newExpenditure = new ExpenditureModel({
-      reason,
-      time,
-      amount,
-    })
-
-    await newExpenditure.save()
-  }
-
   // 获取 income 的接口，分页获取，懒加载，每次 3 条
   /**
    * @param {number} page - 分页的页数，第几页
@@ -50,14 +27,14 @@ class PLService {
       [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
     }
 
-    const incomeDetails = await IncomeModel.find()
+    const incomeDetails = await BalanceModel.find()
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
       .lean()
 
     const responseData = incomeDetails.map((income) => ({
-      iid: income.iid,
+      bid: income.bid,
       reason: income.reason,
       time: income.time,
       amount: income.amount,
@@ -85,14 +62,14 @@ class PLService {
       [sortField]: sortOrder === 'asc' ? 'asc' : 'desc',
     }
 
-    const expenditureModelDetails = await ExpenditureModel.find()
+    const expenditureModelDetails = await BalanceModel.find()
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
       .lean()
 
     const responseData = expenditureModelDetails.map((expenditure) => ({
-      eid: expenditure.eid,
+      bid: expenditure.bid,
       reason: expenditure.reason,
       time: expenditure.time,
       amount: expenditure.amount,
@@ -108,7 +85,7 @@ class PLService {
     session.startTransaction()
     try {
       // 使用聚合操作计算总收入
-      const totalIncomeResult = await IncomeModel.aggregate([
+      const totalIncomeResult = await BalanceModel.aggregate([
         {
           $group: {
             _id: null,
@@ -118,7 +95,7 @@ class PLService {
       ])
 
       // 使用聚合操作计算总支出
-      const totalExpenditureResult = await ExpenditureModel.aggregate([
+      const totalExpenditureResult = await BalanceModel.aggregate([
         {
           $group: {
             _id: null,

@@ -1,12 +1,12 @@
 export type SortOrder = 'asc' | 'desc'
 
-export type SortFieldRanking =
+export type UserSortFieldRanking =
   | 'moemoepoint'
   | 'upvote'
   | 'like'
-  | 'topic_count'
-  | 'reply_count'
-  | 'comment_count'
+  | 'topic'
+  | 'reply'
+  | 'comment'
 
 interface LoginUserResponseData {
   uid: number

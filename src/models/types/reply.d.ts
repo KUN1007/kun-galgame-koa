@@ -1,6 +1,6 @@
-import type { UserAttributes } from './userModel'
+import type { UserAttributes } from './user'
+import type { TopicAttributes } from './topic'
 
-// 回复
 export interface ReplyAttributes {
   rid: number
   tid: number
@@ -14,15 +14,16 @@ export interface ReplyAttributes {
   content: string
   upvote_time: number
 
-  likes_count: number
-  comments_count: number
-
   upvotes: number[]
   likes: number[]
   dislikes: number[]
   share: number[]
   comment: number[]
-  // 虚拟字段
+
+  topic: TopicAttributes[]
   r_user: UserAttributes[]
   to_user: UserAttributes[]
+
+  created: Date
+  updated: Date
 }

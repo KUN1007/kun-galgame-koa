@@ -1,6 +1,6 @@
 import schedule from 'node-schedule'
 
-import UserModel from '@/models/userModel'
+import UserModel from '@/models/user'
 
 // 创建每日 0 点的定时任务
 const resetDailyTopicCountTask = schedule.scheduleJob('0 0 * * *', async () => {

@@ -8,7 +8,7 @@ import nodemailer from 'nodemailer'
 import SMPTransport from 'nodemailer-smtp-transport'
 import { generateRandomCode } from '@/utils/generateRandomCode'
 import env from '@/config/config.dev'
-import UserModel from '@/models/userModel'
+import UserModel from '@/models/user'
 
 class AuthService {
   // 验证码有效时间

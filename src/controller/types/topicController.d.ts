@@ -3,19 +3,19 @@ export type SortField =
   | 'time'
   | 'popularity'
   | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
+  | 'upvotes'
+  | 'likes'
+  | 'replies'
   | 'comments'
 
 export type SortOrder = 'asc' | 'desc'
 
-export type SortFieldRanking =
+export type TopicSortFieldRanking =
   | 'popularity'
   | 'views'
-  | 'upvotes_count'
-  | 'likes_count'
-  | 'replies_count'
+  | 'upvotes'
+  | 'likes'
+  | 'replies'
   | 'comments'
 
 export type SortFieldPool = 'views' | 'likes_count' | 'time'
